@@ -132,8 +132,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b1_lang";
-static String version_date = "30.09.2004";
+static String version_name = "ProjectX 0.81.8.02b2_lang";
+static String version_date = "01.10.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -8275,6 +8275,8 @@ public long nextFilePTS(int type, int ismpg, long lastpts, int file_number) {
 	java.text.DateFormat sms = new java.text.SimpleDateFormat("HH:mm:ss.SSS");
 	sms.setTimeZone(java.util.TimeZone.getTimeZone("GMT+0:00"));
 
+	lastpts &= 0xFFFFFFFFL; //DM30092004 081.8.02 add, fix, ignore bit33 of lastpts
+
 	if (combvideo.size() > file_number)
 	{
 		try 
@@ -15340,6 +15342,7 @@ class PIDdemux {
 			} else {
 				ptslength = (0xFF&origdata[8]);           // read byte pts-length
 				shift=3;
+
 
 
 
