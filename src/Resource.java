@@ -31,10 +31,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -42,25 +50,30 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
+import sun.net.www.protocol.file.FileURLConnection;
+
 /**
  * Project-X resource and localization handling.
  * 
  * @author Peter Storch
  */
 public class Resource {
+	
+	/** the prefix of all pjx resource files */
+	private static final String PJX_RESOURCE_PREFIX = "pjxresources";
 
 	/** the users locale */
 	private static Locale locale = null;
 
 	/** resource bundle */
-	private static ResourceBundle defaultResource = ResourceBundle.getBundle("pjxresources", Locale.ENGLISH);
+	private static ResourceBundle defaultResource = ResourceBundle.getBundle(PJX_RESOURCE_PREFIX, Locale.ENGLISH);
 
 	/** resource bundle */
 	private static ResourceBundle resource = null;
 	
 	static{
 		try {
-			resource = ResourceBundle.getBundle("pjxresources");
+			resource = ResourceBundle.getBundle(PJX_RESOURCE_PREFIX);
 		} catch (MissingResourceException e) {
 			// our fallback is english
 			resource = defaultResource;
@@ -78,7 +91,8 @@ public class Resource {
 	/**
 	 * Loads Language from ini file.
 	 * 
-	 * @param filename Name of the inifile.  
+	 * @param filename
+	 *            Name of the inifile.
 	 */
 	public static void loadLang(String inifile)
 	{
@@ -135,8 +149,8 @@ public class Resource {
 	}
 	
 	/**
-	 * Gets a String from the Resource file.
-	 * If the key is not found, the key itself is returned as text.
+	 * Gets a String from the Resource file. If the key is not found, the key
+	 * itself is returned as text.
 	 * 
 	 * @param key
 	 * @return String
@@ -254,11 +268,13 @@ public class Resource {
 
 	/**
 	 * Sets a button's text and mnemonic values using the specified resource
-	 * key.
-	 * The button text is scanned for &. If found the character after it is used as menmonic. 
+	 * key. The button text is scanned for &. If found the character after it is
+	 * used as menmonic.
 	 * 
-	 * @param   button    the button (e.g. a menu or menu item) to localize
-	 * @param   key       the resource string to find
+	 * @param button
+	 *            the button (e.g. a menu or menu item) to localize
+	 * @param key
+	 *            the resource string to find
 	 */
 	public static final void localize(AbstractButton button, String key) {
 		String text = getString(key);
@@ -293,24 +309,21 @@ public class Resource {
 
 		langMenu.addSeparator();
 
-/*		JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem();
-		localize(item_eng, "language.english");
-		item_eng.addActionListener(listener);
-		item_eng.setSelected(Locale.ENGLISH.equals(locale));
-		item_eng.setActionCommand(Locale.ENGLISH.toString());
-		langMenu.add(item_eng);
-		group.add(item_eng);
+/*
+ * JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem();
+ * localize(item_eng, "language.english"); item_eng.addActionListener(listener);
+ * item_eng.setSelected(Locale.ENGLISH.equals(locale));
+ * item_eng.setActionCommand(Locale.ENGLISH.toString()); langMenu.add(item_eng);
+ * group.add(item_eng);
+ * 
+ * JRadioButtonMenuItem item_ger = new JRadioButtonMenuItem();
+ * localize(item_ger, "language.german"); item_ger.addActionListener(listener);
+ * item_ger.setSelected(Locale.GERMAN.equals(locale));
+ * item_ger.setActionCommand(Locale.GERMAN.toString()); langMenu.add(item_ger);
+ * group.add(item_ger);
+ */
 
-		JRadioButtonMenuItem item_ger = new JRadioButtonMenuItem();
-		localize(item_ger, "language.german");
-		item_ger.addActionListener(listener);
-		item_ger.setSelected(Locale.GERMAN.equals(locale));
-		item_ger.setActionCommand(Locale.GERMAN.toString());
-		langMenu.add(item_ger);
-		group.add(item_ger);
-*/
-
-		Locale[] locales = Locale.getAvailableLocales();
+		Locale[] locales = getAvailableLocales();
 		for (int i = 0; i < locales.length; i++) {
 			Locale item = locales[i];
 			JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(item.getLanguage());
@@ -328,13 +341,14 @@ public class Resource {
 	}
 	
 	/**
-	 * Inner class LangListener.
-	 * Handles the actions from the Language Menu.
+	 * Inner class LangListener. Handles the actions from the Language Menu.
 	 */
 	private static class LangListener implements ActionListener
 	{
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		public void actionPerformed(ActionEvent event) {
@@ -352,5 +366,94 @@ public class Resource {
 		
 	}
 
-	
+	/**
+	 * Returns the available Locales for pjxresources.
+	 * 
+	 * @return
+	 */
+	private static Locale[] getAvailableLocales() {
+		List locales = new ArrayList();
+		String defLang = Locale.getDefault().getLanguage();
+
+		try {
+			URL url = ClassLoader.getSystemResource(PJX_RESOURCE_PREFIX + "_en.properties");
+			if (url != null) {
+				URLConnection urlc = null;
+				urlc = url.openConnection();
+				
+				// If the resources are located in a JAR file, we need this
+				// version
+				// to get the available locales and flag icons ..
+				if (urlc != null && urlc instanceof JarURLConnection) {
+					JarURLConnection jurlc = (JarURLConnection) urlc;
+					JarFile jarf = null;
+					try {
+						jarf = jurlc.getJarFile();
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+					if (jarf != null) {
+						for (Enumeration en = jarf.entries(); en.hasMoreElements();) {
+							JarEntry jare = (JarEntry) en.nextElement();
+							String name = jare.getName();
+							if (name.startsWith(PJX_RESOURCE_PREFIX)) {
+								String code = name.substring(0,
+										name.length() - ".properties".length());
+								int pos = code.indexOf('_');
+								if (pos != -1) {
+									code = code.substring(pos + 1);
+								}
+								pos = code.indexOf('.');
+								if (pos != -1)
+								{
+									code = code.substring(0, pos);
+								}
+								Locale locale = new Locale(code);
+								locales.add(locale);
+							}
+						}
+					}
+				}
+				// .. else if the resources are in the file system, we use the
+				// default
+				// version to get the available locales and flag icons.
+				else {
+					File enFile = new File(url.getFile());
+					File dir = enFile.getParentFile();
+					File[] files = dir.listFiles();
+					if (files != null) {
+						for (int i = 0; i < files.length; i++) {
+							File file = files[i];
+							if (file.isFile() && file.getName().startsWith(PJX_RESOURCE_PREFIX))
+							{
+								try {
+									String code = file.getName();
+									int pos = code.indexOf('_');
+									if (pos != -1) {
+										code = code.substring(pos + 1);
+									}
+									pos = code.indexOf('.');
+									if (pos != -1)
+									{
+										code = code.substring(0, pos);
+									}
+									Locale locale = new Locale(code);
+									locales.add(locale);
+								} catch (Exception e) {
+									System.out.println(e);
+								}
+							}
+						}
+					}
+				}
+			} else {
+				System.err.println("Couldn't find \"" + PJX_RESOURCE_PREFIX
+						+ "\"*.properties");
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		return (Locale[])locales.toArray(new Locale[0]);
+	}
 }
