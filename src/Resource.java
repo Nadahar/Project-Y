@@ -453,7 +453,45 @@ public class Resource {
 	 */
 	public static URL getResourceURL(String resource)
 	{
+		try
+		{
+			String filename = System.getProperty("user.dir") + "/" + resource;
+			File file = new File(filename);
+			if (file.exists() && file.canRead())
+			{
+				return file.toURL();
+			}
+		}
+		catch(Exception e)
+		{
+			// ignore it, it was just a try to get this resource from the filesystem
+		}
+		
+		// ok, not founde in the filesystem, now try the classloader
 		return Resource.class.getClassLoader().getResource(resource);
+	}
+
+	/**
+	 * Returns a resource (e.g. from the jar file) as an URL.
+	 * 
+	 * @param resourceName the name of the resource
+	 * @return URL
+	 */
+	public static URL getLocalizedResourceURL(String path, String resourceName)
+	{
+		if (resource.getLocale() != null)
+		{
+			String localizedResource = path + "/" + resource.getLocale() + "/" + resourceName;
+			
+			URL url = getResourceURL(localizedResource);
+			if (url != null)
+			{
+				return url;
+			}
+		}
+
+		// there is no localized version of this file, try the default version
+		return getResourceURL(path + "/" + resourceName);
 	}
 
 	/**

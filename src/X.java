@@ -88,6 +88,7 @@ import java.io.PrintWriter;
 import java.io.PushbackInputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -148,7 +149,7 @@ Audio Audio = new Audio();
 static D2V d2v = new D2V();
 static TS tf = new TS();
 
-static String inifile = "", ColourTablesFile = ""; //DM13062004 081.7 int04 add
+static String inifile = "";
 static String inidir = System.getProperty("user.dir");
 static String filesep = System.getProperty("file.separator");
 static String frametitle = "";
@@ -256,9 +257,6 @@ public X()	//DM20032004 081.6 int18 changed
 	if ( !inidir.endsWith(filesep) ) 
 		inidir += filesep;
 	inifile = inidir + "X.ini";
-
-	//DM13062004 081.7 int04 add
-	ColourTablesFile = inidir + "colours.tbl";
 }
 
 void buildGUI()
@@ -4959,29 +4957,37 @@ public void javaEV()
 public static int loadAC3() {
 	Audio AC3Audio = new Audio();
 	AC3list.clear();
-	if (!new File(inidir+"ac3.bin").exists()) 
+	
+	URL url = Resource.getResourceURL("ac3.bin");
+	if (url == null) 
 		return 0;
+	
 	try {
-	RandomAccessFile in = new RandomAccessFile(inidir+"ac3.bin","r");
-	byte[] check = new byte[(int)in.length()];
-	in.seek(0); 
-	in.read(check); 
-	in.close();
-
-	Msg(""); //DM22062004 081.7 int05 add
-
-	int a=0, frame_counter=0;
-	while (a < check.length) {
-		AC3Audio.AC3_parseHeader(check,a);
-		Msg("("+frame_counter+") "+AC3Audio.AC3_saveAnddisplayHeader());
-		byte[] ac3data = new byte[AC3Audio.Size];
-		System.arraycopy(check,a,ac3data,0,AC3Audio.Size);
-		AC3list.add(ac3data);
-		a += AC3Audio.Size;
-		frame_counter++;
-	}
-	check = null;
-	return frame_counter;
+		BufferedInputStream bis = new BufferedInputStream(url.openStream());
+		ByteArrayOutputStream bao = new ByteArrayOutputStream();
+		byte[] buff = new byte[1024];
+		int bytesRead = -1;
+		while ((bytesRead = bis.read(buff, 0, buff.length)) != -1)
+		{
+			bao.write(buff, 0, bytesRead);
+		}
+		
+		byte[] check = bao.toByteArray();
+	
+		Msg(""); //DM22062004 081.7 int05 add
+	
+		int a=0, frame_counter=0;
+		while (a < check.length) {
+			AC3Audio.AC3_parseHeader(check,a);
+			Msg("("+frame_counter+") "+AC3Audio.AC3_saveAnddisplayHeader());
+			byte[] ac3data = new byte[AC3Audio.Size];
+			System.arraycopy(check,a,ac3data,0,AC3Audio.Size);
+			AC3list.add(ac3data);
+			a += AC3Audio.Size;
+			frame_counter++;
+		}
+		check = null;
+		return frame_counter;
 	} 
 	catch (IOException e5) { Msg(Resource.getString("ac3.msg.loading.error")); }
 
@@ -12963,7 +12969,7 @@ public void processSubpicture(String[] args)
 	Hashtable user_table = new Hashtable();
 
 	if (comBox[11].getSelectedIndex() > 2)
-		user_table = Common.getUserColourTable(ColourTablesFile, comBox[11].getSelectedItem().toString());
+		user_table = Common.getUserColourTable(comBox[11].getSelectedItem().toString());
 	//DM13062004 081.7 int04 add--
 
 	//DM25072004 081.7 int07 add

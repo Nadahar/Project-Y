@@ -31,6 +31,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -41,6 +43,8 @@ public final class Common
 	private static java.text.DateFormat time_format_1 = new java.text.SimpleDateFormat("HH:mm:ss.SSS");
 	private static java.text.DateFormat time_format_2 = new java.text.SimpleDateFormat("HH:mm:ss:SSS");
 
+	private static final String COLOUR_TABLES_FILENAME = "colours.tbl";
+	
 	private Common()
 	{}
 
@@ -133,14 +137,16 @@ public final class Common
 	}
 
 	//DM13062004 081.7 int04 add
-	public static Hashtable getUserColourTable(String file, String model) throws IOException
+	public static Hashtable getUserColourTable(String model) throws IOException
 	{
 		Hashtable user_table = new Hashtable();
+		
+		URL url = Resource.getResourceURL(COLOUR_TABLES_FILENAME);
 
-		if ( !(new File(file).exists()) )
+		if ( url == null )
 			return user_table;
 
-		BufferedReader table = new BufferedReader( new FileReader(file));
+		BufferedReader table = new BufferedReader( new InputStreamReader(url.openStream()));
 		String line;
 		boolean table_match = false;
 

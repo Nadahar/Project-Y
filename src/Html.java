@@ -38,7 +38,7 @@ public class Html extends JFrame
 {
 	public Html()
 	{
-		setBounds( 200, 25, 600, 400);
+		setBounds( 200, 25, 600, 500);
 		HtmlPane html = new HtmlPane();
 		setContentPane(html);
 		setTitle("Html Frame");
@@ -68,11 +68,7 @@ class HtmlPane extends JScrollPane implements HyperlinkListener
 	{
 		try
 		{
-			File f = new File ("htmls/index.html");
-			String s = f.getAbsolutePath();
-			s = "file:"+s;
-			URL url = new URL(s);
-			html = new JEditorPane(s);
+			html = new JEditorPane(Resource.getLocalizedResourceURL("htmls", "index.html"));
 			html.setEditable(false);
 			html.addHyperlinkListener(this);
 
