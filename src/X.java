@@ -132,8 +132,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02_lang";
-static String version_date = "26.09.2004";
+static String version_name = "ProjectX 0.81.8.02b1_lang";
+static String version_date = "30.09.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -312,10 +312,13 @@ protected void buildPopupMenu()
 	popup.addSeparator();
 
 	JMenuItem menuitem_2 = popup.add(Resource.getString("popup.add"));
+	menuitem_2.setActionCommand("add");
 	JMenuItem menuitem_3 = popup.add(Resource.getString("popup.remove"));
+	menuitem_3.setActionCommand("remove");
 	popup.addSeparator();
 
 	JMenuItem menuitem_4 = popup.add(Resource.getString("popup.rename"));
+	menuitem_4.setActionCommand("rename");
 	popup.addSeparator();
 
 	JMenuItem menuitem_5 = popup.add(Resource.getString("popup.openhex"));
@@ -4052,6 +4055,7 @@ class COLLECTION extends JFrame
 			point = listreader.readLine();
 			if (point==null) 
 				break;
+
 
 
 			if (point.trim().equals("")) 
@@ -15336,6 +15340,7 @@ class PIDdemux {
 			} else {
 				ptslength = (0xFF&origdata[8]);           // read byte pts-length
 				shift=3;
+
 
 
 
