@@ -79,7 +79,6 @@ public class RawRead implements RawReadIF
 
 	public boolean isAccessibleDisk(String sourcefile)
 	{
-		System.out.println("isAccessibleDisk('" + sourcefile + "');");
 		// make sure it's not a PC file (c: or UNC prefix) and not a Linux file (/ prefix)
 		// support of URLs untested ( file:// , http:// .. )
 		if (DllLoaded && sourcefile.charAt(1) != ':' && sourcefile.charAt(1) != '\\' && sourcefile.charAt(0) != '/')
