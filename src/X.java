@@ -6938,8 +6938,9 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 	int packsize0_buffer=Integer.parseInt(comBox[36].getSelectedItem().toString()); //DM21112003 081.5++
 	packsize0_buffer=packsize0_buffer>bs?bs:packsize0_buffer; //DM21112003 081.5++
 
-	boolean pes_alignment, pes_ext1, pes_ext2, vdr_dvbsub;
-	int pes_shift, pes_header_length;
+	boolean pes_alignment, pes_ext1, pes_ext2, mpeg2;
+	int pes_shift, pes_header_length, vdr_dvbsub;
+	Hashtable substreams = new Hashtable();
 
 
 	morepva:
@@ -7178,33 +7179,15 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 
 			pes_header_length = 0xFF & data[8];
 
-			ttx = false;
-			subID = 0;
+			vdr_dvbsub = -1;
 
-			//DM30122003 081.6 int10 changed
-			if (pesID == 0xBD && packlength > 2)
-			{
-				int off = 9 + pes_header_length;
-
-				if ( off < 6 + packlength )
-				{
-					subID = 0xFF & data[off];
-					ttx = (pes_header_length == 0x24 && subID>>>4 == 1) ? true : false; 
-
-					if (ismpg == 0 && !ttx) 
-						subID = 0;
-				}
-				else if (ismpg != 1) 
-					data[8] = (byte)(packlength - 3);
-			}
-
-			vdr_dvbsub = false;
+			mpeg2 =  (0xC0 & data[6]) == 0x80 ? true : false;
+			pes_alignment = mpeg2 && (4 & data[6]) != 0 ? true : false;
 
 			//vdr_dvbsub determination
-			if (pesID == 0xBD && ismpg != 1)
+			if (pesID == 0xBD && mpeg2)
 			{
 				//read flags
-				pes_alignment = (4 & data[6]) != 0 ? true : false;
 				pes_shift = 9; //points to 1st appendix
 				pes_shift += (0x80 & data[7]) != 0 ? 5 : 0; //pes_pts
 				pes_shift += (0x40 & data[7]) != 0 ? 5 : 0; //pes_dts
@@ -7227,11 +7210,31 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 					if (pes_ext2 && packlength > pes_shift + 2)
 					{
 						pes_shift++; //skip ext2 length field
-						int val = 0xFF & data[pes_shift]; //read byte0 (res.) of ext2
-
-						vdr_dvbsub = val == 0x28 ? true : false;
+						vdr_dvbsub = 0xFF & data[pes_shift]; //read byte0 (res.) of ext2
 					}
 				}
+			}
+
+//Msg("" + mpeg2 + " / " + pes_alignment + " / 0x" + Integer.toHexString(pesID) + " / 0x" + Integer.toHexString(vdr_dvbsub));
+
+			ttx = false;
+			subID = 0;
+
+			//DM30122003 081.6 int10 changed
+			if (pesID == 0xBD && packlength > 2)
+			{
+				int off = 9 + pes_header_length;
+
+				if ( off < 6 + packlength )
+				{
+					subID = 0xFF & data[off];
+					ttx = (pes_header_length == 0x24 && subID>>>4 == 1) ? true : false; 
+
+					if (ismpg == 0 && !ttx) 
+						subID = 0;
+				}
+				else if (ismpg != 1) 
+					data[8] = (byte)(packlength - 3);
 			}
 
 

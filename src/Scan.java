@@ -839,8 +839,20 @@ public class Scan
 		this.buffersize=buffersize;
 	}
 
-	//DM04122003 081.6_int02 changed
 	public int testFile(String infile, boolean more)
+	{
+		long len = new File(infile).length();
+
+		int ret = testFile(infile, more, 0);
+
+		if (ret != 0)
+			return ret;
+
+		// if type is not yet detected, try it again on a later position (10% of length)
+		return testFile(infile, more, len / 10);
+	}
+
+	public int testFile(String infile, boolean more, long position)
 	{
 		video_streams.clear();
 		audio_streams.clear();
@@ -874,7 +886,7 @@ public class Scan
 			{
 				RandomAccessFile incheck = new RandomAccessFile( infile, "r" );
 				size = incheck.length();
-				incheck.seek(0);
+				incheck.seek(position);
 				incheck.read(check);
 				incheck.close();
 			}
