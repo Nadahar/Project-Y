@@ -88,6 +88,7 @@ import java.io.PrintWriter;
 import java.io.PushbackInputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -3839,7 +3840,7 @@ class COLLECTION extends JFrame
 		//int loadSize = 2560000; // bytes for searching the next I-frame ;changed for X0.81
 		int loadSize = loadSizeForward; // bytes for searching the next I-frame ;changed for X0.81
 
-		setTitle(title + "processing preview...");
+		setTitle(title + RESOURCE.getString("collection.title.processing"));
 
 		if (pos>>>4 >= (long)search.getMaximum())   // last
 		{
@@ -3867,7 +3868,7 @@ class COLLECTION extends JFrame
 		catch (IOException e6)
 		{
 			//DM25072004 081.7 int07 add
-			Msg("preview error: " + e6);
+			Msg(RESOURCE.getString("collection.preview.error") + " " + e6);
 		}
 		setTitle(title);
 		getExpectedSize();
@@ -4011,7 +4012,8 @@ class COLLECTION extends JFrame
 		else
 		{
 			Toolkit.getDefaultToolkit().beep();
-			setTitle("collection specials for coll.# "+activecoll+"  -> ERROR! collection doesn't exists ");
+			String title = MessageFormat.format(RESOURCE.getString("collection.title.error"), new Object[]{""+activecoll});
+			setTitle(title);
 		}
 	}
 
@@ -4054,7 +4056,7 @@ class COLLECTION extends JFrame
 		listwriter.close();
 		}
 		catch (IOException e) { 
-			Msg(".. cannot access file : "+file); 
+			Msg(RESOURCE.getString("collection.access.file.error") + " "+file); 
 		}
 	}
 
@@ -4105,7 +4107,7 @@ class COLLECTION extends JFrame
 		listreader.close();
 		} 
 		catch (IOException e5) { 
-			Msg("error loading "+file);
+			Msg(RESOURCE.getString("collection.loading.error") + " " + file);
 		}
 
 		//DM17012004 081.6 int11 changed
@@ -4854,7 +4856,7 @@ class GoListener implements ActionListener
 		}
 		else if (actName.equals("cancel"))
 		{ 
-			Msg("--- process cancelled ----"); 
+			Msg(RESOURCE.getString("golistener.msg.cacelled")); 
 			TextArea.setBackground(new Color(230, 230, 255)); //DM14052004 081.7 int02 add
 			qpause=false; 
 			qbreak=true; 
@@ -4864,13 +4866,13 @@ class GoListener implements ActionListener
 		{
 			if (!qpause)
 			{ 
-				Msg("--- process paused ----"); 
+				Msg(RESOURCE.getString("golistener.msg.paused")); 
 				TextArea.setBackground(new Color(255, 255, 220)); //DM26032004 081.6 int18 add
 				qpause=true; 
 			}
 			else
 			{ 
-				Msg("--- process resumed ----"); 
+				Msg(RESOURCE.getString("golistener.msg.resumed")); 
 				TextArea.setBackground(Color.white); //DM26032004 081.6 int18 add
 				qpause=false; 
 			}
@@ -4880,7 +4882,7 @@ class GoListener implements ActionListener
 			options[31]=1; 
 			options[30]=0;
 			options[33]=Integer.parseInt(comBox[9].getSelectedItem().toString(),16);
-			TextArea.setText("extracting raw(PES) data of ID 0x"+comBox[9].getSelectedItem().toString()+"...");
+			TextArea.setText(RESOURCE.getString("golistener.msg.extracting") + comBox[9].getSelectedItem().toString() + "...");
 			new WORK().start();
 		}
 	}
@@ -4945,7 +4947,7 @@ public static int loadAC3() {
 	check = null;
 	return frame_counter;
 	} 
-	catch (IOException e5) { Msg("error loading ac3.bin"); }
+	catch (IOException e5) { Msg(RESOURCE.getString("ac3.msg.loading.error")); }
 
 	AC3list.clear();
 	return 0;
