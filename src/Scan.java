@@ -25,8 +25,11 @@
  */
 
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import xinput.XInputFile;
 
 public class Scan {
 
@@ -50,7 +53,8 @@ String[] type = {
 	"ES (Subpicture 2-bit RLE)" //DM31012004 081.6 int13
 };
 
-String video =" ", audio=" ", addInfo="", origFile="", playtime="", text="", pics=""; //DM10032004 081.6 int18 add, //DM28042004 081.7 int02 changed
+String video =" ", audio=" ", addInfo="", playtime="", text="", pics=""; //DM10032004 081.6 int18 add, //DM28042004 081.7 int02 changed
+XInputFile origFile;
 ArrayList pidlist = new ArrayList();
 boolean hasVideo=false, nullpacket=false;
 byte[] vbasic = new byte[12];
@@ -61,25 +65,16 @@ int filetype = 0; //DM26032004 081.6_int18 add
 
 java.text.DateFormat timeformat = new java.text.SimpleDateFormat("HH:mm:ss.SSS");
 
-//DM18062004 081.7 int05 add
-RawInterface raw_interface;
-
-//DM18062004 081.7 int05 add
-public Scan()
-{
-	raw_interface = new RawInterface();
-}
-
 //DM26032004 081.6_int18 changed
-public int inputInt(String file) { 
-	filetype = testFile(file,false);
+public int inputInt(XInputFile aXInputFile) { 
+	filetype = testFile(aXInputFile,false);
 	return filetype;
 }
 
 //DM26032004 081.6_int18 changed
-public String Type(String file) { 
-	origFile = file; 
-	filetype = testFile(file,true);
+public String Type(XInputFile aXInputFile) { 
+	origFile = aXInputFile; 
+	filetype = testFile(aXInputFile,true);
 	return type[filetype] + addInfo; 
 }
 
@@ -88,10 +83,8 @@ public boolean isSupported() {
 	return (filetype == 0 ? false : true);
 }
 
-//DM18062004 081.7 int05 changed
-public String Date(String file)
-{
-	return raw_interface.getFileDate(file);
+public String Date(XInputFile aXInputFile) {
+	return java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG).format(new java.util.Date(aXInputFile.lastModified()))+"  "+java.text.DateFormat.getTimeInstance(java.text.DateFormat.LONG).format(new java.util.Date(aXInputFile.lastModified()));
 }
  
 //DM10032004 081.6 int18 changed
@@ -121,16 +114,11 @@ public String getPlaytime() {
 	return playtime; 
 }
 
-//DM18062004 081.7 int05 changed
-public boolean isEditable()
-{
-	if (raw_interface.isAccessibleDisk(origFile))
-		return hasVideo;
-	else
-		return (new File(origFile).exists() && hasVideo);
+public boolean isEditable() { 
+	return (origFile.exists() && hasVideo); 
 }
 
-public String getFile() { 
+public XInputFile getFile() { 
 	return origFile; 
 }
 
@@ -598,7 +586,7 @@ public void setBuffer(int buffersize) {
 	this.buffersize=buffersize;
 }
 
-public int testFile(String infile, boolean more) { //DM04122003 081.6_int02 changed
+public int testFile(XInputFile aXInputFile, boolean more) { //DM04122003 081.6_int02 changed
 	video = "no video found at a short scan";
 	audio = "no audio found at a short scan"; 
 	text = "no teletext found at a short scan"; 
@@ -621,16 +609,8 @@ public int testFile(String infile, boolean more) { //DM04122003 081.6_int02 chan
    
 	try 
 	{
-
-	//DM18062004 081.7 int05 changed
-	if (!raw_interface.getScanData(infile, check))
-	{
-		RandomAccessFile incheck = new RandomAccessFile( infile, "r" );
-		size = incheck.length();
-		incheck.seek(0);
-		incheck.read(check);
-		incheck.close();
-	}
+	size = aXInputFile.length();
+	aXInputFile.randomAccessSingleRead(check, 0);
 
 	riffcheck:
 	for (int a=0; a<bs0; a++)  //DM30122003 081.6 int10 add, compressed as AC3,MPEG is currently better detected as ES-not RIFF

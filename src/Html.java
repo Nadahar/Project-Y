@@ -24,14 +24,25 @@
  *
  */
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.net.URL;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.io.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
+import java.net.URL;
+
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.Document;
 
 //DM20032004 081.6 int18 introduced
 public class Html extends JFrame

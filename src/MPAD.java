@@ -30,7 +30,14 @@
  *
  */
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PushbackInputStream;
+import java.io.RandomAccessFile;
 
 public class MPAD {
 
@@ -1043,41 +1050,24 @@ public static int getbits(int N) {
 }
 ***/
 
-public static void loadbits(int size)
-{
+public static void loadbits(int size) {
 	Bits = new boolean[size*8];
 	BitPos = 0;
-
-	for (int a=0; a < size; a++)
-		for (int b=0; b < 8; b++)
-			if (((0x80>>>b) & buf[BufferPos + a]) != 0)
-				Bits[(a * 8) + b] = true;
-
-	BufferPos += size;
+	for (int a=0;a<size;a++)
+		for (int b=0;b<8;b++) if (((0x80>>>b) & buf[BufferPos+a])!=0) Bits[(a*8)+b]=true;
+	BufferPos+=size;
 }
 
-//DM10062004 081.7 int04 fixed
-public static int getbits(int N)
-{
+public static int getbits(int N) {
 	int Val=0;
-
-	for (int a = 0; a < N && BitPos + a < Bits.length; a++)
-		if (Bits[BitPos + a])
-			Val |= 1<<(N - 1 - a);
-
+	for (int a=0;a<N;a++) if (Bits[BitPos+a]) Val |= 1<<(N-1-a);
 	BitPos += N;
 	return Val;
 }
 
-//DM10062004 081.7 int04 fixed
-public static int showbits(int N)
-{
+public static int showbits(int N) {
 	int Val=0;
-
-	for (int a = 0; a < N && BitPos + a < Bits.length; a++)
-		if (Bits[BitPos + a])
-			Val |= 1<<(N-1-a);
-
+	for (int a=0;a<N;a++) if (Bits[BitPos+a]) Val |= 1<<(N-1-a);
 	return Val;
 }
 

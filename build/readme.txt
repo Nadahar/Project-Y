@@ -1,1 +1,1 @@
-This directory is used by build.bat.
+This directory is used for documentation.

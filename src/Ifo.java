@@ -26,8 +26,12 @@
 
 //package X
 
-import java.io.*;
-import java.util.zip.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.zip.InflaterInputStream;
 
 //DM10052004 081.7 int02 introduced
 public final class Ifo

@@ -57,12 +57,25 @@
  */
 
 
-import java.io.*;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.awt.image.BufferedImage;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.MemoryImageSource;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PushbackInputStream;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class MPVD extends JFrame {
 
@@ -1010,32 +1023,17 @@ public void sequence_header(){
 	vbv_buffer_size             = Get_Bits(10);
 	constrained_parameters_flag = Get_Bits(1);
 
-	//DM05072004 081.7 int06 changed
-	info_4 = " ";
-
-	if ((load_intra_quantizer_matrix = Get_Bits(1))>0)
-	{
+	if ((load_intra_quantizer_matrix = Get_Bits(1))>0){
 		for (i=0; i<64; i++)
 			intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
-
-		//DM05072004 081.7 int06 add
-		info_4 += ",iqm";
-	}
-	else
-	{
+	}else{
 		System.arraycopy(default_intra_quantizer_matrix,0,intra_quantizer_matrix,0,64);
 	}
 
-	if ((load_non_intra_quantizer_matrix = Get_Bits(1))>0)
-	{
+	if ((load_non_intra_quantizer_matrix = Get_Bits(1))>0){
 		for (i=0; i<64; i++)
 			non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
-
-		//DM05072004 081.7 int06 add
-		info_4 += ",niqm";
-	}
-	else
-	{
+	}else{
 		java.util.Arrays.fill(non_intra_quantizer_matrix,16);
 	}
 
@@ -1045,6 +1043,8 @@ public void sequence_header(){
 
 	frame_rate = (float)frame_rate_Table[frame_rate_code]; //DM06022004 081.6 int15 add
 
+	//DM06052004 081.7 int02 add
+	info_4 = "";
 
 	extension_and_user_data();
 
@@ -1165,8 +1165,6 @@ public void sequence_extension(){
 
 	horizontal_size = (horizontal_size_extension<<12) | (horizontal_size&0xfff);
 	vertical_size = (vertical_size_extension<<12) | (vertical_size&0xfff);
-
-	info_4 += ", low delay=" + low_delay; //DM26052004 081.7 int03 add
 }
 
 /* decode sequence display extension */
@@ -1192,8 +1190,7 @@ public void sequence_display_extension(){
 	display_vertical_size   = Get_Bits(14);
 
 	//DM06052004 081.7 int02 add
-	//DM26052004 081.7 int03 changed
-	info_4 += ", SDE: " + display_horizontal_size + "*" + display_vertical_size;
+	info_4 = ", SDE: " + display_horizontal_size + "*" + display_vertical_size;
 }
 
 /* decode quant matrix entension */
@@ -1261,9 +1258,6 @@ public void picture_display_extension(){
 
 		frame_center_vertical_offset[i] = Get_Bits(16);
 		Flush_Bits(1);	// marker bit
-
-		//DM24062004 081.7 int05 add
-		info_3 += ",(" + frame_center_horizontal_offset[i] + "," + frame_center_vertical_offset[i] + ")";
 	}
 }
 
@@ -1541,9 +1535,6 @@ public int slice(int MBAmax){
 			}
 		}
 
-//test
-//System.out.println("mba " + MBA[0]);
-
 		if (MBAinc[0]==1) { /* not skipped */
 			if (decode_macroblock(macroblock_type, motion_type, dct_type, PMV,
 				dc_dct_pred, motion_vertical_field_select, dmvector)<1) {
@@ -1652,22 +1643,6 @@ public int decode_macroblock(int macroblock_type[], int motion_type[], int dct_t
 
 	if (Fault_Flag>0) return 0;	// trigger: go to next slice
 
-//test
-/**
-System.out.println(
-	"ma " + macroblock_type[0] + 
-	" /mt " + motion_type[0] + 
-	" /mv " + motion_vector_count[0] + 
-	" /mf " + mv_format[0] +
-	" /ms " + mvscale[0] + 
-	" /dm " + dmv[0] + 
-	" /dc " + dct_type[0] +
-	" /qs " + quantizer_scale + 
-	" /qt " + q_scale_type +
-	" /cm " + concealment_motion_vectors
-);
-**/
-
 	/* decode blocks */
 	for (comp=0; comp<block_count; comp++)	{
 		Clear_Block(comp);
@@ -1744,12 +1719,6 @@ public void Decode_MPEG2_Intra_Block(int comp, int dc_dct_pred[]) {
 			break;
 	}
 
-//test
-/**
-System.out.println("comp " + comp + " /dc " + val);
-if (quantizer_scale > 4)
-	val -= 128;
-**/
 	bp[0] = (short)(val << (3-intra_dc_precision));  //the top-left pixel value of block
 
 	/* decode AC coefficients */
@@ -2308,10 +2277,7 @@ public void Add_Block(int comp, int bx, int by, int dct_type[], boolean addflag)
 				pixels[pPos] += val<<16 | val<<8 | val;
 			}
 		}
-	}
-
-	else
-	{    //chroma cc1 = Cb, cc2=Cr
+	}else{    //chroma cc1 = Cb, cc2=Cr
 		if (chroma_format!=CHROMA444){
 			rfp<<=1;
 			iincr<<=1;
@@ -2531,9 +2497,6 @@ private void scale_Picture()
 			pixels2[x + (y * scanline)] = 0xFF000000 | pixels[(int)X + ((int)Y * horizontal_size)];
 
 	source.newPixels();
-
-	//DM30072004 081.7 int07 add
-	WSS.init(pixels, horizontal_size);
 }
 
 
@@ -2566,22 +2529,6 @@ public void paint(Graphics g)
 	g.setColor(Color.white);
 	g.drawString(info_1, 36, 301);
 	g.drawString(info_2, 36, 316);
-
-	//DM30072004 081.7 int07 add++
-	String str;
-
-	if ((str = WSS.getWSS()) != null)
-	{
-		g.setColor(Color.white);
-		g.fill3DRect(10, 10, 80, 16, true);
-		g.setColor(Color.red);
-		g.drawString("WSS present", 14, 22);
-
-		setToolTipText("<html>doubleclick to save as bmp<p><p>" + str + "</html>");
-	}
-	else
-		setToolTipText("doubleclick to save as bmp");
-	//DM30072004 081.7 int07 add--
 
 	if (PLAY)
 	{
@@ -2651,14 +2598,14 @@ public void run()
 }
 
 //DM27042004 081.7 int02 changed
-//DM24062004 081.7 int05 changed
 public void showCut(boolean play, long cutPoints[], java.util.ArrayList previewList)
 {
 	PLAY = play;
 
 	if ( !previewList.isEmpty() )
 	{
-		cutfiles_length = ((PreviewObject)previewList.get(previewList.size() - 1)).getEnd();
+		Object filedata[] = (Object[])previewList.get(previewList.size()-1);
+		cutfiles_length = ((long[])filedata[1])[1];
 		cutfiles_points = cutPoints;
 	}
 	else

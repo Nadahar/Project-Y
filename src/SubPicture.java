@@ -29,16 +29,22 @@
  * http://www.via.ecp.fr/~sam/doc/dvd/
  */
 
-import java.awt.*;
-import java.awt.font.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
-import java.awt.image.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 
 public class SubPicture extends JFrame
@@ -91,89 +97,23 @@ public class Picture extends JPanel implements Runnable
 	private Font font, font_alt, font_std; //DM30122003 081.6 int10 add, //DM01032004 081.6 int18 add
 	private FontRenderContext frc;
 
-	//DM26052004 081.7 int03 changed
 	private final int default_teletext_colors[] = {
-		//bg = 0 = black
-		0xFF606060, //Y 40%
-		0xFFEB6060, //red lighter
+		0xFF808080, //Y 50%
+		0xFFEB8080, //red light
 		0xFF10EB10, //green
 		0xFFEBEB10, //yellow
-		0xFF5050EB, //blue lighter
-		0xFFEB60EB, //magenta lighter
+		0xFF9090EB, //blue light
+		0xFFEB10EB, //magenta
 		0xFF10EBEB, //cyan
 		0xFFEBEBEB, //Y 100%
-
-		//bg = 1 = red
-		0xFF606060, //Y black
-		0xFFE06060, //red
-		0xFF60E060, //green
-		0xFFE0E060, //yellow
-		0xFF6060E0, //blue
-		0xFFE060E0, //magenta
-		0xFF60E0E0, //cyan
-		0xFFE0E0E0, //white-gray
-
-		//bg = 2 = green
-		0xFF707070, //Y black
-		0xFFD07070, //red
-		0xFF70D070, //green
-		0xFFD0D070, //yellow
-		0xFF7070D0, //blue
-		0xFFD070D0, //magenta
-		0xFF70D0D0, //cyan
-		0xFFD0D0D0, //white-gray
-
-		//bg = 3 = yellow
-		0xFF808080, //Y black
-		0xFFC08080, //red
-		0xFF80C080, //green
-		0xFFC0C080, //yellow
-		0xFF8080C0, //blue
-		0xFFC080C0, //magenta
-		0xFF80C0C0, //cyan
-		0xFFC0C0C0, //white-gray
-
-		//bg = 4 = blue
-		0xFF909090, //Y black
-		0xFFC09090, //red
-		0xFF90C090, //green
-		0xFFC0C090, //yellow
-		0xFF9090C0, //blue
-		0xFFC090C0, //magenta
-		0xFF90C0C0, //cyan
-		0xFFB0B0B0, //white-gray
-
-		//bg = 5 = magenta
-		0xFFA0A0A0, //Y black
-		0xFFB0A0A0, //red
-		0xFFA0B0A0, //green
-		0xFFB0B0A0, //yellow
-		0xFFA0A0B0, //blue
-		0xFFB0A0B0, //magenta
-		0xFFA0B0B0, //cyan
-		0xFFA0A0A0, //white-gray
-
-		//bg = 6 = cyan
-		0xFFB0B0B0, //Y black
-		0xFFC0A0A0, //red
-		0xFFA0D0A0, //green
-		0xFFC0D0A0, //yellow
-		0xFFA0A0D0, //blue
-		0xFFD0A0D0, //magenta
-		0xFFA0D0D0, //cyan
-		0xFF909090, //white-gray
-
-		//bg = 7 = white
-		0xFFD0D0D0, //Y black
-		0xFFE09090, //red
-		0xFF90E090, //green
-		0xFFE0E090, //yellow
-		0xFF9090E0, //blue
-		0xFFE090E0, //magenta
-		0xFF90E0E0, //cyan
-		0xFF808080, //white-gray
-
-		0 // bg transparent
+		0xFF101010, //black
+		0xFFEB8080, //red lighter
+		0xFF80EB80, //green lighter
+		0xFFEBEB80, //yellow lighter
+		0xFF8080EB, //blue lighter
+		0xFFEB80EB, //magante lighter
+		0xFF80EBEB, //cyan lighter
+		0 // full transparency black bg
 	};
 
 	private final int default_sup_colors[] = {
@@ -199,34 +139,25 @@ public class Picture extends JPanel implements Runnable
 	private Object[] str = new Object[0];
 	private byte[] RLEheader = { 0x53,0x50,0,0,0,0,0,0,0,0,0,0,0,0 }; // startcode + later reverse 5PTS, DTS=0
 	private byte[] sections = {
-		0, 0,           // next contr sequ.
+		0, 0,           // size  
 		3, 0x32, 0x10,         // color palette linkage
 		4, (byte)0xFF, (byte)0xFA,         // color alpha channel linkage F=opaque
 		5, 0, 0, 0, 0, 0, 0, // coordinates Xa,Ya,Xe,Ye
 		6, 0, 0, 0, 0,     // bytepos start top_field, start bottom_field
-		1,  // start displ.  //0 means force display
-		(byte)0xFF,    // end of sequ.
-		1, 0x50,  // time for next sequ,
-		0, 0,  //next contr sequ.
-		2,   // stop displ.
-		(byte)0xFF     // end of sequ: timedur in pts/1100, size s.a. , add 0xFF if size is not WORD aligned
+		1, (byte)0xFF,    // 0xFF
+		1, 0x50, 0, 0, 2, (byte)0xFF     // section 01, end sequ: timedur in pts/900, size s.a. , add 0xFF if size is not WORD aligned
 	};
 
 	private ByteArrayOutputStream out = new ByteArrayOutputStream();
 	private byte newline[] = { 0,0 };
 	private int Rect[] = new int[4];
 	private int pos[] = new int[4];
-	private int option[] = new int[10]; //DM26052004 081.7 int03 changed
-
-	//DM26052004 081.7 int03 changed
-	private int standard_values[] = { 26, 10, 32, 80, 560, 720, 576, -1, 4 };
+	private int option[] = new int[8];
+	private int standard_values[] = { 28, 10, 32, 60, 600, 720, 576 };  // ("Font pointsize; Backgr. Alpha value; Xoffset; Yoffset; Screenwidth");
 
 	private ArrayList user_color_table = new ArrayList();
 	private Bitmap bitmap;
 	private boolean read_from_Image = false;
-
-	//DM25072004 081.7 int07 add
-	private int isforced_status = 0;
 
 	DVBSubpicture dvb = new DVBSubpicture(); //DM24042004 081.7 int02 new
 
@@ -235,7 +166,7 @@ public class Picture extends JPanel implements Runnable
 		bimg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		big = bimg.createGraphics();
 
-		set("SansSerif", ("" + "26;10;32;80;560;720;576;-1;4"));
+		set("SansSerif", ("" + "28;10;32;60;600;720;576;-1"));
 		frc = big.getFontRenderContext();
 
 		//   big.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -263,7 +194,6 @@ public class Picture extends JPanel implements Runnable
 
 	// set display time
 	//DM22032004 081.6 int18 changed
-	//DM26052004 081.7 int03 changed
 	public byte[] setTime(byte tmp[], long out_time)
 	{
 		long in_time = 0;
@@ -271,14 +201,13 @@ public class Picture extends JPanel implements Runnable
 		for (int a=0; a<4; a++) // in_pts
 			in_time |= (0xFF & tmp[a+2])<<(a*8);
 
-		//long difference = (long)Math.round((out_time - in_time) / 1100.0); // 900.0
-		long difference = 1L + ((out_time - in_time) / 1000);
+		long difference = (long)Math.round((out_time - in_time) / 900.0);
 
 		int tp = (0xFF & tmp[12])<<8 | (0xFF & tmp[13]);
 		tmp[34+tp] = (byte)(0xFF & difference>>>8);
 		tmp[35+tp] = (byte)(0xFF & difference);
 
-		newTitle(" / in: " + sms.format(new java.util.Date(in_time / 90)) + " duration: " + sms.format(new java.util.Date((out_time - in_time) / 90)) );
+		newTitle(" / in: "+sms.format(new java.util.Date(in_time / 90))+" duration: "+sms.format(new java.util.Date(difference * 10)) );
 
 		return tmp;
 	}
@@ -309,26 +238,24 @@ public class Picture extends JPanel implements Runnable
 
 		int color_table[] = getColorTable(1);
 
-		//DM26052004 081.7 int03 moved
-		big.setFont(font);
-
-		big.setColor(new Color(color_table[64])); // 8
+		big.setColor(new Color(color_table[8]));
 		big.fillRect(Rect[0], Rect[1], Rect[2], Rect[3]); // black background
 
 		// paint ascii char
 		for (int a=0; a < str.length; a++)
 		{
 			int[] chars = (int[])str[a];
-			x = option[3];
+			x=option[3];
 
-			//DM26052004 081.7 int03 changed
 			for (int b=0; b < chars.length; b++)
 			{
-				int offset = (7 & chars[b]>>>4)<<3;
+				if ( (0xF & (chars[b]>>>4) ) > 0)
+					big.setFont(font_alt);
+				else
+					big.setFont(font);
 
-				big.setColor(new Color(color_table[offset + (7 & chars[b])]));
+				big.setColor(new Color(color_table[7 & chars[b]]));
 				big.drawString("" + (char)(chars[b]>>>8), x, Rect[1] + (option[0] * (1 + a)));
-
 				x += font.getStringBounds("" + (char)(chars[b]>>>8), frc).getWidth();
 			}
 		}
@@ -390,12 +317,12 @@ public class Picture extends JPanel implements Runnable
 		return value;
 	}
 
-	//DM26052004 081.7 int03 changed
-	public byte[] writeRLE(long start_time, int onscreen_time) throws IOException
+	public byte[] writeRLE(long pts, int onscreen_time) throws IOException
 	{
 		read_from_Image = true; // use user defined alpha value for color index 0
 
-		bitmap = new Bitmap( Rect[0], Rect[1], Rect[2], Rect[3], bimg.getRGB(Rect[0], Rect[1], Rect[2], Rect[3], null, 0, Rect[2]), 2, 0, 1, 2, start_time, onscreen_time);
+		//depth, pageid, regionid, objectid, pts, playtime at 90khz ticks
+		bitmap = new Bitmap( Rect[0], Rect[1], Rect[2], Rect[3], bimg.getRGB(Rect[0], Rect[1], Rect[2], Rect[3], null, 0, Rect[2]), 2, 0, 1, 2, pts, onscreen_time);
 
 		return buildRLE();
 	}
@@ -466,8 +393,6 @@ public class Picture extends JPanel implements Runnable
 			if (bottom_field_start_pos == 0) 
 				bottom_field_start_pos = out.size() - 10;        // save startpos of bottom_field (size-14)
 		}
-
-		out.write(newline);  //DM26052004 081.7 int03 add , not the best solution, but need the "0,0" here
 
 		int pack = out.size() - 12;
 		int control_block_pos = pack + 24;
@@ -655,12 +580,6 @@ public class Picture extends JPanel implements Runnable
 		option[2] = option[7];
 	}
 
-	//DM26052004 081.7 int03 add
-	public int getMaximumLines()
-	{ 
-		return option[8];
-	}
-
 	/*** set user data ("Font pointsize; Backgr. Alpha value; Yoffset; Xoffset; Screenwidth"); **/
 	public int set(String nm, String values)
 	{
@@ -791,32 +710,6 @@ public class Picture extends JPanel implements Runnable
 			Flush_Bits( BPos, 4);
 	}
 
-	//DM25072004 081.7 int07 add
-	public String isForced_Msg()
-	{
-		String str = null;
-
-		//change of status occured
-		if ((isforced_status & 1) == 0)
-		{
-			if ((isforced_status & 2) > 0)
-				str = "-> display status: not forced";
-
-			else
-				str = "-> display status: forced";
-		}
-
-		isforced_status |= 1;
-
-		return str;
-	}
-
-	//DM25072004 081.7 int07 add
-	public void reset()
-	{
-		isforced_status = 0;
-	}
-
 	//DM14052004 081.7 int02 add
 	public int decode_picture(byte packet[], int off, boolean decode)
 	{
@@ -848,9 +741,6 @@ public class Picture extends JPanel implements Runnable
 		//DM28042004 081.7 int02 changed
 		if (Show_Bits(data, BPos, 24) == 0xF) // DVB subpicture: 8bit padding 0x00 + 8bit subtitle_stream_id 0x00 + start of subtitle segment 0x0F
 		{
-			//DM15072004 081.7 int06 add
-			big.setFont(font_std);
-
 			int ret = dvb.decodeDVBSubpicture(data, BPos, big, bimg, pts, save, visible);
 
 			if (ret > -2)
@@ -865,7 +755,7 @@ public class Picture extends JPanel implements Runnable
 		start_pos[2] = Get_Bits(data, BPos, 16) - 2;
 		Flush_Bits(BPos, start_pos[2]<<3); // jump to sections chunk
 
-		int playtime_pos = Get_Bits(data, BPos, 16);  //fixed pos, so it must follow the 1st ctrl sequ,
+		int playtime_pos = Get_Bits(data, BPos, 16);
 
 		if (playtime_pos == start_pos[2] + 2)
 		{
@@ -878,22 +768,14 @@ public class Picture extends JPanel implements Runnable
 
 		int color_table[] = getColorTable(0);
 
-		//DM26052004 081.7 int03 changed
 		while (BPos[0] < off + playtime_pos)  // read sections chunk
 		{
-			int cmd_switch = Get_Bits(data, BPos, 8);
-			switch(cmd_switch)
+			switch(Get_Bits(data, BPos, 8))
 			{
-			case 0: // force display
-				//DM25072004 081.7 int07 changed
-				isforced_status = (isforced_status & 5) != 5 ? 4 : 5;
+			case 0: // alias
 				break;
-			case 1: // start display
-				//DM25072004 081.7 int07 changed
-				isforced_status = (isforced_status & 3) != 3 ? 2 : 3;
-				break;
-			case 2: // stop display
-			case 0xFF: // end of ctrl sequ.
+			case 1: // alias
+				Flush_Bits(BPos, 8);
 				break;
 			case 3: // 4 color links
 				for (int b=0; b<4; b++)
@@ -911,8 +793,6 @@ public class Picture extends JPanel implements Runnable
 				for (int b=0; b<2; b++)
 					start_pos[b] = Get_Bits(data, BPos, 16);
 				break;
-			default:
-				X.Msg("!> suppic unknown cmd: " + cmd_switch);
 			}
 		}
 
@@ -936,7 +816,7 @@ public class Picture extends JPanel implements Runnable
 			return -9;
 
 		if (!decode)
-			return (playtime * 1000); //DM26052004 081.7 int03 changed , 900
+			return (playtime * 900);
 
 
 		for (int b=0; b<2; b++)
@@ -1002,7 +882,7 @@ public class Picture extends JPanel implements Runnable
 
 		repaint();
 
-		return (playtime * 1000); //DM26052004 081.7 int03 changed, 900
+		return (playtime * 900);
 	}
 
 

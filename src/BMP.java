@@ -28,8 +28,12 @@
 
 //DM24042004 081.7 int02 introduced
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 public class BMP
 {

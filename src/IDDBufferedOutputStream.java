@@ -23,7 +23,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class IDDBufferedOutputStream extends BufferedOutputStream {
 	long pos=0;
@@ -121,19 +125,16 @@ public class IDDBufferedOutputStream extends BufferedOutputStream {
 		type=3;
 		IddOut=new BufferedOutputStream(new FileOutputStream(name,filenumber==1?false:true),655350);
 	}
-
 	public String renameVdrTo(String parent, String oldName){
 		String num = "000"+filenumber+".vdr";
 		String newName = parent + num.substring(num.length()-7);
-
 		File nname = new File(newName);
-		File oname = new File(oldName);
 
-		//DM09072004 081.7 int06 changed
-		if (!oname.getName().equals(nname.getName()) && nname.exists())
+		if (nname.exists())
 			nname.delete();
 
-		Common.renameTo(oname, nname); //DM13042004 081.7 int01 changed
+		Common.renameTo(new File(oldName), nname); //DM13042004 081.7 int01 changed
+		//new File(oldName).renameTo(nname);
 
 		return newName;
 	}

@@ -27,16 +27,18 @@
 /*
  * example of a basic implementation of a DVB subtitle decoder
  * 
- * it does not implement yet export of encoded string characters, only bitmapped pictures
+ * it does not implement yet support of encoded string characters, only bitmapped pictures
  * 
  */
 
 //package X
 //DM24042004 081.7 int02 introduced
 
-import java.awt.*;
-import java.awt.image.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 public class DVBSubpicture
 {
@@ -63,31 +65,16 @@ public class DVBSubpicture
 	private boolean preview_visible = false;
 	private int fix_page_id;
 
-	//DM13062004 081.7 int04 add
-	private Hashtable user_table = new Hashtable();
-	private boolean user_table_enabled;
-
-	//DM30072004 081.7 int07 add
-	private boolean global_error = false;
 
 	public DVBSubpicture()
 	{
 		table_CLUT_8bit = generateDefaultCLUT_8Bits();
-		setIRD(8, user_table, false, ""); 	//DM13062004 081.7 int04 changed
+		setIRD(8, false, "");
 	}
 
-	public void setIRD(int val, Hashtable table, boolean log, String page_id_str)
+	public void setIRD(int val, boolean log, String page_id_str)
 	{
 		IRD = val;  //2,4,8 = 4,16,256-color support
-
-		//DM13062004 081.7 int04 add++
-		user_table = table;
-		user_table_enabled = !user_table.isEmpty(); //DM23062004 081.7 int05 changed
-
-		if (user_table_enabled)
-			IRD = Integer.parseInt(user_table.get("model").toString().trim());
-		//DM13062004 081.7 int04 add--
-
 		biglog = log;
 		resetEpoch();
 
@@ -120,27 +107,14 @@ public class DVBSubpicture
 	{
 		int Pos, Val;
 		Pos = BitPosition>>>3;
-
-		//DM03082004 081.7 int07 add
-		if (Pos >= data.length - 4)
-		{
-			global_error = true;
-			BitPosition += N;
-			BytePosition = BitPosition>>>3;
-			return 0;
-		}
-
 		Val =   (0xFF & data[Pos])<<24 |
 			(0xFF & data[Pos+1])<<16 |
 			(0xFF & data[Pos+2])<<8 |
 			(0xFF & data[Pos+3]);
-
 		Val <<= BitPosition & 7;
 		Val >>>= 32-N;
-
 		BitPosition += N;
 		BytePosition = BitPosition>>>3;
-
 		return Val;
 	}
 
@@ -148,22 +122,12 @@ public class DVBSubpicture
 	{
 		int Pos, Val;
 		Pos = BitPosition>>>3;
-
-		//DM03082004 081.7 int07 add
-		if (Pos >= data.length - 4)
-		{
-			global_error = true;
-			return 0;
-		}
-
 		Val =   (0xFF & data[Pos])<<24 |
 			(0xFF & data[Pos+1])<<16 |
 			(0xFF & data[Pos+2])<<8 |
 			(0xFF & data[Pos+3]);
-
 		Val <<= BitPosition & 7;
 		Val >>>= 32-N;
-
 		return Val;
 	}
 
@@ -203,21 +167,12 @@ public class DVBSubpicture
 
 		picture_saved = false;
 
-		//DM30072004 081.7 int07 add
-		global_error = false;
-
 		flushBits(8); //padding
 		int stream_ident = getBits(8); // 0 = std
 		int segment_type = 0;
 
-		//DM30072004 081.7 int07 changed
 		while ( nextBits(8) == 0x0F )
-		{
 			segment_type = Subtitle_Segment();
-
-			if (global_error && region != null)
-				region.setError(4);
-		}
 
 		if ( nextBits(8) == 0xFF )
 		{}
@@ -282,20 +237,18 @@ public class DVBSubpicture
 	private void end_display()
 	{
 		int segment_length = getBits(16);
-		flushBits(segment_length * 8); //DM18062004 081.7 int05 changed
+		flushBits(segment_length);
 	}
 
 	private void stuffing()
 	{
 		int segment_length = getBits(16); //+ BytePosition;
-		flushBits(segment_length * 8); //DM18062004 081.7 int05 changed
+		flushBits(segment_length);
 	}
 
 	private void prepare_output()
 	{
-		//DM26052004 081.7 int03 changed
-		//long new_time_out = (long)Math.round((pts - page.getTimeIn()) / 900.0);
-		long new_time_out = 1L + ((pts - page.getTimeIn()) / 1000);
+		long new_time_out = (long)Math.round((pts - page.getTimeIn()) / 900.0);
 
 		if (page.getTimeOut() > 0 && new_time_out > page.getTimeOut())
 			new_time_out = page.getTimeOut();
@@ -322,8 +275,7 @@ public class DVBSubpicture
 	{
 		int segment_end = getBits(16) + BytePosition;
 		int segment_type = 0x10;
-
-		int time_out = getBits(8) * 100; //page_time_out, milliseconds 'til disappearing without another erase event
+		int time_out = getBits(8) * 100; //page_time_out, seconds 'til disappearing without another erase event
 
 		page.setVersionNumber(getBits(4)); //page_version_number, if number exists, update isn't necessary
 
@@ -345,15 +297,6 @@ public class DVBSubpicture
 		for (Enumeration e = epoch.getRegions(); e.hasMoreElements() ; )
 		{
 			region = epoch.setRegion(Integer.parseInt(e.nextElement().toString()));
-
-			//DM23062004 081.7 int05 add
-			if (region.getErrors() > 0)
-			{
-				X.Msg("!> decoding error: " + region.getErrors() + ", Region_Id " + region.getId() + " (pts " + page.getTimeIn() + ")");
-				//region.setActive(false);
-			}
-
-			region.setError(0); //DM23062004 081.7 int05 add
 
 			if ( !region.isActive() || !region.isChanged() )
 				continue;
@@ -469,15 +412,6 @@ public class DVBSubpicture
 
 		flushBits(4);
 
-		//user table
-		//DM13062004 081.7 int04 add
-		if (user_table_enabled)
-		{
-			setUserClut();
-			flushBits( (segment_end - BytePosition) * 8);
-			return;
-		}
-
 		while (BytePosition < segment_end)
 		{
 			int CLUT_entry_id = getBits(8);
@@ -528,7 +462,7 @@ public class DVBSubpicture
 
 		if (region_id < 0)
 		{
-			flushBits( (segment_end - BytePosition) * 8);  //DM18062004 081.7 int05 changed
+			flushBits(segment_end - BytePosition);
 			addBigMessage("object_id " + object.getId() + " with no region_id");
 			return;
 		}
@@ -940,22 +874,8 @@ public class DVBSubpicture
 		if ((0xFF000000 & color) == 0) //keep underlying pixel if new pixel is full transparent
 			return;
 
-		//DM23062004 081.7 int05 add
-		if (x > region.getWidth() - 1 || y > region.getHeight() - 1)
-		{
-			region.setError(2);
-			return;
-		}
-
 		from_index = x + y * region.getWidth();
 		to_index = from_index + w;
-
-		//DM23062004 081.7 int05 add
-		if (x + w > region.getWidth())
-		{
-			to_index = from_index + region.getWidth() - x;
-			region.setError(1);
-		}
 
 		java.util.Arrays.fill(pixel_data, from_index, to_index, color);
 	}
@@ -1030,24 +950,6 @@ public class DVBSubpicture
 
 		return color_index;
 	}
-
-	//DM13062004 081.7 int04 add
-	private void setUserClut()
-	{
-		int model = Integer.parseInt(user_table.get("model").toString().trim());
-		int max_indices = model > 2 ? (model > 4 ? 256 : 16) : 4;
-
-		for (int i = 0; i < max_indices; i++)
-		{
-			if (user_table.containsKey("" + i))
-			{
-				addBigMessage("addUserClut: " + i + " /ARGB " + user_table.get("" + i));
-
-				clut.setClutEntry(mapColorIndex(i, region.getDepth(), model), model, (int)Long.parseLong(user_table.get("" + i).toString().trim(), 16));
-			}
-		}
-	}
-
 
 	private Epoch setEpoch(int epoch_id)
 	{
@@ -1303,9 +1205,6 @@ public class DVBSubpicture
 		private int pixel_code_2bit;
 		private int pixel[];
 
-		//DM23062004 081.7 int05 add
-		private int error = 0;
-
 		private Region()
 		{}
 
@@ -1500,21 +1399,6 @@ public class DVBSubpicture
 		private boolean isChanged()
 		{
 			return changed;
-		}
-
-		//DM23062004 081.7 int05 add
-		private int getErrors()
-		{
-			return error;
-		}
-
-		//DM23062004 081.7 int05 add
-		private void setError(int val)
-		{
-			error |= val;
-
-			if (val == 0)
-				error = 0;
 		}
 	}
 

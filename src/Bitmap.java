@@ -27,7 +27,7 @@
 //package X
 //DM24042004 081.7 int02 introduced
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class Bitmap
 {
@@ -51,8 +51,7 @@ public class Bitmap
 	public Bitmap(int newx, int newy, int w, int h, int[] p, int d, int page, int region, int object, long pts, int time)
 	{
 		x = newx;
-		//y = newy;
-		y = newy & ~1; //DM26052004 081.7 int03 changed
+		y = newy;
 		width = w;
 		height = h;
 		pixel = p;
