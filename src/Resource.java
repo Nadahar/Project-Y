@@ -46,6 +46,7 @@ import java.util.jar.JarFile;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
@@ -439,4 +440,27 @@ public class Resource {
 		
 		return (Locale[])locales.toArray(new Locale[0]);
 	}
+	
+	/**
+	 * Returns a resource (e.g. from the jar file) as an URL.
+	 * 
+	 * @param resource
+	 * @return URL
+	 */
+	public static URL getResourceURL(String resource)
+	{
+		return Resource.class.getClassLoader().getResource(resource);
+	}
+
+	/**
+	 * Loads an image as ImageIcon.
+	 * 
+	 * @param iconName
+	 * @return ImageIcon
+	 */
+	public static ImageIcon loadIcon(String iconName)
+	{
+		return new ImageIcon(getResourceURL(iconName));
+	}
+	
 }

@@ -596,21 +596,21 @@ protected JPanel buildFilePanel()
 	comBox[0].setMaximumRowCount(8);
 	aa.add(comBox[0]);
 
-	JButton file_up = new JButton("^");
+	JButton file_up = new JButton(Resource.loadIcon("up.gif"));
 	file_up.setActionCommand("up");
 	file_up.setPreferredSize(new Dimension(50,22));
 	file_up.setMaximumSize(new Dimension(50,22));
 	file_up.setToolTipText(Resource.getString("filepanel.fileup.tip"));
 	aa.add(file_up);
 
-	JButton file_down = new JButton("v");
+	JButton file_down = new JButton(Resource.loadIcon("dn.gif"));
 	file_down.setActionCommand("down");
 	file_down.setPreferredSize(new Dimension(50,22));
 	file_down.setMaximumSize(new Dimension(50,22));
 	file_down.setToolTipText(Resource.getString("filepanel.filedown.tip"));
 	aa.add(file_down);
 
-	JButton file_remove = new JButton("x");
+	JButton file_remove = new JButton(Resource.loadIcon("x.gif"));
 	file_remove.setActionCommand("rf");
 	file_remove.setPreferredSize(new Dimension(50,22));
 	file_remove.setMaximumSize(new Dimension(50,22));
