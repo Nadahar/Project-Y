@@ -2885,6 +2885,7 @@ class FileListener implements ActionListener
 
 
 
+
 		}
 		else if (actName.equals("co") && outchange==false)
 		{
@@ -7283,7 +7284,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 				//DM12042004 081.7 int01 changed
 				Msg("");
-				Msg("-> video: fr/ ct/ 1p/ cg/ og/ dg = " + options[7] + "/ " + clv[0] + "/ " + clv[1] + "/ " + clv[2] + "/ " + clv[3] + "/ " + clv[4]);
+				Msg("-> Video: fr/ ct/ 1p/ cg/ og/ dg = " + options[7] + "/ " + clv[0] + "/ " + clv[1] + "/ " + clv[2] + "/ " + clv[3] + "/ " + clv[4]);
 
 				vptslog = demux.closeVideo();
 				aa++;
@@ -12387,13 +12388,13 @@ final String subdecode_errors[] = {
 	"",
 	"", //DM24042004 081.7 int02 add // -1 = correct decoded dvb-subpicture segments, can export
 	"", //DM24042004 081.7 int02 add // -2 = correct decoded dvb-subpicture segments, w/o export
-	"!> error while decoding DVB Subpicture", //DM24042004 081.7 int02 add // -3 = error while decoding dvb-subpicture
-	"!> lack of packet data",
-	"!> packet size doesn't match packet data",
-	"!> wrong chunk position index",
-	"!> wrong chunk position",
-	"!> wrong end of chunk index",
-	"!> wrong end of chunk"
+	Resource.getString("subpicture.msg.error3"), //DM24042004 081.7 int02 add // -3 = error while decoding dvb-subpicture
+	Resource.getString("subpicture.msg.error4"),
+	Resource.getString("subpicture.msg.error5"),
+	Resource.getString("subpicture.msg.error6"),
+	Resource.getString("subpicture.msg.error7"),
+	Resource.getString("subpicture.msg.error8"),
+	Resource.getString("subpicture.msg.error9")
 };
 
 
@@ -12439,7 +12440,7 @@ public void processSubpicture(String[] args)
 	//DM13062004 081.7 int04 changed
 	subpicture.picture.dvb.setIRD(2<<comBox[11].getSelectedIndex(), user_table, (options[30]==1 ? true : false), d2vfield[9].getText().toString());
 
-	Msg("-> selected DVB subpicture color model: " + comBox[11].getSelectedItem() + " ; fixed to page id: " + d2vfield[9].getText().toString());
+	Msg(Resource.getString("subpicture.msg.model", "" + comBox[11].getSelectedItem()) + " " + d2vfield[9].getText().toString());
 
 	if (RButton[17].isSelected())
 	{
@@ -12447,15 +12448,15 @@ public void processSubpicture(String[] args)
 		export_type = 1;
 	}
 
-	Msg("-> export format: " + subfile.substring(subfile.length() - 3));
+	Msg(Resource.getString("subpicture.msg.output") + " " + subfile.substring(subfile.length() - 3));
 
 	PushbackInputStream in = new PushbackInputStream(new FileInputStream(filename),65536);
 	IDDBufferedOutputStream out = new IDDBufferedOutputStream(new FileOutputStream(subfile),65536);
 
 	PrintStream print_out = new PrintStream(out);
 
-	Msg("-> temp. file: " + filename + "  (" + size + " bytes)");
-	progress.setString("check & synchronize "+filename);
+	Msg(Resource.getString("subpicture.msg.tmpfile", filename, "" + size));
+	progress.setString(Resource.getString("subpicture.progress") + " " + filename);
 	progress.setStringPainted(true);
 	progress.setValue(0);
 
@@ -12486,7 +12487,7 @@ public void processSubpicture(String[] args)
 		}
 		vbin.close();
 
-		Msg("Video PTS: start 1.GOP " + Common.formatTime_1(vptsval[0] / 90) + ", end last GOP " + Common.formatTime_1( vptsval[vptsval.length-1] / 90));
+		Msg(Resource.getString("video.msg.pts.start_end", Common.formatTime_1(vptsval[0] / 90)) + " " + Common.formatTime_1( vptsval[vptsval.length-1] / 90));
 		vptsdata=true;
 	}
 
@@ -12534,7 +12535,7 @@ public void processSubpicture(String[] args)
 
 		if (aa<logsize)
 		{
-			Msg("!> "+(logsize-aa)+" PTS's discarded in stream");
+			Msg(Resource.getString("subpicture.msg.discard", "" + (logsize-aa)));
 			long tmp[][] = new long[2][aa];
 			System.arraycopy(ptsval,0,tmp[0],0,aa);
 			System.arraycopy(ptspos,0,tmp[1],0,aa);
@@ -12549,7 +12550,7 @@ public void processSubpicture(String[] args)
 		yield();
 		bin.close();
 
-		Msg("Subpicture PTS: first packet " + Common.formatTime_1(ptsval[0] / 90) + ", last packet " + Common.formatTime_1(ptsval[ptsval.length-2] / 90));
+		Msg(Resource.getString("subpicture.msg.pts.start_end", Common.formatTime_1(ptsval[0] / 90)) + " " + Common.formatTime_1(ptsval[ptsval.length-2] / 90));
 		ptsdata=true; 
 	}
 
@@ -12564,7 +12565,7 @@ public void processSubpicture(String[] args)
 
 		if (jump < 0)
 		{
-			Msg("-> !! video & subpicture PTS doesn't match at any time!");  
+			Msg(Resource.getString("subpicture.msg.pts.mismatch"));  
 			vptsdata = false; 
 			x = 0; 
 		}
@@ -12572,32 +12573,17 @@ public void processSubpicture(String[] args)
 		else
 			x = jump;
 
-
-		/**
-		timebase:
-		while ( ptsval.length>2 && Math.abs(ptsval[x] - vptsval[0]) > 20000000 )
-		{
-			x++;
-			if (x >= ptsval.length-1)
-			{ 
-				Msg("-> !! video & subpicture PTS doesn't match at any time!"); 
-				vptsdata=false; 
-				x=0; 
-				break timebase; 
-			}
-		}
-		**/
 	}
 
 	if (vptsdata && ptsdata)
 	{
-		Msg("-> adjusting subpicture at video-timeline ");
+		Msg(Resource.getString("subpicture.msg.adjust.at.video"));
 		time_difference = vptsval[0];
 	}
 
 	if (!vptsdata && ptsdata)
 	{
-		Msg("-> adjusting subpicture at its own timeline ");
+		Msg(Resource.getString("subpicture.msg.adjust.at.own"));
 		time_difference = 0;
 	}
 
@@ -12637,7 +12623,8 @@ public void processSubpicture(String[] args)
 		if (parse12[0]!=0x53 || parse12[1]!=0x50) // find "SP"
 		{
 			if (!cBox[3].isSelected() && !miss)
-				Msg("!> missing syncword @ "+count);
+				Msg(Resource.getString("subpicture.msg.syncword.lost") + " " + count);
+
 			miss=true;
 			count++;
 			in.unread(parse12,1,11);
@@ -12645,7 +12632,7 @@ public void processSubpicture(String[] args)
 		}
 
 		if (!cBox[3].isSelected() && miss)
-			Msg("!> found syncword @ "+count);
+			Msg(Resource.getString("subpicture.msg.syncword.found") + " " + count);
 
 		in.unread(parse12,0,12);
 		miss=false;
@@ -12706,7 +12693,7 @@ public void processSubpicture(String[] args)
 		new_pts = source_pts - time_difference;
 
 		if ((display_time = subpicture.picture.decode_picture(packet, 10, subpicture.isVisible(), new_pts, write, subpicture.isVisible())) < -2)
-			Msg(subdecode_errors[Math.abs((int)display_time)] + " @ " + (count-packetlength) + ", dropping picture..");
+			Msg(Resource.getString("subpicture.msg.error", subdecode_errors[Math.abs((int)display_time)], "" + (count-packetlength)));
 
 		if (options[30] == 1)
 			System.out.println("PTS: source " + Common.formatTime_1(source_pts / 90) + "(" + source_pts + ")" + " /new " + Common.formatTime_1(new_pts / 90) + "(" + new_pts + ")" + " / write: " + write + " / dec.state: " + display_time);
@@ -12714,7 +12701,7 @@ public void processSubpicture(String[] args)
 		if (display_time < 0)  //dvb_subpic
 		{
 			if (!DVBpicture)
-				Msg("-> source is DVB Subtitle..");
+				Msg(Resource.getString("subpicture.msg.dvbsource"));
 
 			DVBpicture = true;
 
@@ -12784,11 +12771,11 @@ public void processSubpicture(String[] args)
 					//Msg(subpicture.picture.getArea());
 					//BMP.buildBMP_24bit(outfile, key);
 
-					subpicture.newTitle(" / page id " + bitmap.getPageId() + " / picture " + pics + " -> in: " + Common.formatTime_1(new_pts / 90) + " duration: " + Common.formatTime_1(bitmap.getPlayTime() * 10));
+					subpicture.newTitle(" " + Resource.getString("subpicture.preview.title.dvbexport", "" + bitmap.getPageId(), "" + pics, Common.formatTime_1(new_pts / 90)) + " " + Common.formatTime_1(bitmap.getPlayTime() * 10));
 				}
 
 				if (!BMP.isEmpty())
-					showExportStatus("pic's:", ++pics);
+					showExportStatus(Resource.getString("subpicture.status"), ++pics);
 
 				BMP.clear();
 			}
@@ -12805,17 +12792,17 @@ public void processSubpicture(String[] args)
 
 			out.write(packet);
 
-			showExportStatus("pic's:", ++pics);
-			subpicture.newTitle(" / picture "+pics+" -> in: " + Common.formatTime_1(new_pts / 90) + " duration: " + Common.formatTime_1(display_time / 90));
+			showExportStatus(Resource.getString("subpicture.status"), ++pics);
+			subpicture.newTitle(" " + Resource.getString("subpicture.preview.title.dvdexport", "" + pics, Common.formatTime_1(new_pts / 90)) + " " + Common.formatTime_1(display_time / 90));
 
 			//DM25072004 081.7 int07 add
 			String str = subpicture.picture.isForced_Msg();
 			if (str != null)
-				Msg(str + ", from picture " + pics);
+				Msg(str + " " + Resource.getString("subpicture.msg.forced") + " " + pics);
 		}
 
 		else
-			subpicture.newTitle(" / picture not exported...");
+			subpicture.newTitle(" " + Resource.getString("subpicture.preview.title.noexport"));
 
 		if (options[30]==1)
 			System.out.println(" -> "+write+"/ "+v+"/ "+new_pts+"/ "+time_difference+"/ "+pics+"/ "+display_time);
@@ -12831,9 +12818,9 @@ public void processSubpicture(String[] args)
 	out.close();
 
 	if (args[1].equals("-1"))
-		Msg("Subpicture PTS: first packet " + Common.formatTime_1(first_pts / 90) + ", last packet " + Common.formatTime_1(source_pts / 90));
+		Msg(Resource.getString("subpicture.msg.pts.start_end", Common.formatTime_1(first_pts / 90)) + " " + Common.formatTime_1(source_pts / 90));
 
-	Msg(" " + pics + " subpictures written..");
+	Msg(Resource.getString("subpicture.msg.summary", "" + pics));
 
 	if (!DVBpicture && export_type == 1)
 	{
@@ -12854,11 +12841,11 @@ public void processSubpicture(String[] args)
 		else if (DVBpicture && export_type == 1)
 			options[39] += new File( BMP.write_ColorTable(fparent, subpicture.picture.getUserColorTable(), 256)).length();
 
-		Msg("===> new File " + subfile);
+		Msg(Resource.getString("subpicture.msg.newfile") + " " + subfile);
 		options[39] += subfile1.length();
 
 		//DM15072004 081.7 int06 changed
-		InfoAtEnd.add("SubPicture " + (NoOfPictures++) + ":\t" + pics + " subpictures\t" + infoPTSMatch(args, vptsdata, ptsdata) + "\t " + subfile1);
+		InfoAtEnd.add(Resource.getString("subpicture.summary", "" + (NoOfPictures++), "" + pics, infoPTSMatch(args, vptsdata, ptsdata)) + subfile1);
 	}
 
 	progress.setValue(100);
@@ -12868,12 +12855,12 @@ public void processSubpicture(String[] args)
 	catch (EOFException e1)
 	{ 
 		//DM25072004 081.7 int07 add
-		Msg(" EOF reached in error: " + e1); 
+		Msg(Resource.getString("subpicture.msg.error.eof") + " " + e1); 
 	}
 	catch (IOException e2)
 	{ 
 		//DM25072004 081.7 int07 add
-		Msg(" IO error "+filename + " / " + e2); 
+		Msg(Resource.getString("subpicture.msg.error.io", filename) + " " + e2); 
 	}
 
 	System.gc();
@@ -12936,10 +12923,10 @@ public void processLPCM(String[] args)
 	PushbackInputStream in = new PushbackInputStream( new FileInputStream(filename),20);
 	IDDBufferedOutputStream out = new IDDBufferedOutputStream( new FileOutputStream(pcmfile),2048000);
 
-	Msg(" .. under development ..");
+	Msg(Resource.getString("lpcm.msg.develop"));
 
-	Msg(filename + "  (" + size + " bytes)");
-	progress.setString("check & synchronize " + filename);
+	Msg(Resource.getString("lpcm.msg.tmpfile", filename, "" + size));
+	progress.setString(Resource.getString("lpcm.progress") + " " + filename);
 	progress.setStringPainted(true);
 	progress.setValue(0);
 
@@ -12966,7 +12953,7 @@ public void processLPCM(String[] args)
 		}
 		vbin.close();
 
-		Msg("Video PTS: start 1.GOP "+sms.format(new java.util.Date(vptsval[0]/90))+", end last GOP "+sms.format(new java.util.Date(vptsval[vptsval.length-1]/90)));
+		Msg(Resource.getString("video.msg.pts.start_end", sms.format(new java.util.Date(vptsval[0]/90))) + " " + sms.format(new java.util.Date(vptsval[vptsval.length-1]/90)));
 		vptsdata=true;
 	}
 
@@ -13049,7 +13036,7 @@ public void processLPCM(String[] args)
 
 		if (jump < 0)
 		{
-			Msg("-> !! video & LPCM PTS doesn't match at any time!");  
+			Msg(Resource.getString("lpcm.msg.pts.mismatch"));  
 			vptsdata = false; 
 			x = 0; 
 		}
@@ -13057,32 +13044,17 @@ public void processLPCM(String[] args)
 		else
 			x = jump;
 
-
-		/**
-		timebase:
-		while ( ptsval.length>2 && Math.abs(ptsval[x] - vptsval[0]) > 20000000 )
-		{
-			x++;
-			if (x >= ptsval.length-1)
-			{ 
-				Msg("-> !! video & LPCM PTS doesn't match at any time!"); 
-				vptsdata=false; 
-				x=0; 
-				break timebase; 
-			}
-		}
-		**/
 	}
 
 	if (vptsdata && ptsdata)
 	{
-		Msg("-> adjusting LPCM at video-timeline ");
+		Msg(Resource.getString("lpcm.msg.adjust.at.video"));
 		time_difference = vptsval[0];
 	}
 
 	if (!vptsdata && ptsdata)
 	{
-		Msg("-> adjusting LPCM at its own timeline ");
+		Msg(Resource.getString("lpcm.msg.adjust.at.own"));
 		time_difference = 0;
 	}
 
@@ -13125,7 +13097,7 @@ public void processLPCM(String[] args)
 		if (parse16[0] != 0x50 || parse16[1] != 0x43 || parse16[2] != 0x4D) // find "PCM"
 		{
 			if (!cBox[3].isSelected() && !miss)
-				Msg("!> missing syncword @ "+count);
+				Msg(Resource.getString("lpcm.msg.syncword.lost") + " " + count);
 
 			miss=true;
 			count++;
@@ -13134,7 +13106,7 @@ public void processLPCM(String[] args)
 		}
 
 		if (!cBox[3].isSelected() && miss)
-			Msg("!> found syncword @ "+count);
+			Msg(Resource.getString("lpcm.msg.syncword.found") + " " + count);
 
 		miss=false;
 		count += parse16.length;
@@ -13197,10 +13169,10 @@ public void processLPCM(String[] args)
 			if (newformat)
 			{
 				if (options[47] < 100) 
-					Msg("=> src_audio: "+Audio.LPCM_displayHeader()+" @ "+sms.format(new java.util.Date( (long)(new_pts / 90.0f))));
+					Msg(Resource.getString("lpcm.msg.source", Audio.LPCM_displayHeader()) + " " + sms.format(new java.util.Date( (long)(new_pts / 90.0f))));
 
 				else if (options[47] == 100) 
-					Msg("=> src_audio: stop displaying, more than 100 audio mode changes in one file reduce work speed");
+					Msg(Resource.getString("lpcm.msg.source.max"));
 
 				options[47]++;
 				yield();
@@ -13211,15 +13183,15 @@ public void processLPCM(String[] args)
 				byteOrder(packet, a, 2);
 
 			if ((packet.length & 1) != 0)
-				Msg("!> packet not WORD aligned");
+				Msg(Resource.getString("lpcm.msg.error.align"));
 
 			out.write(packet);
 			samples++;
 			//showExportStatus("packs:", samples);
-			showExportStatus("writing..");
+			showExportStatus(Resource.getString("audio.status.write"));
 		}
 		else
-			showExportStatus("paused..");
+			showExportStatus(Resource.getString("audio.status.pause"));
 
 		if (options[30]==1)
 			System.out.println(" -> "+write+"/ "+v+"/ "+new_pts+"/ "+time_difference+"/ "+samples+"/ "+display_time);
@@ -13231,9 +13203,9 @@ public void processLPCM(String[] args)
 	out.close();
 
 	if (args[1].equals("-1") || ptsdata)
-		Msg("LPCM PTS: first packet "+sms.format(new java.util.Date(first_pts/90))+", last packet "+sms.format(new java.util.Date(source_pts/90)));
+		Msg(Resource.getString("lpcm.msg.pts.start_end", sms.format(new java.util.Date(first_pts/90))) + " " + sms.format(new java.util.Date(source_pts/90)));
 
-	Msg(" " + samples + " packs written..");
+	Msg(Resource.getString("lpcm.msg.summary", " " + samples));
 
 	File pcmfile1 = new File(pcmfile); 
 
@@ -13243,11 +13215,11 @@ public void processLPCM(String[] args)
 	{ 
 
 		Audio.fillRiffHeader(pcmfile); //update riffheader
-		Msg("===> new File " + pcmfile);
+		Msg(Resource.getString("lpcm.msg.newfile") + " " + pcmfile);
 		options[39] += pcmfile1.length();
 
 		//DM15072004 081.7 int06 changed
-		InfoAtEnd.add("LPCM " + (NoOfPictures++) + ":\t" + samples + " packs\t" + infoPTSMatch(args, vptsdata, ptsdata) + "\t " + pcmfile1);
+		InfoAtEnd.add(Resource.getString("lpcm.summary", "" + (NoOfPictures++), "" + samples, infoPTSMatch(args, vptsdata, ptsdata)) + pcmfile1);
 	}
 
 	yield();
@@ -13256,12 +13228,12 @@ public void processLPCM(String[] args)
 	catch (EOFException e1)
 	{ 
 		//DM25072004 081.7 int07 add
-		Msg(" EOF reached in error: " + e1); 
+		Msg(Resource.getString("lpcm.error.eof") + " " + e1); 
 	}
 	catch (IOException e2)
 	{ 
 		//DM25072004 081.7 int07 add
-		Msg(" IO error: "+filename + " / " + e2); 
+		Msg(Resource.getString("lpcm.error.io", filename) + " " + e2); 
 	}
 
 	System.gc();

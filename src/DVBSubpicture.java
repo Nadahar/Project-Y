@@ -349,7 +349,7 @@ public class DVBSubpicture
 			//DM23062004 081.7 int05 add
 			if (region.getErrors() > 0)
 			{
-				X.Msg("!> decoding error: " + region.getErrors() + ", Region_Id " + region.getId() + " (pts " + page.getTimeIn() + ")");
+				X.Msg(Resource.getString("subpicture.msg.error.dvbdecoding", "" + region.getErrors(), "" + region.getId(), "" + page.getTimeIn()));
 				//region.setActive(false);
 			}
 
