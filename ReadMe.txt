@@ -72,7 +72,7 @@
  the compiling process doesn't take more than about 30 seconds.
 
 
- ProjectX - CVS at sourceforge.net/project-x/
+ ProjectX - CVS at sourceforge.net/projects/project-x/
 
 /==============================================================================/
 
