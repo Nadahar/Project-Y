@@ -52,8 +52,20 @@ public class Resource {
 	/** the users locale */
 	private static Locale locale = null;
 
-	/** Project-X resource bundle */
-	private static ResourceBundle resource = ResourceBundle.getBundle("pjxresources");
+	/** resource bundle */
+	private static ResourceBundle defaultResource = ResourceBundle.getBundle("pjxresources", Locale.ENGLISH);
+
+	/** resource bundle */
+	private static ResourceBundle resource = null;
+	
+	static{
+		try {
+			resource = ResourceBundle.getBundle("pjxresources");
+		} catch (MissingResourceException e) {
+			// our fallback is english
+			resource = defaultResource;
+		}
+	}
 		
 	/**
 	 * Constructor of Resource.
@@ -86,7 +98,12 @@ public class Resource {
 						System.out.println("lang="+lang);
 						locale=new Locale(lang);
 						System.out.println("locale="+locale);
-						resource = ResourceBundle.getBundle("pjxresources", locale);
+						try {
+							resource = ResourceBundle.getBundle("pjxresources");
+						} catch (MissingResourceException e) {
+							// our fallback is english
+							resource = defaultResource;
+						}
 						System.out.println("resource="+resource.getLocale());
 						
 						// we have found what we need, stop reading this file
@@ -127,10 +144,21 @@ public class Resource {
 	public static String getString(String key)
 	{
 		String text = null;
-		try {
+		try 
+		{
 			text = resource.getString(key);
-		} catch (MissingResourceException e) {
-			System.out.println("ResourceKey '" + key + "' not found in pjxresources.properties");
+		} 
+		catch (MissingResourceException e) 
+		{
+			try 
+			{
+				// fallback to defaultResource
+				text = defaultResource.getString(key);
+			} 
+			catch (MissingResourceException e2) 
+			{
+				System.out.println("ResourceKey '" + key + "' not found in pjxresources");
+			}
 		}
 		
 		// use key as text as fallback
@@ -265,7 +293,7 @@ public class Resource {
 
 		langMenu.addSeparator();
 
-		JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem();
+/*		JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem();
 		localize(item_eng, "language.english");
 		item_eng.addActionListener(listener);
 		item_eng.setSelected(Locale.ENGLISH.equals(locale));
@@ -280,6 +308,21 @@ public class Resource {
 		item_ger.setActionCommand(Locale.GERMAN.toString());
 		langMenu.add(item_ger);
 		group.add(item_ger);
+*/
+
+		Locale[] locales = Locale.getAvailableLocales();
+		for (int i = 0; i < locales.length; i++) {
+			Locale item = locales[i];
+			JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(item.getLanguage());
+			menuItem.addActionListener(listener);
+			if (locale != null)
+			{
+				menuItem.setSelected(item.getLanguage().equals(locale.getLanguage()));
+			}
+			menuItem.setActionCommand(item.getLanguage());
+			langMenu.add(menuItem);
+			group.add(menuItem);
+		}
 
 		return langMenu;
 	}
