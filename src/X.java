@@ -8099,7 +8099,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 
 			cell.add(""+(options[7]));
 			Msg(Resource.getString("rawparse.actual.vframes")+" "+options[7]);
-			Msg("switch to file: "+nextfile);
+			Msg(Resource.getString("rawparse.switch.to")+" "+nextfile);
 			progress.setString(((ToVDR==0)?Resource.getString("rawparse.actual.demuxing"):Resource.getString("rawparse.converting"))+Resource.getString("rawparse.dvb.mpeg")+" "+(new File(nextfile)).getName());
 			progress.setStringPainted(true);
 
@@ -8437,7 +8437,7 @@ public long nextFilePTS(int type, int ismpg, long lastpts, int file_number) {
 
 		} 
 		catch (IOException e) { 
-			Msg("nextfile "+e); 
+			Msg(Resource.getString("nextfile.io.error")+" "+e); 
 		}
 	}
 
@@ -8446,17 +8446,17 @@ public long nextFilePTS(int type, int ismpg, long lastpts, int file_number) {
 		String x = comBox[27].getSelectedItem().toString();
 		if (x.equals("auto")) { 
 			long newpts = ((pts/324000000L)-1L)*324000000L;
-			Msg("-> shift original PTS automatic backward by "+(newpts/324000000L)+" hour(s)");
+			Msg(Resource.getString("nextfile.shift.auto", ""+(newpts/324000000L)));
 			return newpts;
 		} else if (!x.equals("0")) { 
-			Msg("-> shift original PTS manual backward by "+comBox[27].getSelectedItem()+" hour(s)");
+			Msg(Resource.getString("nextfile.shift.manual", comBox[27].getSelectedItem()));
 			return ((long)(Double.parseDouble(comBox[27].getSelectedItem().toString())*324000000L)); //DM26022004 081.6 int18 changed
 		} else 
 			return 0L;
 	} else {
 		pts -= options[27];
 		pts &= 0xFFFFFFFFL;
-		Msg("-> next file start with PTS: "+sms.format(new java.util.Date(pts/90L))+" / last actual PTS is "+sms.format(new java.util.Date(lastpts/90L)));
+		Msg(Resource.getString("nextfile.next.file.start",sms.format(new java.util.Date(pts/90L)),sms.format(new java.util.Date(lastpts/90L))));
 		if (Math.abs(pts-lastpts)<900000) //DM06022004 081.6 int15 changed
 			return -1L;
 		else if (pts>lastpts)  
@@ -8483,7 +8483,7 @@ public byte[] overlapPVA(byte[] overlapnext) {
 		ovl.close();
 		}
 		catch (IOException e) {
-			Msg("overlap read error "+e); 
+			Msg(Resource.getString("overlappva.io.error")+" "+e); 
 		}
 	}
 	return overlapnext;
@@ -8576,7 +8576,10 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 	byte[] overlapnext = new byte[256];
 	byte[] pes1 = { 0,0,1,(byte)0xE0,0,0,(byte)0x80,0,0 };
 	byte[] pes2 = { 0,0,1,(byte)0xE0,0,0,(byte)0x80,(byte)0x80,5,0,0,0,0,0 };
-	String[] streamtypes = { " (AC-3/DTS)"," (TTX)"," (MPEG Audio)"," (MPEG Video)" };
+	String[] streamtypes = { Resource.getString("pvaparse.streamtype.ac3"),
+							Resource.getString("pvaparse.streamtype.ttx"),
+							Resource.getString("pvaparse.streamtype.mpeg.audio"),
+							Resource.getString("pvaparse.streamtype.mpeg.video") };
 	int isheader=0;
 	options[5]=262143;
 	options[6]=0;
@@ -8607,7 +8610,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 	for (int a=0; a<abc.size(); a++) 
 		include[a] = 0xFF&Integer.parseInt(abc.get(a).toString().substring(2),16);
 	if (abc.size()>0)
-		Msg("-> special PIDs for searching defined");
+		Msg(Resource.getString("pvaparse.special.pids"));
 
 	//*** split skipping first
 	if (options[18]>0)
@@ -8640,7 +8643,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 	//size = count + new File(pvafile).length();
 
 	if (FileNumber>0)
-		Msg("continue with file: "+pvafile);
+		Msg(Resource.getString("pvaparse.continue")+" "+pvafile);
 
 	long base = count;
 
@@ -8660,7 +8663,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 
 	overlapPVA(overlapnext);
 
-	progress.setString(((ToVDR==0)?"demuxing":"converting")+" PVA file  "+(new File(pvafile)).getName());
+	progress.setString(((ToVDR==0)?Resource.getString("pvaparse.demuxing"):Resource.getString("pvaparse.converting"))+Resource.getString("pvaparse.pvafile")+" "+(new File(pvafile)).getName());
 	progress.setStringPainted(true);
 	progress.setValue((int)((count-base)*100/(size-base))+1);
 	yield();
@@ -8701,14 +8704,14 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 			if ((255&push8[0])!=0x41 || (255&push8[1])!=0x56 || (255&push8[4])!=0x55) {
 				in.unread(push8,1,7);
 				if (!cBox[3].isSelected() && !miss) //DM03112003 081.5++ info
-					Msg("!> missing syncword @ "+count);
+					Msg(Resource.getString("pvaparse.missing.sync")+" "+count);
 				miss=true;
 				count++;
 				continue pvaloop;
 			}
 
 			if (!cBox[3].isSelected() && miss) //DM03112003 081.5++ info
-				Msg("!> found syncword @ "+count);
+				Msg(Resource.getString("pvaparse.found.sync")+" "+count);
 			miss=false;
 
 			/**** overlapcheck ***/
@@ -8717,7 +8720,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 				in.unread(push8);
 				in.read(push256,0,256);
 				if (java.util.Arrays.equals(overlapnext,push256)) { 
-					Msg("File-Overlap detected @ filepos.: "+count);
+					Msg(Resource.getString("pvaparse.file.overlap")+" "+count);
 					break pvaloop;
 				}
 				in.unread(push256);
@@ -8742,7 +8745,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 
 			clv[5]++;
 			if (options[30]==1) 
-				System.out.print("\rpacks: "+clv[5]+" "+((count*100/size))+"% "+(count-8));
+				System.out.print("\r"+Resource.getString("pvaparse.packs")+clv[5]+" "+((count*100/size))+"% "+(count-8));
 
 			/** pid inclusion **/
 			includeloop:
@@ -8822,7 +8825,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 			if (pidcheck==-1) {   // create new PID object
 				TSPid = new TSPID();
 				TSPid.setPID(pid);
-				Msg("-> found ID 0x"+Integer.toHexString(pid).toUpperCase()+" @ "+options[20]); //DM02022004 081.6 int14 changed
+				Msg(Resource.getString("pvaparse.found.id")+Integer.toHexString(pid).toUpperCase()+" @ "+options[20]); //DM02022004 081.6 int14 changed
 				comBox[9].addItem(Integer.toHexString(pid));
 				PVAPidlist.add(TSPid);
 			} 
@@ -8831,7 +8834,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 			if (!cBox[40].isSelected()) {
 				if (TSPid.getCounter()!=-1) {
 					if (counter!=TSPid.getCounter()) { 
-						Msg("!> ID 0x"+Integer.toHexString(pid).toUpperCase()+" -> packet "+packet+" @ pos. "+(count-8-packlength)+" out of sequence ("+counter+"/"+TSPid.getCounter()+") (shifting..)");
+						Msg(Resource.getString("pvaparse.outof.sequence", Integer.toHexString(pid).toUpperCase(),""+packet,""+(count-8-packlength),""+counter, ""+TSPid.getCounter()));
 						TSPid.setCounter(counter);
 					}
 					TSPid.countPVA();
@@ -8854,7 +8857,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 				String IDtype="";
 				switch (pid) {
 				case 1: { 
-					IDtype="(Video)";
+					IDtype=Resource.getString("idtype.video");
 					demux = new PIDdemux();
 					TSPid.setStarted(true);
 					demux.setID(0xE0);
@@ -8868,11 +8871,11 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 					if (ToVDR==0) 
 						demux.initVideo(fparent,options,bs,PVAdemuxlist.size(),3);
 					else 
-						IDtype+=" mapped to 0xE0"+streamtypes[3];
+						IDtype+=Resource.getString("idtype.mapped.to.e0")+streamtypes[3];
 					break; 
 				}
 				case 2: { 
-					IDtype="(mainAudio)";
+					IDtype=Resource.getString("idtype.main.audio");
 				/**
 					if (!cpts) 
 						continue pvaloop;
@@ -8887,16 +8890,16 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 					demux.setStreamType(ismpg);
 					TSPid.setID(PVAdemuxlist.size());
 					PVAdemuxlist.add(demux);
-					IDtype+=" has PES-ID 0x"+Integer.toHexString(streamID).toUpperCase()+streamtypes[2];
+					IDtype+=Resource.getString("idtype.has.pesid")+Integer.toHexString(streamID).toUpperCase()+streamtypes[2];
 					if (ToVDR==0) 
 						demux.init(fparent,options,bs/PVAdemuxlist.size(),PVAdemuxlist.size(),3);
 					else 
-						IDtype+=" mapped to 0x"+Integer.toHexString(demux.getnewID()).toUpperCase();
+						IDtype+=Resource.getString("idtype.mapped.to")+Integer.toHexString(demux.getnewID()).toUpperCase();
 					break; 
 				**/
 				}
 				default: { 
-					IDtype="(additional)"; 
+					IDtype=Resource.getString("idtype.additional"); 
 					if (!cpts) 
 						continue pvaloop;
 					int streamID = 0xFF&data[3];
@@ -8916,15 +8919,15 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 					demux.setStreamType(ismpg);
 					TSPid.setID(PVAdemuxlist.size());
 					PVAdemuxlist.add(demux);
-					IDtype+=" has PES-ID 0x"+Integer.toHexString(streamID).toUpperCase()+streamtypes[demux.getType()];
+					IDtype+=Resource.getString("idtype.has.pesid")+Integer.toHexString(streamID).toUpperCase()+streamtypes[demux.getType()];
 					if (ToVDR==0) 
 						demux.init(fparent,options,bs/PVAdemuxlist.size(),PVAdemuxlist.size(),3);
 					else 
-						IDtype+=" mapped to 0x"+Integer.toHexString(demux.getnewID()).toUpperCase();
+						IDtype+=Resource.getString("idtype.mapped.to")+Integer.toHexString(demux.getnewID()).toUpperCase();
 					break; 
 				}
 				}
-				Msg("-> ID 0x"+Integer.toHexString(pid).toUpperCase()+" "+IDtype);
+				Msg(Resource.getString("pvaparse.id.0x")+Integer.toHexString(pid).toUpperCase()+" "+IDtype);
 			}
 
 
@@ -9054,9 +9057,9 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 			base = count;
 
 
-			Msg("-> actual written vframes: "+options[7]);
-			Msg("switch to file: "+nextfile);
-			progress.setString(((ToVDR==0)?"demuxing":"converting")+" PVA file  "+new File(nextfile).getName());
+			Msg(Resource.getString("pvaparse.actual.vframes")+" "+options[7]);
+			Msg(Resource.getString("pvaparse.continue")+" "+nextfile);
+			progress.setString(((ToVDR==0)?Resource.getString("pvaparse.demuxing"):Resource.getString("pvaparse.converting"))+Resource.getString("pvaparse.pvafile")+" "+(new File(nextfile)).getName());
 			progress.setStringPainted(true);
 			overlapPVA(overlapnext);
 		} else 
@@ -9120,19 +9123,19 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 				if ( demux.subID()!=0 && (0xF0&demux.subID())!=0x80 ) 
 					break;
 				Msg("");
-				Msg("--> AC-3/DTS Audio on ID 0x"+Integer.toHexString(demux.getPID()).toUpperCase()+" "+((demux.subID()!=0) ? ("(SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")") : "")); //DM19122003 081.6 int07 changed
+				Msg(Resource.getString("pvaparse.ac3.onid")+Integer.toHexString(demux.getPID()).toUpperCase()+" "+((demux.subID()!=0) ? ("(SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")") : "")); //DM19122003 081.6 int07 changed
 				mpt(values);
 				break;
 			}
 			case 1: {
 				Msg("");
-				Msg("--> Teletext on ID 0x"+Integer.toHexString(demux.getPID()).toUpperCase()+" (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
+				Msg(Resource.getString("pvaparse.teletext.onid")+Integer.toHexString(demux.getPID()).toUpperCase()+" (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
 				processTeletext(values);
 				break;
 			}
 			case 2: { 
 				Msg("");
-				Msg("--> MPEG Audio on ID 0x"+Integer.toHexString(demux.getPID()).toUpperCase()+" (0x"+Integer.toHexString(demux.getID()).toUpperCase()+")");
+				Msg(Resource.getString("pvaparse.mpeg.audio.onid")+Integer.toHexString(demux.getPID()).toUpperCase()+" (0x"+Integer.toHexString(demux.getID()).toUpperCase()+")");
 				mpt(values);
 				break;
 			}
@@ -9154,11 +9157,11 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 	}  // end try
 	catch (EOFException e1) { 
 		//DM25072004 081.7 int07 add
-		Msg("pva EOF reached in error: " + e1); 
+		Msg(Resource.getString("pvaparse.eof.error")+" " + e1); 
 	}
 	catch (IOException e2) { 
 		//DM25072004 081.7 int07 add
-		Msg("pva File I/O error: " + e2); 
+		Msg(Resource.getString("pvaparse.io.error")+" " + e2); 
 	}
 
 	yield();
