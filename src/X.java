@@ -143,7 +143,7 @@ static SubPicture subpicture = new SubPicture(); //DM06032004 081.6 int18 change
 Scan scan = new Scan();
 MPAC MPAConverter = new MPAC();
 MPAD MPADecoder = new MPAD();
-static MPVD MPVDecoder = new MPVD();
+//static MPVD MPVDecoder = new MPVD();
 Audio Audio = new Audio();
 static D2V d2v = new D2V();
 static TS tf = new TS();
@@ -240,6 +240,7 @@ JFrame autoload; //DM26032004 081.6 int18 add
 Hashtable Options = new Hashtable();  //DM26032004 081.6 int18 add, intended for new ini or langauge
 
 TeletextPageMatrix tpm = null;  //DM17042004 081.7 int02 add
+static MPVD MPVDecoder = null;
 
 //DM20072004 081.7 int07 add
 long fakedPTS = -1;
@@ -263,6 +264,7 @@ void buildGUI()
 	RButton[1] = new JRadioButton();
 
 	chooser = new X_JFileChooser(); //DM12122003 081.6 int05
+	MPVDecoder = new MPVD();
 
 	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -544,7 +546,7 @@ protected JPanel buildFilePanel()
 	list3.setName("cw");
 	list3.setVisibleRowCount(4);
 	list3.setSelectionMode(2);
-	list3.setToolTipText("drag&drop file(s) here, or use the context menu");
+	list3.setToolTipText(Resource.getString("filepanel.dragdrop.tip"));
 	list3.addMouseListener(new MouseAdapter()
 	{
 		public void mouseClicked(MouseEvent e)
@@ -586,21 +588,21 @@ protected JPanel buildFilePanel()
 	file_up.setActionCommand("up");
 	file_up.setPreferredSize(new Dimension(50,22));
 	file_up.setMaximumSize(new Dimension(50,22));
-	file_up.setToolTipText("move file(s) up in collection list");
+	file_up.setToolTipText(Resource.getString("filepanel.fileup.tip"));
 	aa.add(file_up);
 
 	JButton file_down = new JButton("v");
 	file_down.setActionCommand("down");
 	file_down.setPreferredSize(new Dimension(50,22));
 	file_down.setMaximumSize(new Dimension(50,22));
-	file_down.setToolTipText("move file(s) down in collection list");
+	file_down.setToolTipText(Resource.getString("filepanel.filedown.tip"));
 	aa.add(file_down);
 
 	JButton file_remove = new JButton("x");
 	file_remove.setActionCommand("rf");
 	file_remove.setPreferredSize(new Dimension(50,22));
 	file_remove.setMaximumSize(new Dimension(50,22));
-	file_remove.setToolTipText("remove file(s) from collection list");
+	file_remove.setToolTipText(Resource.getString("filepanel.fileremove.tip"));
 	aa.add(file_remove);
 
 
@@ -615,31 +617,31 @@ protected JPanel buildFilePanel()
 	JPanel bb = new JPanel();
 	bb.setLayout(new ColumnLayout());
 
-	JLabel coll_label = new JLabel("= coll.#");
+	JLabel coll_label = new JLabel(Resource.getString("filepanel.collnumber"));
 	coll_label.setPreferredSize(new Dimension(50,22));
 	coll_label.setMaximumSize(new Dimension(50,22));
-	coll_label.setToolTipText("choose active file collection");
+	coll_label.setToolTipText(Resource.getString("filepanel.collnumber.tip"));
 	bb.add(coll_label);
 
 	JButton add_coll = new JButton("+");
 	add_coll.setActionCommand("+c");
 	add_coll.setPreferredSize(new Dimension(50,22));
 	add_coll.setMaximumSize(new Dimension(50,22));
-	add_coll.setToolTipText("create new file collection");
+	add_coll.setToolTipText(Resource.getString("filepanel.addcoll.tip"));
 	bb.add(add_coll);
 
 	JButton remove_coll = new JButton("-");
 	remove_coll.setActionCommand("-c");
 	remove_coll.setPreferredSize(new Dimension(50,22));
 	remove_coll.setMaximumSize(new Dimension(50,22));
-	remove_coll.setToolTipText("delete file collection");
+	remove_coll.setToolTipText(Resource.getString("filepanel.removecoll.tip"));
 	bb.add(remove_coll);
 
-	JButton open_autoload = new JButton("AL");
+	JButton open_autoload = new JButton(Resource.getString("filepanel.autoload"));
 	open_autoload.setActionCommand("oa");
 	open_autoload.setPreferredSize(new Dimension(50,22));
 	open_autoload.setMaximumSize(new Dimension(50,22));
-	open_autoload.setToolTipText("open autoload file window");
+	open_autoload.setToolTipText(Resource.getString("filepanel.autoload.tip"));
 	bb.add(open_autoload);
 
 
@@ -649,7 +651,7 @@ protected JPanel buildFilePanel()
 
 	JPanel mm = new JPanel();
 	mm.setLayout(new GridLayout(0,1));
-	mm.add(new JLabel("output directory:"));
+	mm.add(new JLabel(Resource.getString("filepanel.outputdir")));
 
 	hh.add(mm);
 
@@ -658,7 +660,7 @@ protected JPanel buildFilePanel()
 
 	outfield = new JTextField();
 	outfield.setEditable(false);
-	outfield.setToolTipText("specified output directory of selected collection");
+	outfield.setToolTipText(Resource.getString("filepanel.outputdir.tip"));
 
 	ll.add(outfield);
 
@@ -666,7 +668,7 @@ protected JPanel buildFilePanel()
 
 	JPanel ii = new JPanel();
 	ii.setLayout(new GridLayout(0,2));
-	ii.add(new JLabel("recent output directories:"));
+	ii.add(new JLabel(Resource.getString("filepanel.recentout")));
 
 	JPanel jj = new JPanel();
 	jj.setLayout(new GridLayout(0,2));
@@ -675,14 +677,14 @@ protected JPanel buildFilePanel()
 	add_output.setActionCommand("+o");
 	add_output.setPreferredSize(new Dimension(50,22));
 	add_output.setMaximumSize(new Dimension(50,22));
-	add_output.setToolTipText("add directory to recent output directory list");
+	add_output.setToolTipText(Resource.getString("filepanel.recentout.add.tip"));
 	jj.add(add_output);
 
 	JButton remove_output = new JButton("-");
 	remove_output.setActionCommand("-o");
 	remove_output.setPreferredSize(new Dimension(50,22));
 	remove_output.setMaximumSize(new Dimension(50,22));
-	remove_output.setToolTipText("remove directory from recent output directory list");
+	remove_output.setToolTipText(Resource.getString("filepanel.recentout.remove.tip"));
 	jj.add(remove_output);
 
 	ii.add(jj);
@@ -1223,7 +1225,7 @@ protected JPanel buildStatusPanel()
 	status.add(new JLabel("Status:  "));
 
 	progress = new JProgressBar();
-	progress.setString("ready...");
+	progress.setString(Resource.getString("run.status"));
 	progress.setStringPainted(true);
 	progress.addChangeListener(new ChangeListener()
 	{
@@ -1809,41 +1811,41 @@ protected JPanel buildexternPanel() { //DM30122003 081.6 int10 changed
 
 	JPanel video2Panel = new JPanel();
 	video2Panel.setLayout( new ColumnLayout() );
-	video2Panel.setBorder( BorderFactory.createTitledBorder("externals / post processing") );
-	video2Panel.setToolTipText("define your prefered applications");
+	video2Panel.setBorder( BorderFactory.createTitledBorder(Resource.getString("externpanel.title1")) );
+	video2Panel.setToolTipText(Resource.getString("externpanel.title1.tip"));
 
-	exeButton = new JButton("external applications dialog");
+	exeButton = new JButton(Resource.getString("externpanel.applications"));
 	exeButton.setActionCommand("exec");
 	exeButton.setPreferredSize(new Dimension(250,25));
 	video2Panel.add(exeButton);
 	exeButton.addActionListener(my0Listener);
 
 	//DM18022004 081.6 int17 new
-	cBox[54] = new JCheckBox("create index.vdr when making VDR");
+	cBox[54] = new JCheckBox(Resource.getString("externpanel.vdrindex") + Resource.getString("mainpanel.box.toVDR") + "\"");
 	cBox[54].setPreferredSize(new Dimension(250,20));
 	cBox[54].setMaximumSize(new Dimension(250,20));
-	cBox[54].setToolTipText("created vdr file segments will then be renamed to 00x.vdr");
+	cBox[54].setToolTipText(Resource.getString("externpanel.vdrindex.tip"));
 	video2Panel.add(cBox[54]);
 
 	//DM14052004 081.7 int02 moved
-	cBox[26] = new JCheckBox("create cellTimes.txt for multiple infiles/cuts");
-	cBox[26].setToolTipText("demux only, add's an entry for the framenumber on file switchin' and cut-in's (new chapter)");
+	cBox[26] = new JCheckBox(Resource.getString("externpanel.celltimes"));
+	cBox[26].setToolTipText(Resource.getString("externpanel.celltimes.tip"));
 	cBox[26].setPreferredSize(new Dimension(270,20));
 	cBox[26].setMaximumSize(new Dimension(270,20));
 	video2Panel.add(cBox[26]);
 
 	//DM18022004 081.6 int17 new
-	RButton[11] = new JRadioButton("autosave PTS values of cutpoints");
+	RButton[11] = new JRadioButton(Resource.getString("externpanel.exportpts"));
 	RButton[11].setPreferredSize(new Dimension(250,20));
 	RButton[11].setMaximumSize(new Dimension(250,20));
-	RButton[11].setToolTipText("to share and reload with {PTS cut} in another X instance");
+	RButton[11].setToolTipText(Resource.getString("externpanel.exportpts.tip"));
 	video2Panel.add(RButton[11]);
 
 	//DM26022004 081.6 int18 new
-	RButton[12] = new JRadioButton("autosave GOPs 1st I-Frame as .bmp");
+	RButton[12] = new JRadioButton(Resource.getString("externpanel.saveframe"));
 	RButton[12].setPreferredSize(new Dimension(250,20));
 	RButton[12].setMaximumSize(new Dimension(250,20));
-	RButton[12].setToolTipText("demux only...");
+	RButton[12].setToolTipText(Resource.getString("externpanel.saveframe.tip"));
 	video2Panel.add(RButton[12]);
 
 	video2.add(video2Panel);
@@ -2881,6 +2883,7 @@ class FileListener implements ActionListener
 
 		if (comBox[0].getItemCount() > 0) 
 			add_files.setEnabled(true);
+
 		else 
 			add_files.setEnabled(false);
 
@@ -3485,7 +3488,7 @@ class COLLECTION extends JFrame
 						preview(val);
 
 					else if (comBox[17].getSelectedIndex() > 0) //DM30032004 081.6 int18 add
-						scannedPID.setText(Resource.getString("collection.preview"));
+						scannedPID.setText(Resource.getString("collection.preview.na"));
 
 					getType();
 				}
@@ -3748,7 +3751,7 @@ class COLLECTION extends JFrame
 		//DM09032004 081.6 int18 changed
 		if (comBox[17].getSelectedIndex()!=0 || previewList.size()==0)
 		{
-			scannedPID.setText(Resource.getString("collection.preview"));
+			scannedPID.setText(Resource.getString("collection.preview.na"));
 			return;
 		}
 
@@ -3774,7 +3777,7 @@ class COLLECTION extends JFrame
 		//DM24062004 081.7 int05 changed
 		pos = Preview.load(pos, ((direction && pos==0) ? (int)lastpos : loadSize), previewList, direction, RButton[6].isSelected(), RButton[10].isSelected(), speciallist, activecoll);
 		dialog.firstfile.setText(Preview.getProcessedFile());
-		dialog.scannedPID.setText(Preview.getProcessedPID());
+		dialog.scannedPID.setText(Resource.getString("collection.preview.processpid") + Preview.getProcessedPID());
 
 
 		lastpos = pos;
@@ -3849,7 +3852,7 @@ class COLLECTION extends JFrame
 		if (comBox[17].getSelectedIndex()==0 && previewList.size()>0)
 			preview(0);
 		else
-			scannedPID.setText(Resource.getString("collection.preview"));
+			scannedPID.setText(Resource.getString("collection.preview.na"));
 
 		title = Resource.getString("collection.title2") + " " + activecoll + "  ";
 		setTitle(title);

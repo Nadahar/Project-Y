@@ -63,7 +63,7 @@ class Preview
 
 	public String getProcessedPID()
 	{
-		return ("processing Video (P)ID 0x" + Integer.toHexString(processed_PID).toUpperCase());
+		return (Integer.toHexString(processed_PID).toUpperCase());
 	}
 
 	public long load(long startposition, int size, ArrayList previewList, boolean direction, boolean all_gops, boolean fast_decode, ArrayList speciallist, int active_collection) throws IOException

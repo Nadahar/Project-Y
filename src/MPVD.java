@@ -95,6 +95,7 @@ private int pixels2[] = new int[512 * 288]; //DM02092004 081.7 int02 changed
 private Image image;
 private MemoryImageSource source;
 private boolean FAST=false;
+private final String tooltip1 = Resource.getString("mpvdecoder.tip1");
 
 public Picture(){
 	//DM08022004 081.6 int16 changed and new
@@ -107,7 +108,7 @@ public Picture(){
 	setBackground(Color.black);
 	setVisible(true);
 	chooser = new JFileChooser();
-	setToolTipText("doubleclick to save as bmp"); // <- VORSCHLAG 1 Tooltip! 
+	setToolTipText(tooltip1); // <- VORSCHLAG 1 Tooltip! 
 
 	//DM02092003+
 	addMouseListener(new MouseAdapter() {
@@ -2610,10 +2611,10 @@ public void paint(Graphics g)
 		g.setColor(Color.red);
 		g.drawString("WSS present", 14, 22);
 
-		setToolTipText("<html>doubleclick to save as bmp<p><p>" + str + "</html>");
+		setToolTipText("<html>" + tooltip1 + "<p><p>" + str + "</html>");
 	}
 	else
-		setToolTipText("doubleclick to save as bmp");
+		setToolTipText(tooltip1);
 	//DM30072004 081.7 int07 add--
 
 	if (PLAY)
