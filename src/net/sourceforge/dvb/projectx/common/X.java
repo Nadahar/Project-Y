@@ -165,8 +165,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b16_lang";
-static String version_date = "24.10.2004";
+static String version_name = "ProjectX 0.81.9";
+static String version_date = "25.10.2004";
 
 public static boolean CLI_mode = false;
 
