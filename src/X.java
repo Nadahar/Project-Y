@@ -224,9 +224,9 @@ static long CUT_BYTEPOSITION=0;
 
 private static long firstVideoPTS; //DM17012004 081.6 int11 new
 
-COLLECTION dialog = new COLLECTION();
+private COLLECTION dialog = null;
 private PatchPanel vpatch = null;
-EXECUTE executePane = new EXECUTE();
+EXECUTE executePane = null;
 
 TabListener mytabListener = new TabListener();
 FileListener my0Listener = new FileListener();
@@ -295,11 +295,11 @@ void buildGUI()
 	//subpicture.picture.run();  // start Pic , DM18052004 081.7 int02 changed
 	java.util.Arrays.fill(dumpfill,(byte)0xFF);
 	
-	// now we can also build the teletext page matrix
+	// now we can also build the other GUI elements
 	tpm = new TeletextPageMatrix();
-	
-	// and the PatchPanel
 	vpatch = new PatchPanel(frame);
+	dialog = new COLLECTION();
+	executePane = new EXECUTE();
 }
 
 /**
