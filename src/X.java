@@ -106,7 +106,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -210,7 +209,7 @@ static JLabel msoff, audiostatusLabel, splitLabel, cutnum, ttxheaderLabel, ttxvp
 static JProgressBar progress;
 static JTextField outfield;
 static JTextField[] d2vfield = new JTextField[10], //DM18052004 081.7 int02 changed
-	patchfield = new JTextField[3], exefield = new JTextField[9];
+	exefield = new JTextField[9];
 
 
 static boolean bool=false, PureVideo=false;
@@ -225,7 +224,7 @@ static long CUT_BYTEPOSITION=0;
 private static long firstVideoPTS; //DM17012004 081.6 int11 new
 
 COLLECTION dialog = new COLLECTION();
-PATCH vpatch = new PATCH(frame);
+private PatchPanel vpatch = null;
 EXECUTE executePane = new EXECUTE();
 
 TabListener mytabListener = new TabListener();
@@ -297,6 +296,9 @@ void buildGUI()
 	
 	// now we can also build the teletext page matrix
 	tpm = new TeletextPageMatrix();
+	
+	// and the PatchPanel
+	vpatch = new PatchPanel(frame);
 }
 
 /**
@@ -2543,7 +2545,7 @@ class MenuListener implements ActionListener
 						Runtime.getRuntime().exec(exe);
 					}
 					catch (Exception ex) {
-						Msg(" ! execution error: "+ex); 
+						Msg(RESOURCE.getString("execute.error") + " " + ex); 
 					}
 				} 
 			}
@@ -2662,7 +2664,7 @@ class MenuListener implements ActionListener
 		else if (actName.equals("editBasics"))
 		{
 			if (scan.isEditable()) {
-				vpatch.entry(scan.getFile());
+				vpatch.entry(scan.getFile(), scan.getVBasic());
 				ScanInfo(scan.getFile());
 			}
 		}
@@ -3111,165 +3113,6 @@ class EXECUTE extends JFrame
 
 
 /*************
- * patch panel *
- *************/
-class PATCH extends JDialog {
-
-	String file="";
-	String[] notes = { " H:"," V:"," BR:","bps " };
-	long ins=0;
-	byte[] os = new byte[1];
-	PatchListener patchAction = new PatchListener();
-
-	class PatchListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			String actName = e.getActionCommand();
-
-			if (actName.equals("change"))
-				change();
-			else if (actName.equals("cancel"))
-				cancel();
-		}
-	}
-
-
-	public PATCH(JFrame f) {
-		super(f, "edit basic video infos in 1st sequence header", true);
-
-		JPanel container = new JPanel();
-		container.setLayout( new BorderLayout() );
-
-		JPanel grid = new JPanel();
-		grid.setLayout(new BoxLayout(grid, BoxLayout.X_AXIS));
-
-		for (int a=0;a<3;a++) {
-			patchfield[a] = new JTextField("");
-			patchfield[a].setPreferredSize(new Dimension(65,22));
-			patchfield[a].setMaximumSize(new Dimension(65,22));
-			grid.add(new JLabel(notes[a]));
-			grid.add(patchfield[a]);
-		}
-		grid.add(new JLabel(notes[3]));
-
-		JButton changebutton = new JButton("change");
-		changebutton.addActionListener(patchAction);
-		grid.add(changebutton);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		JButton cancelbutton = new JButton("cancel");
-		cancelbutton.addActionListener(patchAction);
-		grid.add(cancelbutton);
-
-		getRootPane().setDefaultButton(cancelbutton);
-
-		container.add(grid);
-		getContentPane().add(container);
-		pack();
-		centerDialog();
-		UIManager.addPropertyChangeListener(new UISwitchListener(container));
-	}
-
-	public boolean search(String file) {
-		try 
-		{
-		RandomAccessFile pfile = new RandomAccessFile(file,"r");
-		long size = pfile.length();
-		byte[] ps = new byte[((size<650000)?(int)size:650000)];
-		os = scan.getVBasic();
-		pfile.seek(0);
-		pfile.read(ps);
-		pfile.close();
-		for (int a=0;a<ps.length-15;a++) {
-			if (ps[a]!=0 || ps[a+1]!=0 || ps[a+2]!=1 || ps[a+3]!=(byte)0xB3 || 
-			ps[a+4]!=os[4] || ps[a+5]!=os[5] || ps[a+6]!=os[6] || ps[a+7]!=os[7] ) continue;
-			ins=a;
-			patchfield[0].setText(""+((255&ps[a+4])<<4 | (240&ps[a+5])>>>4));
-			patchfield[1].setText(""+((15&ps[a+5])<<8 | (255&ps[a+6])));
-			patchfield[2].setText(""+(((255&ps[a+8])<<10 | (255&ps[a+9])<<2 | (192 & ps[a+10])>>>6)*400));
-			return true;
-		}
-		} 
-		catch (IOException e) { X.Msg("patch error "+e); }
-		return false;
-	}
-
-	public void entry(String file1) {
-		file = file1;
-		if (search(file))
-			this.show();
-	}
-
-	protected void centerDialog() {
-		Dimension screenSize = this.getToolkit().getScreenSize();
-		Dimension size = this.getSize();
-		screenSize.height = screenSize.height/2;
-		screenSize.width = screenSize.width/2;
-		size.height = size.height/2;
-		size.width = size.width/2;
-		int y = screenSize.height - size.height;
-		int x = screenSize.width - size.width;
-		this.setLocation(x,y);
-	}
-
- 	public void cancel() {
-		this.setVisible(false);
-	}
-
-	public void change() {
-		try 
-		{
-		int hsize=Integer.parseInt(patchfield[0].getText());
-		int vsize=Integer.parseInt(patchfield[1].getText());
-		int brate=Integer.parseInt(patchfield[2].getText())/400;
-		os[4] = (byte)(0xFF&hsize>>>4);
-		os[5] = (byte)((0xF0&hsize<<4) | (0xF&vsize>>>8));
-		os[6] = (byte)(0xFF&vsize);
-		os[8] = (byte)(0xFF&brate>>>10);
-		os[9] = (byte)(0xFF&brate>>>2);
-		os[10]= (byte)((0x3F&os[10]) | (0xC0&brate<<6));
-		dochange();
-		} 
-		catch (NumberFormatException e) {  }
-		catch (NullPointerException e) {  }
-	}
-
-	public void dochange() {
-		try 
-		{
-		RandomAccessFile pfile = new RandomAccessFile(file,"rw");
-		pfile.seek(ins);
-		pfile.write(os);
-		pfile.close();
-		} 
-		catch (IOException e) { X.Msg("patch error2 "+e); }
-		this.setVisible(false);
-	}
-}
-
-//DM24062004 081.7 int05
-/** outsourced
-class PREVIEW
-{}
-**/
-
-/*************
  * cut panel *
  *************/
 class COLLECTION extends JFrame
@@ -3435,7 +3278,7 @@ class COLLECTION extends JFrame
 				}
 				catch (NumberFormatException ne)
 				{
-					Msg("-> wrong number as ID");
+					Msg(RESOURCE.getString("cutlistener.wrongnumber"));
 				}
 
 				includeField.setText("");
@@ -3565,10 +3408,10 @@ class COLLECTION extends JFrame
 
 				//DM27042004 081.7 int02 changed
 				if ((comBox[14].getSelectedIndex()&1)==1) 
-					MPVDecoder.picture.showCut(false, cutPoints, previewList);
+					MPVD.picture.showCut(false, cutPoints, previewList);
 
 				else
-					MPVDecoder.picture.showCut(true, cutPoints, previewList);
+					MPVD.picture.showCut(true, cutPoints, previewList);
 
 				if (actName.equals("cutbox") || actName.equals("delpoint"))
 				{
@@ -3584,7 +3427,7 @@ class COLLECTION extends JFrame
 			{
 				cutdel.setEnabled(false);
 				cutPoints = new long[0];
-				MPVDecoder.picture.showCut(true, cutPoints, previewList); //DM27042004 081.7 int02 changed
+				MPVD.picture.showCut(true, cutPoints, previewList); //DM27042004 081.7 int02 changed
 			}
 
 			if (comBox[17].getSelectedIndex()==0)
@@ -3612,7 +3455,7 @@ class COLLECTION extends JFrame
 		previewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), RESOURCE.getString("collection.cutpanel"))); //DM27042004 081.7 int02 changed
 		previewPanel.setLayout ( new BorderLayout() );
 		previewPanel.setToolTipText(RESOURCE.getString("collection.cutpanel_tip1")); //DM18052004 081.7 int02 add
-		previewPanel.add(MPVDecoder.picture);
+		previewPanel.add(MPVD.picture);
 
 		search = new JSlider(0, (10240000/16), 0);
 		search.setPreferredSize(new Dimension(512,24));
@@ -3970,10 +3813,10 @@ class COLLECTION extends JFrame
 
 		//DM27042004 081.7 int02 changed
 		if (cutPoints.length!=0)
-			MPVDecoder.picture.showCut((keyIndex&1)==0, cutPoints, previewList);
+			MPVD.picture.showCut((keyIndex&1)==0, cutPoints, previewList);
 
 		else
-			MPVDecoder.picture.showCut(true, cutPoints, previewList);
+			MPVD.picture.showCut(true, cutPoints, previewList);
 	}
 
 	public void preview(long pos)
@@ -9436,16 +9279,16 @@ public void mpt(String[] args) {
 	yield();
 
 
-	MPADecoder.RESET=false;
+	MPAD.RESET=false;
 
 	//DM10042004 081.7 int01 add+
-	MPADecoder.MAX_VALUE = RButton[2].isSelected() ? (Integer.parseInt(exefield[8].getText().toString()) * 32767 / 100) : 32767;
-	MPADecoder.MULTIPLY = RButton[2].isSelected() ? 32767 : 1;
-	MPADecoder.NORMALIZE = RButton[2].isSelected() ? true : false;
+	MPAD.MAX_VALUE = RButton[2].isSelected() ? (Integer.parseInt(exefield[8].getText().toString()) * 32767 / 100) : 32767;
+	MPAD.MULTIPLY = RButton[2].isSelected() ? 32767 : 1;
+	MPAD.NORMALIZE = RButton[2].isSelected() ? true : false;
 
-	if (MPADecoder.MAX_VALUE > 32767)
+	if (MPAD.MAX_VALUE > 32767)
 	{
-		MPADecoder.MAX_VALUE = 32767;
+		MPAD.MAX_VALUE = 32767;
 		exefield[8].setText("100");
 	}
 	//DM10042004 081.7 int01 add-
@@ -10298,23 +10141,23 @@ public boolean processAudio(String[] args) {
 		/***** init FFT/window for mpa decoding for 1 file****/
 		if (args[2].equals("mp") && cBox[50].isSelected())
 		{
-			MPADecoder.init_work(comBox[1].getSelectedIndex());
-			MPADecoder.DOWNMIX = (RButton[3].isSelected()) ? true : false;
-			MPADecoder.MONO = (RButton[3].isSelected() || options[10]==4) ? true : false;
-			MPADecoder.MOTOROLA = (RButton[4].isSelected()) ? true : false;
-			MPADecoder.WAVE = (RButton[5].isSelected()) ? true : false;
-			if (MPADecoder.WAVE)
+			MPAD.init_work(comBox[1].getSelectedIndex());
+			MPAD.DOWNMIX = (RButton[3].isSelected()) ? true : false;
+			MPAD.MONO = (RButton[3].isSelected() || options[10]==4) ? true : false;
+			MPAD.MOTOROLA = (RButton[4].isSelected()) ? true : false;
+			MPAD.WAVE = (RButton[5].isSelected()) ? true : false;
+			if (MPAD.WAVE)
 			{
-				audiooutL.write(MPADecoder.RIFF);
+				audiooutL.write(MPAD.RIFF);
 				if (options[10]>=4) 
-					audiooutR.write(MPADecoder.RIFF);
+					audiooutR.write(MPAD.RIFF);
 			}
 			//DM07022004 081.6 int16 new
 			else if (RButton[9].isSelected()) //AIFF
 			{
-				audiooutL.write(MPADecoder.AIFF);
+				audiooutL.write(MPAD.AIFF);
 				if (options[10]>=4) 
-					audiooutR.write(MPADecoder.AIFF);
+					audiooutR.write(MPAD.AIFF);
 			}
 		}
 
@@ -10339,7 +10182,7 @@ public boolean processAudio(String[] args) {
 			}
 
 			/********* fix VBR & restart processing ********/
-			if ((0xCL&options[17]) != 0 || MPADecoder.RESET) { 
+			if ((0xCL&options[17]) != 0 || MPAD.RESET) { 
 				options[17] = (0x3FFFFL&options[17]) | ((long)frame_counter)<<18; 
 				return true; 
 			}
@@ -10540,9 +10383,9 @@ public boolean processAudio(String[] args) {
 					if (awrite) {
 						if (options[16]==1) {		// copy last frame
 							if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
-								audiooutL.write(MPADecoder.decodeArray(copyframe[0]));
+								audiooutL.write(MPAD.decodeArray(copyframe[0]));
 								if (options[10]>=4) 
-									audiooutR.write(MPADecoder.get2ndArray());
+									audiooutR.write(MPAD.get2ndArray());
 							} else if (Audio.Layer>1 && options[10]>0) {
 								newframes = MPAConverter.modifyframe(copyframe[0],options); 
 								audiooutL.write(newframes[0]); 
@@ -10566,9 +10409,9 @@ public boolean processAudio(String[] args) {
 							//else if (samplerate==0) padding_counter++;		//count padding
 
 							if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
-								audiooutL.write(MPADecoder.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
+								audiooutL.write(MPAD.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
 								if (options[10]>=4) 
-									audiooutR.write(MPADecoder.get2ndArray());
+									audiooutR.write(MPAD.get2ndArray());
 							} else if (Audio.Layer>1 && options[10]>0) {
 								newframes = MPAConverter.modifyframe(silent_Frame[(padding_counter>0)?0:1],options);
 								audiooutL.write(newframes[0]);
@@ -10681,9 +10524,9 @@ public boolean processAudio(String[] args) {
 					continue readloop;
 
 				if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
-					audiooutL.write(MPADecoder.decodeArray(frame));
+					audiooutL.write(MPAD.decodeArray(frame));
 					if (options[10]>=4) 
-						audiooutR.write(MPADecoder.get2ndArray());
+						audiooutR.write(MPAD.get2ndArray());
 				} else if (Audio.Layer>1 && options[10]>0) {
 					newframes = MPAConverter.modifyframe(frame,options);
 					audiooutL.write(newframes[0]);
@@ -10718,9 +10561,9 @@ public boolean processAudio(String[] args) {
 					continue readloop;
 
 				if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
-					audiooutL.write(MPADecoder.decodeArray(frame));
+					audiooutL.write(MPAD.decodeArray(frame));
 					if (options[10]>=4) 
-						audiooutR.write(MPADecoder.get2ndArray());
+						audiooutR.write(MPAD.get2ndArray());
 				} else if (Audio.Layer>1 && options[10]>0) {
 					newframes = MPAConverter.modifyframe(frame,options);
 					audiooutL.write(newframes[0]);
@@ -10826,9 +10669,9 @@ public boolean processAudio(String[] args) {
 
 
 							if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
-								audiooutL.write(MPADecoder.decodeArray(copyframe[0]));
+								audiooutL.write(MPAD.decodeArray(copyframe[0]));
 								if (options[10]>=4) 
-									audiooutR.write(MPADecoder.get2ndArray());
+									audiooutR.write(MPAD.get2ndArray());
 							} else if (Audio.Layer>1 && options[10]>0) {
 								newframes = MPAConverter.modifyframe(copyframe[0],options); 
 								audiooutL.write(newframes[0]);
@@ -10853,9 +10696,9 @@ public boolean processAudio(String[] args) {
 							//else if (samplerate==0) padding_counter++;		//count padding
 
 							if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
-								audiooutL.write(MPADecoder.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
+								audiooutL.write(MPAD.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
 								if (options[10]>=4) 
-									audiooutR.write(MPADecoder.get2ndArray());
+									audiooutR.write(MPAD.get2ndArray());
 							} else if (Audio.Layer>1 && options[10]>0) {
 								newframes = MPAConverter.modifyframe(silent_Frame[(padding_counter>0)?0:1],options);
 								audiooutL.write(newframes[0]);
@@ -10934,9 +10777,9 @@ public boolean processAudio(String[] args) {
 
 					if (options[16]==1) {				//add_copy prev. frame
 						if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
-							audiooutL.write(MPADecoder.decodeArray(copyframe[0]));
+							audiooutL.write(MPAD.decodeArray(copyframe[0]));
 							if (options[10]>=4) 
-								audiooutR.write(MPADecoder.get2ndArray());
+								audiooutR.write(MPAD.get2ndArray());
 						} else if (Audio.Layer>1 && options[10]>0) {		//modify frame
 							newframes = MPAConverter.modifyframe(copyframe[0],options); 
 							audiooutL.write(newframes[0]);
@@ -10961,9 +10804,9 @@ public boolean processAudio(String[] args) {
 						//else if (samplerate==0) padding_counter++;		//count padding
 
 						if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
-							audiooutL.write(MPADecoder.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
+							audiooutL.write(MPAD.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
 							if (options[10]>=4) 
-								audiooutR.write(MPADecoder.get2ndArray());
+								audiooutR.write(MPAD.get2ndArray());
 						} else if (Audio.Layer>1 && options[10]>0) {		//modify frame
 							newframes = MPAConverter.modifyframe(silent_Frame[(padding_counter>0)?0:1],options);
 							audiooutL.write(newframes[0]);
@@ -11170,14 +11013,13 @@ public boolean processAudio(String[] args) {
 	}
 
 	if (cBox[50].isSelected() && Audio.Layer>1) {
-		if (MPADecoder.WAVE)
+		if (MPAD.WAVE) {
 			for (int g=1; g<4; g++)
 			{
 				pureaudio[0][g]+=".wav";
 				pureaudio[1][g]+=".wav";
 			}
-		//DM07022004 081.6 int16 new
-		else if (RButton[9].isSelected())
+		} else if (RButton[9].isSelected())
 			for (int g=1; g<4; g++)
 			{
 				pureaudio[0][g]+=".aif";
@@ -11215,19 +11057,19 @@ public boolean processAudio(String[] args) {
 	File wavname = new File (fparent+"_0.wav");
 
 	/*** make riff ***/
-	if (cBox[50].isSelected() && args[2].equals("mp") && MPADecoder.WAVE)
+	if (cBox[50].isSelected() && args[2].equals("mp") && MPAD.WAVE)
 	{
 		if (Audio.Layer>1)
 		{
-			MPADecoder.fillRIFF(newnameL);
+			MPAD.fillRIFF(newnameL);
 			if (options[10]>=4) 
-				MPADecoder.fillRIFF(newnameR);
+				MPAD.fillRIFF(newnameR);
 		}
 		else
 		{
-			MPADecoder.deleteRIFF(newnameL);
+			MPAD.deleteRIFF(newnameL);
 			if (options[10]>=4) 
-				MPADecoder.deleteRIFF(newnameR);
+				MPAD.deleteRIFF(newnameR);
 		}
 	}
 	//DM07022004 081.6 int16 new
@@ -11235,15 +11077,15 @@ public boolean processAudio(String[] args) {
 	{
 		if (Audio.Layer>1)
 		{
-			MPADecoder.fillAiff(newnameL,(long)(time_counter/90.0f));
+			MPAD.fillAiff(newnameL,(long)(time_counter/90.0f));
 			if (options[10]>=4) 
-				MPADecoder.fillAiff(newnameR,(long)(time_counter/90.0f));
+				MPAD.fillAiff(newnameR,(long)(time_counter/90.0f));
 		}
 		else
 		{
-			MPADecoder.deleteAiff(newnameL);
+			MPAD.deleteAiff(newnameL);
 			if (options[10]>=4) 
-				MPADecoder.deleteAiff(newnameR);
+				MPAD.deleteAiff(newnameR);
 		}
 	}
 	else if (cBox[4].isSelected() && args[2].equals("mp")) {
@@ -14380,8 +14222,8 @@ public static void goptest(IDDBufferedOutputStream vseq, byte[] gop, byte[] pts,
 	//DM26022004 081.6 int18 new
 	if (RButton[12].isSelected())
 	{
-		MPVDecoder.picture.decodeArray(gop, false, RButton[6].isSelected(), RButton[10].isSelected());
-		MPVDecoder.picture.saveBMP(true, running);
+		MPVD.picture.decodeArray(gop, false, RButton[6].isSelected(), RButton[10].isSelected());
+		MPVD.picture.saveBMP(true, running);
 	}
 
 
@@ -16556,13 +16398,13 @@ class makeVDR {
 			if (toVdr==1 && cBox[54].isSelected())
 				name = out.renameVdrTo(new File(name).getParent()+filesep,name);
 
-			Msg("===> new File "+name);
+			Msg(RESOURCE.getString("makeVDR.new.file") + " " + name);
 			InfoAtEnd.add("Stream:\t "+name);
 		}
 
 		}
 		catch (IOException e) { 
-			Msg("writeVDR error(close)"+e); 
+			Msg(RESOURCE.getString("makeVDR.close.error") + " " + e); 
 		}
 
 		makempg=false;
