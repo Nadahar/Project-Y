@@ -1,5 +1,5 @@
 /*
- * @(#)StartUp.java - mini info, holf a place for start infos
+ * @(#)StartUp.java - about box of Project-X, with terms of condition and credits
  *
  * Copyright (c) 2004 by dvb.matt, All Rights Reserved. 
  * 
@@ -24,7 +24,9 @@
  *
  */
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -32,84 +34,68 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 
 
-//DM17022004 081.6 int17 introduced, int18 changed
-public class StartUp extends JFrame 
+/**
+ * AboutBox for Project-X GUI.
+ * 
+ * @author Peter Storch
+ */
+public class AboutBox extends JDialog
 {
-	boolean agreement = false;
-	JRadioButton disagree;
-	JRadioButton agree;
-	Listener listener = new Listener();
-
-	class Listener implements ActionListener
+	/** Background Color */
+	private static final Color BACKGROUND_COLOR = new Color(224,224,224,224);
+	
+	/**
+	 * Constructor of AboutBox.
+	 * 
+	 * @param frame
+	 */
+	public AboutBox(Frame frame)
 	{
-		public void actionPerformed(ActionEvent e)
-		{
-			String actName = e.getActionCommand();
-
-			if (actName.equals("agree")) 
-			{
-				setVisible(false);
-				X.setButton(1, true);
-				X.setVisible0(true);
-			}
-
-			else if (actName.equals("disagree")) 
-			{
-				System.exit(0);
-			}
-		}
-	}
-
-	public StartUp()
-	{
-		open(Resource.getString("startup.title"));
-	}
-
-	public StartUp(String title)
-	{
-		open(title);
-	}
-
-	protected void open(String title)
-	{
-		setTitle(title);
+		super(frame, true);
+		setTitle(Resource.getString("about.title"));
 
 		JPanel container = new JPanel();
 		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 		container.setBorder( BorderFactory.createEmptyBorder(10,10,10,10));
+		container.setBackground(BACKGROUND_COLOR);
+		
+		JLabel logo = new JLabel(Resource.loadIcon("px.gif"));
+		logo.setBackground(BACKGROUND_COLOR);
+		logo.setOpaque(true);
+
+		String credits[] = Resource.getStringByLines("credits");
+
+		for (int a=0; a<credits.length; a++) 
+			container.add(new JLabel(credits[a]));
+
+		container.add(new JLabel(" ")); // as spacer
 
 		String terms[] = Resource.getStringByLines("terms");
 
 		for (int a=0; a<terms.length; a++) 
 			container.add(new JLabel(terms[a]));
 
-		disagree = new JRadioButton(Resource.getString("terms.disagree"));
-		disagree.setActionCommand("disagree");
-		disagree.setOpaque(false);
-		agree = new JRadioButton(Resource.getString("terms.agree"));
-		agree.setActionCommand("agree");
-		agree.setOpaque(false);
-		agree.setEnabled(false); //DM16042004 081.7 int01 add
+		JButton ok = new JButton(Resource.getString("about.ok"));
+		ok.setBackground(BACKGROUND_COLOR);
+		ok.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0) {
+				dispose(); 
+			}
+		});
 
-		ButtonGroup BrGroup = new ButtonGroup();
-		BrGroup.add(disagree);
-		BrGroup.add(agree);
-
-		container.add(disagree);
-		container.add(agree);
-		disagree.addActionListener(listener);
-		agree.addActionListener(listener);
-
-		JPanel container2 = new JPanel();
+		JPanel container2 = new JPanel(new BorderLayout());
 		container2.setBorder( BorderFactory.createRaisedBevelBorder());
-		container2.add(container);
+		container2.setBackground(BACKGROUND_COLOR);
+		container2.add(logo, BorderLayout.NORTH);
+		container2.add(container, BorderLayout.CENTER);
+		container2.add(ok, BorderLayout.SOUTH);
 
 		getContentPane().add(container2);
 		pack();
@@ -118,32 +104,12 @@ public class StartUp extends JFrame
 
 		addWindowListener (new WindowAdapter() { 
 			public void windowClosing(WindowEvent e) { 
-				System.exit(0); 
+				dispose(); 
 			}
 		});
 
-		return;
+		show();
 	}
 
-	public void set( boolean agreement)
-	{
-		//DM16042004 081.7 int01 add
-		agree.setEnabled(true);
-
-		this.agreement = agreement;
-		agree.setSelected(agreement);
-		if (agreement)
-			agree.setForeground(Color.green);
-	}
-
-	public boolean get()
-	{
-		return agree.isSelected();
-	}
-
-	public void close()
-	{
-		dispose();
-	}
 }
 

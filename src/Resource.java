@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -180,6 +181,23 @@ public class Resource {
 		}
 		
 		return text;
+	}
+
+	/**
+	 * Returns a resource String as a String Array of lines.
+	 * 
+	 * @return String[]
+	 */
+	public static String[] getStringByLines(String key)
+	{
+		List lines = new ArrayList();
+		StringTokenizer st = new StringTokenizer(getString(key), "\n");
+		while (st.hasMoreTokens())
+		{
+			lines.add(st.nextToken());
+		}
+		
+		return (String[])lines.toArray(new String[0]);
 	}
 
 	/**

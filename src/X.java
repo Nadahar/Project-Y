@@ -88,13 +88,11 @@ import java.io.PrintWriter;
 import java.io.PushbackInputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.swing.BorderFactory;
@@ -145,7 +143,7 @@ static SubPicture subpicture = new SubPicture(); //DM06032004 081.6 int18 change
 
 MPAC MPAConverter = new MPAC();
 MPAD MPADecoder = new MPAD();
-Audio Audio = new Audio();
+static Audio audio = new Audio();
 static D2V d2v = new D2V();
 static TS tf = new TS();
 
@@ -176,7 +174,7 @@ static ArrayList collout = new ArrayList(), tempfiles = new ArrayList();
 static ArrayList workinglist = new ArrayList(), combvideo = new ArrayList();
 static ArrayList InfoAtEnd = new ArrayList(), cell = new ArrayList();
 static ArrayList cutlist = new ArrayList(), ctemp = new ArrayList(), speciallist = new ArrayList();
-static ArrayList TSPidlist = new ArrayList(), PVAPidlist = new ArrayList(), AC3list = new ArrayList();
+static ArrayList TSPidlist = new ArrayList(), PVAPidlist = new ArrayList();
 static ArrayList TSdemuxlist = new ArrayList(), PVAdemuxlist = new ArrayList(),	VDRdemuxlist = new ArrayList(), PESdemuxlist = new ArrayList();
 
 static JFrame frame = new JFrame(); //DM20032004 081.6 int18 changed
@@ -548,7 +546,7 @@ protected JMenu buildHelpMenu()
 //DM20032004 081.6 int18 add
 protected void showAboutBox()
 {
-	JOptionPane.showMessageDialog(this, getTerms(), Resource.getString("about.title"), JOptionPane.INFORMATION_MESSAGE);
+	new AboutBox(frame);
 }
 
 // file panel
@@ -4950,52 +4948,6 @@ public void javaEV()
 	TextArea.append("\n" + Resource.getString("javaev.java.disk.access") + "\t" + raw_interface.GetLoadStatus());
 }
 
-
-/****************
- *load ac3.bin file *
- ****************/
-public static int loadAC3() {
-	Audio AC3Audio = new Audio();
-	AC3list.clear();
-	
-	URL url = Resource.getResourceURL("ac3.bin");
-	if (url == null) 
-		return 0;
-	
-	try {
-		BufferedInputStream bis = new BufferedInputStream(url.openStream());
-		ByteArrayOutputStream bao = new ByteArrayOutputStream();
-		byte[] buff = new byte[1024];
-		int bytesRead = -1;
-		while ((bytesRead = bis.read(buff, 0, buff.length)) != -1)
-		{
-			bao.write(buff, 0, bytesRead);
-		}
-		
-		byte[] check = bao.toByteArray();
-	
-		Msg(""); //DM22062004 081.7 int05 add
-	
-		int a=0, frame_counter=0;
-		while (a < check.length) {
-			AC3Audio.AC3_parseHeader(check,a);
-			Msg("("+frame_counter+") "+AC3Audio.AC3_saveAnddisplayHeader());
-			byte[] ac3data = new byte[AC3Audio.Size];
-			System.arraycopy(check,a,ac3data,0,AC3Audio.Size);
-			AC3list.add(ac3data);
-			a += AC3Audio.Size;
-			frame_counter++;
-		}
-		check = null;
-		return frame_counter;
-	} 
-	catch (IOException e5) { Msg(Resource.getString("ac3.msg.loading.error")); }
-
-	AC3list.clear();
-	return 0;
-}
-
-
 /****************
  *load cutfile *
  ****************/
@@ -5141,7 +5093,6 @@ public static void main(String[] args) {
 	boolean loadGUI=false;
 	boolean IDsLoaded=false;
 	boolean CutsLoaded=false;
-	int ac3f=0;
 
 	if (args.length > 0) {
 
@@ -5201,8 +5152,7 @@ public static void main(String[] args) {
 		panel.updateState();
 
 		//DM22062004 081.7 int05 changed
-		if ((ac3f = loadAC3()) > 0) 
-			Msg(Resource.getString("msg.ac3.frames", ""+ac3f));
+		Audio.loadAC3(); 
 
 		cBox[11].setSelected(false);
 		options[30]=0;
@@ -5274,10 +5224,7 @@ public static void main(String[] args) {
 		panel.javaEV();
 
 		//DM22062004 081.7 int05 changed
-		if ((ac3f = loadAC3()) > 0) 
-		{
-			Msg(Resource.getString("msg.ac3.frames", ""+ac3f));
-		}
+		Audio.loadAC3(); 
 
 		startup.set(RButton[1].isSelected());
 
@@ -5299,23 +5246,6 @@ public static void setVisible0( boolean visible)
 public static void setButton(int button, boolean selected)
 {
 	RButton[button].setSelected(selected);
-}
-
-/**
- * Returns the terms of condition
- * 
- * @return String[]
- */
-public static String[] getTerms()
-{
-	List terms = new ArrayList();
-	StringTokenizer st = new StringTokenizer(Resource.getString("terms"), "\n");
-	while (st.hasMoreTokens())
-	{
-		terms.add(st.nextToken());
-	}
-	
-	return (String[])terms.toArray(new String[0]);
 }
 
 /**
@@ -10066,11 +9996,11 @@ public boolean processAudio(String[] args)
 
 			/*** parse header ********/
 			//DM19122003 081.6 int07 changed
-			ERRORCODE = (is_AC3 || !is_DTS) ? Audio.AC3_parseHeader(pushback,0) : 0; 
+			ERRORCODE = (is_AC3 || !is_DTS) ? audio.AC3_parseHeader(pushback,0) : 0; 
 			if (ERRORCODE < 1)
 			{ 
 				if (!is_AC3 || is_DTS)
-					ERRORCODE = Audio.DTS_parseHeader(pushback,0); 
+					ERRORCODE = audio.DTS_parseHeader(pushback,0); 
 
 				if (ERRORCODE < 1)
 				{ 
@@ -10096,14 +10026,14 @@ public boolean processAudio(String[] args)
 			n-=10;
 
 			/********* read entire frame ********/
-			frame = new byte[Audio.Size];
-			audioin.read(frame,0,Audio.Size);
+			frame = new byte[audio.Size];
+			audioin.read(frame,0,audio.Size);
 
 			/********* startfileposition of current frame ********/
 			actframe = n;
 
 			/********* expected position for following frame ********/
-			n += Audio.Size;
+			n += audio.Size;
 
 			if (cBox[51].isSelected())
 			{  // skip a frame
@@ -10128,7 +10058,7 @@ public boolean processAudio(String[] args)
 					audioin.read(push24,0,24);
 					miniloop:
 					for (; d<(is_DTS?15:17); d++) { //smpte
-						ERRORCODE = is_DTS ? Audio.DTS_parseNextHeader(push24,d) : Audio.AC3_parseNextHeader(push24,d);
+						ERRORCODE = is_DTS ? audio.DTS_parseNextHeader(push24,d) : audio.AC3_parseNextHeader(push24,d);
 						if (ERRORCODE>0) 
 							break miniloop; 
 					} 
@@ -10147,7 +10077,7 @@ public boolean processAudio(String[] args)
 			}
 
 			//DM10042004 081.7 int01
-			if (is_AC3 && !is_DTS && cBox[68].isSelected() && (ERRORCODE = CRC.checkCRC16ofAC3(frame, 2, Audio.Size)) != 0 )
+			if (is_AC3 && !is_DTS && cBox[68].isSelected() && (ERRORCODE = CRC.checkCRC16ofAC3(frame, 2, audio.Size)) != 0 )
 			{
 				Msg(Resource.getString("audio.msg.crc.error", "" + ERRORCODE) + " " + actframe);
 				audioin.unread(frame, 2, frame.length - 2);
@@ -10163,9 +10093,9 @@ public boolean processAudio(String[] args)
 			/********* check for change in frametype ********/ 
 			//R_One18122003 081.6 int07 changed
 			if (is_DTS) 
-				compare = Audio.DTS_compareHeader(); 
+				compare = audio.DTS_compareHeader(); 
 			else 
-				compare = Audio.AC3_compareHeader(); 
+				compare = audio.AC3_compareHeader(); 
 
 			if (compare > 0) 
 				newformat=true; 
@@ -10173,15 +10103,15 @@ public boolean processAudio(String[] args)
 			if (frame_counter==0) 
 				newformat=true;
 
-			Audio.saveHeader();
+			audio.saveHeader();
 
 			/**** replace not 3/2 with silence ac3 3/2 061i++ ****/
 			//R_One18122003 081.6 int07 changed
-			if (!is_DTS && cBox[10].isSelected() && Audio.Mode != 7 )
+			if (!is_DTS && cBox[10].isSelected() && audio.Mode != 7 )
 			{
-				for (int c=0; c < AC3list.size(); c++)
+				for (int c=0; c < Audio.getAC3list().size(); c++)
 				{
-					byte[] ac3data = (byte[])AC3list.get(c);
+					byte[] ac3data = (byte[])Audio.getAC3list().get(c);
 
 					if ( ((0xE0 & ac3data[6])>>>5) != 7 ) 
 						continue;
@@ -10195,7 +10125,7 @@ public boolean processAudio(String[] args)
 
 			/****** preloop if audio starts later than video, and i must insert *****/
 			//if ( !( preloop && vptsdata && vptsval[v] < timeline-(Audio.Time_length/2.0) ) ) preloop=false;
-			if ( (preloop && v>=vptsval.length) || !( preloop && vptsdata && vptsval[v] < timeline-(Audio.Time_length/2.0) ) ) 
+			if ( (preloop && v>=vptsval.length) || !( preloop && vptsdata && vptsval[v] < timeline-(audio.Time_length/2.0) ) ) 
 				preloop=false;
 			else {
 
@@ -10213,8 +10143,8 @@ public boolean processAudio(String[] args)
 				/**** insert silence ac3 061g++ ****/
 				//DM19122003 081.6 int07 changed
 				if (!is_DTS && options[16]==0) {
-					for (int c=0;c<AC3list.size();c++) {
-						byte[] ac3data = (byte[])AC3list.get(c);
+					for (int c=0;c<Audio.getAC3list().size();c++) {
+						byte[] ac3data = (byte[])Audio.getAC3list().get(c);
 						if ( (0xFE&ac3data[4])!=(0xFE&frame[4]) || ( (7&ac3data[5]) != (7&frame[5]) ) || (0xE0&ac3data[6])!=(0xE0&frame[6]) ) 
 							continue;
 						audbuf.write(ac3data);
@@ -10223,17 +10153,17 @@ public boolean processAudio(String[] args)
 				} else 
 					audbuf.write(frame);
 
-				while ( precount < timeline - (Audio.Time_length/2.0) ) {
+				while ( precount < timeline - (audio.Time_length/2.0) ) {
 
 					/****** check if frame write should paused *****/
 					if (vptsdata && w<vptsval.length) { 
 						double ms1 = (double)(precount-vptsval[w+1]);
 						double ms2 = (double)(time_counter-vtime[w+1]);
-						if ( (double)Math.abs(ms2) <= Audio.Time_length/2.0 ) {
+						if ( (double)Math.abs(ms2) <= audio.Time_length/2.0 ) {
 							awrite=false;
 							w+=2;
 						}
-						else if ( (double)Math.abs(ms1) <= Audio.Time_length/2.0 ) {
+						else if ( (double)Math.abs(ms1) <= audio.Time_length/2.0 ) {
 							awrite=false;
 							w+=2;
 						}
@@ -10246,7 +10176,7 @@ public boolean processAudio(String[] args)
 						if (options[30]==1) 
 							System.out.println(" ö"+ms3+"/"+ms4+"/"+(ms4-ms3));
 
-						if (!awrite && (double)Math.abs((time_counter-vtime[v]) - (precount-vptsval[v])) <= (double)Audio.Time_length/2.0 ) {
+						if (!awrite && (double)Math.abs((time_counter-vtime[v]) - (precount-vptsval[v])) <= (double)audio.Time_length/2.0 ) {
 							awrite=true;
 							v+=2;
 							double ms1 = precount-vptsval[v-2], ms2 = time_counter-vtime[v-2];
@@ -10258,7 +10188,7 @@ public boolean processAudio(String[] args)
 
 					/****** calculate A/V Offset for true *****/
 					if ((v < vptsval.length) ) {
-						if ( (double)Math.abs(vptsval[v] - precount) <= ((double)Audio.Time_length/2.0) )  {
+						if ( (double)Math.abs(vptsval[v] - precount) <= ((double)audio.Time_length/2.0) )  {
 							awrite=true;
 							v+=2;
 							double ms1 = precount-vptsval[v-2], ms2 = time_counter-vtime[v-2];
@@ -10268,7 +10198,7 @@ public boolean processAudio(String[] args)
 						}
 
 						/****** calculate A/V Offset for false *****/
-						if (awrite && (double)Math.abs((time_counter-vtime[v-2]) - (precount-vptsval[v-2])) > (double)Audio.Time_length/2.0 ) {
+						if (awrite && (double)Math.abs((time_counter-vtime[v-2]) - (precount-vptsval[v-2])) > (double)audio.Time_length/2.0 ) {
 							awrite=false;
 							v-=2;
 						}
@@ -10295,10 +10225,10 @@ public boolean processAudio(String[] args)
 						frame_counter++;
 						cb++;
 						ins[1]++;
-						time_counter+=Audio.Time_length;
+						time_counter+=audio.Time_length;
 					}
 
-					precount+=Audio.Time_length;
+					precount+=audio.Time_length;
 					if (options[30]==1) 
 						System.out.println("(6)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0)) )+"  ");
 
@@ -10308,7 +10238,7 @@ public boolean processAudio(String[] args)
 				audioin.unread(frame);
 
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg(Resource.getString("audio.msg.summary.pre-insert", "" + ins[1], FramesToTime((int)ins[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.pre-insert", "" + ins[1], FramesToTime((int)ins[1],audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				continue readloopdd;
 
@@ -10317,7 +10247,7 @@ public boolean processAudio(String[] args)
 
 			/****** check if frame write should paused *****/
 			if (vptsdata) { 
-				awrite = SyncCheck(time_counter,Audio.Time_length,timeline,frame_counter,v,w,vptsval,vtime,awrite);
+				awrite = SyncCheck(time_counter,audio.Time_length,timeline,frame_counter,v,w,vptsval,vtime,awrite);
 				v = (int)(options[49]>>>32);
 				w = (int)(0xffffffffL & options[49]);
 			}
@@ -10331,7 +10261,7 @@ public boolean processAudio(String[] args)
 
 			/****** message *****/
 			if (options[30]==1) 
-				System.out.println(" k)"+timeline+" l)"+(Audio.Time_length/2.0)+" u)"+Audio.Size+" m)"+awrite+" n)"+w+" o)"+v+" p)"+n);
+				System.out.println(" k)"+timeline+" l)"+(audio.Time_length/2.0)+" u)"+audio.Size+" m)"+awrite+" n)"+w+" o)"+v+" p)"+n);
 
 			/****** stop if no more audio needed *****/
 			if (vptsdata && timeline > vptsval[vptsval.length-1]+10000) {
@@ -10344,7 +10274,7 @@ public boolean processAudio(String[] args)
 			//DM19122003 081.6 int07 changed
 			if ((newformat && awrite) || (newformat && !vptsdata))
 			{
-				String hdr = is_DTS ? Audio.DTS_displayHeader() : Audio.AC3_displayHeader();
+				String hdr = is_DTS ? audio.DTS_displayHeader() : audio.AC3_displayHeader();
 
 				if (options[47] < 100) 
 				{
@@ -10383,7 +10313,7 @@ public boolean processAudio(String[] args)
 				System.out.println(" x"+((x<ptspos.length-1)?x+"/"+ptsval[x+1]+"/"+ptspos[x+1]:"-"));
 
 			/****** pts for next frame!! ****/
-			timeline += Audio.Time_length;
+			timeline += audio.Time_length;
 
 			audbuf.reset();
 			audbuf.write(frame);
@@ -10407,7 +10337,7 @@ public boolean processAudio(String[] args)
 						riffw[0].AC3RiffData(afc.AC3RiffFormat(frame)); 
 
 					frame_counter++;
-					time_counter+=Audio.Time_length;
+					time_counter+=audio.Time_length;
 				}
 				continue readloopdd;
 
@@ -10415,7 +10345,7 @@ public boolean processAudio(String[] args)
 
 			minSync=0; //DM151003 test 081.5++ simple sync
 
-			if ( (double)Math.abs( ptsval[x+1] - timeline) < (double)Audio.Time_length/2.0 ) {
+			if ( (double)Math.abs( ptsval[x+1] - timeline) < (double)audio.Time_length/2.0 ) {
 				timeline=ptsval[x+1];
 				x++;
 				if (!vptsdata || (vptsdata && awrite)) {
@@ -10426,7 +10356,7 @@ public boolean processAudio(String[] args)
 						riffw[0].AC3RiffData(afc.AC3RiffFormat(frame)); 
 
 					frame_counter++;
-					time_counter+=Audio.Time_length;
+					time_counter+=audio.Time_length;
 				}
 				continue readloopdd;
 			}
@@ -10454,18 +10384,18 @@ public boolean processAudio(String[] args)
 						riffw[0].AC3RiffData(afc.AC3RiffFormat(frame)); 
 
 					frame_counter++;
-					time_counter+=Audio.Time_length;
+					time_counter+=audio.Time_length;
 					if (options[30]==1) 
 						System.out.println("(10)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0)) )+"  ");
 				}
-				timeline+=Audio.Time_length;
+				timeline+=audio.Time_length;
 
 				/**** test *****/
 				/**** insert silence ac3 061g++ ****/
 				//R_One18122003 081.6 int07 changed
 				if (!is_DTS && options[16]==0) {
-					for (int c=0;c<AC3list.size();c++) {
-						byte[] ac3data = (byte[])AC3list.get(c);
+					for (int c=0;c<Audio.getAC3list().size();c++) {
+						byte[] ac3data = (byte[])Audio.getAC3list().get(c);
 						if ( (0xFE&ac3data[4])!=(0xFE&frame[4]) || ( (7&ac3data[5]) != (7&frame[5]) ) || (0xE0&ac3data[6])!=(0xE0&frame[6]) ) 
 							continue;
 						audbuf.reset();
@@ -10476,15 +10406,15 @@ public boolean processAudio(String[] args)
 
 				long[] ins = { (long)time_counter,0 };
 
-				while ( ptsval[x+1] > (timeline-(Audio.Time_length/2.0)) )  {
+				while ( ptsval[x+1] > (timeline-(audio.Time_length/2.0)) )  {
 					if (vptsdata && w<vptsval.length) { 
-						double ms1 = (double)(timeline-Audio.Time_length-vptsval[w+1]);
+						double ms1 = (double)(timeline-audio.Time_length-vptsval[w+1]);
 						double ms2 = (double)(time_counter-vtime[w+1]);
-						if ( (double)Math.abs(ms2) <= Audio.Time_length/2.0 ) {
+						if ( (double)Math.abs(ms2) <= audio.Time_length/2.0 ) {
 							awrite=false;
 							w+=2;
 						}
-						else if ( (double)Math.abs(ms1) <= Audio.Time_length/2.0 ) {
+						else if ( (double)Math.abs(ms1) <= audio.Time_length/2.0 ) {
 							awrite=false;
 							w+=2;
 						}
@@ -10493,8 +10423,8 @@ public boolean processAudio(String[] args)
 					// neu 047  
 					if (vptsdata && (v < vptsval.length)) {
 						if (!awrite && (double)Math.abs((time_counter - vtime[v]) -
-								(timeline-Audio.Time_length-vptsval[v]) ) <= (double)Audio.Time_length/2.0 ) {
-							double ms1 = (double)(timeline-Audio.Time_length-vptsval[v]);
+								(timeline-audio.Time_length-vptsval[v]) ) <= (double)audio.Time_length/2.0 ) {
+							double ms1 = (double)(timeline-audio.Time_length-vptsval[v]);
 							double ms2 = (double)(time_counter-vtime[v]);
 							msoff.setText(""+(int)(ms1/90)+"/"+(int)(ms2/90)+"/"+(int)((ms2-ms1)/90));
 							if (options[30]==1) 
@@ -10505,8 +10435,8 @@ public boolean processAudio(String[] args)
 					} 
 
 					if (vptsdata && (v < vptsval.length)) {
-						if ( (double)Math.abs(vptsval[v] - (timeline-Audio.Time_length)) <= ((double)Audio.Time_length/2.0) )  {
-							double ms1 = (double)(timeline-Audio.Time_length-vptsval[v]), ms2 = (double)(time_counter-vtime[v]);
+						if ( (double)Math.abs(vptsval[v] - (timeline-audio.Time_length)) <= ((double)audio.Time_length/2.0) )  {
+							double ms1 = (double)(timeline-audio.Time_length-vptsval[v]), ms2 = (double)(time_counter-vtime[v]);
 							msoff.setText(""+(int)(ms1/90)+"/"+(int)(ms2/90)+"/"+(int)((ms2-ms1)/90));
 							if (options[30]==1) 
 								System.out.println(" ß"+ms1+"/"+ms2+"/"+(ms2-ms1));
@@ -10516,7 +10446,7 @@ public boolean processAudio(String[] args)
 
 						//neu 047
 						if (awrite && (double)Math.abs((time_counter - vtime[v-2]) -
-								(timeline-Audio.Time_length-vptsval[v-2]) ) > (double)Audio.Time_length/2.0 ) {
+								(timeline-audio.Time_length-vptsval[v-2]) ) > (double)audio.Time_length/2.0 ) {
 							awrite=false;
 							v-=2;
 						}
@@ -10537,7 +10467,7 @@ public boolean processAudio(String[] args)
 							riffw[0].AC3RiffData(afc.AC3RiffFormat(audbuf.toByteArray())); 
 
 						frame_counter++;
-						time_counter+=Audio.Time_length;
+						time_counter+=audio.Time_length;
 						cc++;
 						ins[1]++;
 					}
@@ -10548,15 +10478,15 @@ public boolean processAudio(String[] args)
 						System.out.println(" x"+((x<ptspos.length-1)?x+"/"+ptsval[x+1]+"/"+ptspos[x+1]:"-"));
 					}
 
-					timeline += Audio.Time_length;
+					timeline += audio.Time_length;
 				} // end while
 
-				timeline -= Audio.Time_length;
+				timeline -= audio.Time_length;
 				slloop=false;
 				x++;
 
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg(Resource.getString("audio.msg.summary.insert", "" + ins[1], FramesToTime((int)ins[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.insert", "" + ins[1], FramesToTime((int)ins[1],audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				/*** reset PTS after inserting 081.5a ***/
 				timeline=ptsval[x];
@@ -10564,21 +10494,21 @@ public boolean processAudio(String[] args)
 				continue readloopdd;
 			} // end if slloop
 
-			if ( (actframe + Audio.Size) >= audiosize ) 
+			if ( (actframe + audio.Size) >= audiosize ) 
 				break readloopdd;
 
 		}  // end while
 
 		/*** add frames at the end ***/
 		if ( args[2].equals("ac") && options[38]==1 && vptsdata && awrite && (w < vptsval.length)) {
-			timeline+=Audio.Time_length;
+			timeline+=audio.Time_length;
 			addf[0] = (long)time_counter;
 
 			/**** insert silence ac3 061g++ ****/
 			//DM19122003 081.6 int07 changed
 			if (!is_DTS && options[16]==0) {
-				for (int c=0;c<AC3list.size();c++) {
-					byte[] ac3data = (byte[])AC3list.get(c);
+				for (int c=0;c<Audio.getAC3list().size();c++) {
+					byte[] ac3data = (byte[])Audio.getAC3list().get(c);
 					if ( (0xFE&ac3data[4])!=(0xFE&frame[4]) || ( (7&ac3data[5]) != (7&frame[5]) ) || (0xE0&ac3data[6])!=(0xE0&frame[6]) ) 
 						continue;
 					audbuf.reset();
@@ -10588,7 +10518,7 @@ public boolean processAudio(String[] args)
 			}
 
 			while ( w < vptsval.length ) {
-				while ( vtime[w+1] > time_counter && (double)Math.abs(vtime[w+1]-time_counter) > (double)Audio.Time_length/2.0 )  {
+				while ( vtime[w+1] > time_counter && (double)Math.abs(vtime[w+1]-time_counter) > (double)audio.Time_length/2.0 )  {
 					audbuf.writeTo(audiooutL);
 
 					/*********** RIFF *****/
@@ -10597,19 +10527,19 @@ public boolean processAudio(String[] args)
 
 					audiostatusLabel.setText(Resource.getString("audio.status.add")); //DM18022004 081.6 int17 changed
 					frame_counter++;
-					time_counter+=Audio.Time_length;
-					timeline+=Audio.Time_length;
+					time_counter+=audio.Time_length;
+					timeline+=audio.Time_length;
 					cd++;
 					addf[1]++;
 					if (options[30]==1) { 
 						System.out.println("(9)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0f)) ));
-						System.out.print(" t)"+(long)(timeline-Audio.Time_length)+" w)"+w);
+						System.out.print(" t)"+(long)(timeline-audio.Time_length)+" w)"+w);
 					}
 				}
 				w+=2;
 			}
 			w-=2;
-			timeline -= Audio.Time_length;
+			timeline -= audio.Time_length;
 			if (options[30]==1) 
 				System.out.println(" eot_video:"+(vptsval[w+1]/90)+"ms, eot_audio:"+((timeline)/90)+"ms                  ");
 		}
@@ -10675,7 +10605,7 @@ public boolean processAudio(String[] args)
 			n+=4;
 
 			/*** parse header ********/
-			if ( (ERRORCODE = Audio.MPA_parseHeader(pushmpa,0)) < 1)
+			if ( (ERRORCODE = audio.MPA_parseHeader(pushmpa,0)) < 1)
 			{
 				audioin.unread(pushmpa,1,3);
 
@@ -10697,7 +10627,7 @@ public boolean processAudio(String[] args)
 
 
 
-			frame = new byte[Audio.Size];
+			frame = new byte[audio.Size];
 			audioin.read(frame,0,frame.length);
 			System.arraycopy(frame,0,header_copy,0,4);
 			header_copy[3] &= 0xCF;
@@ -10707,7 +10637,7 @@ public boolean processAudio(String[] args)
 			actframe = n;
 
 			/********* expected position for following frame ********/
-			n += Audio.Size;
+			n += audio.Size;
 
 			/********* pitch ********/
 			if (cBox[51].isSelected()){  // skip a frame
@@ -10722,8 +10652,8 @@ public boolean processAudio(String[] args)
 			if (options[16]==1) {
 				copyframe[0] = new byte[frame.length];
 				System.arraycopy(frame,0,copyframe[0],0,frame.length);
-				if (Audio.Layer>1 && options[9]==1) 
-					copyframe[0] = Audio.MPA_deleteCRC(copyframe[0]);
+				if (audio.Layer>1 && options[9]==1) 
+					copyframe[0] = audio.MPA_deleteCRC(copyframe[0]);
 			}
 
 			/********* finish loop if last frame in file is shorter than nominal size ********/
@@ -10735,7 +10665,7 @@ public boolean processAudio(String[] args)
 			if ( n < audiosize-4 ) {
 				if (!cBox[69].isSelected()){ //DM30122003 081.6 int10 new
 					audioin.read(pushmpa,0,4);
-					ERRORCODE = Audio.MPA_parseNextHeader(pushmpa,0);
+					ERRORCODE = audio.MPA_parseNextHeader(pushmpa,0);
 					audioin.unread(pushmpa);
 					if (ERRORCODE<1) {
 						audioin.unread(frame,1,frame.length-1);
@@ -10743,11 +10673,11 @@ public boolean processAudio(String[] args)
 						continue readloop;
 					}
 				}
-				layertype=Audio.Layer;
+				layertype=audio.Layer;
 			}
 
 			//DM10042004 081.7 int01
-			if (cBox[68].isSelected() && (ERRORCODE = CRC.checkCRC16ofMPA(Audio, frame)) != 0 )
+			if (cBox[68].isSelected() && (ERRORCODE = CRC.checkCRC16ofMPA(audio, frame)) != 0 )
 			{
 				Msg(Resource.getString("audio.msg.crc.error", "") + " " + actframe);
 				audioin.unread(frame, 2, frame.length - 2);
@@ -10761,7 +10691,7 @@ public boolean processAudio(String[] args)
 			miss=false;
 
 			/********* check for change in frametype ********/
-			if ( (compare = Audio.MPA_compareHeader()) > 0 ) {
+			if ( (compare = audio.MPA_compareHeader()) > 0 ) {
 				newformat=true;
 				if (compare==6) {
 					jss++;
@@ -10771,22 +10701,22 @@ public boolean processAudio(String[] args)
 			if (frame_counter==0) 
 				newformat=true;
 
-			Audio.saveHeader();
+			audio.saveHeader();
 
 			// timeline ist hier aktuelle audiopts
 
 			/****** message *****/
 			if (options[30]==1) 
-				System.out.println(" k)"+timeline+" l)"+(Audio.Time_length/2.0)+" m)"+awrite+" n)"+w+" o)"+v+" p)"+n);
+				System.out.println(" k)"+timeline+" l)"+(audio.Time_length/2.0)+" m)"+awrite+" n)"+w+" o)"+v+" p)"+n);
 
 
 			/****** preloop if audio starts later than video, and i must insert *****/
-			if ( (preloop && vptsdata && v>=vptsval.length) || !( preloop && vptsdata && vptsval[v] < timeline-(Audio.Time_length/2.0) ) ) 
+			if ( (preloop && vptsdata && v>=vptsval.length) || !( preloop && vptsdata && vptsval[v] < timeline-(audio.Time_length/2.0) ) ) 
 				preloop=false;
 			else {
 
-				silent_Frame[0]=new byte[Audio.Size_base];	//silence without padd, std
-				silent_Frame[1]=new byte[Audio.Size];		//silence with padd for 22.05, 44.1
+				silent_Frame[0]=new byte[audio.Size_base];	//silence without padd, std
+				silent_Frame[1]=new byte[audio.Size];		//silence with padd for 22.05, 44.1
 				for (int a=0;a<2;a++){
 					System.arraycopy(header_copy,0,silent_Frame[a],0,4);	//copy last header data
 					silent_Frame[a][1] |= 1;				//mark noCRC
@@ -10796,18 +10726,18 @@ public boolean processAudio(String[] args)
 				long precount=vptsval[v];
 				long[] ins = { (long)time_counter,0 };
 
-				while ( precount < timeline- (Audio.Time_length/2.0) ) {  //better for RTS
+				while ( precount < timeline- (audio.Time_length/2.0) ) {  //better for RTS
 
 					/*********** test *059d*****/
 					/****** check if frame write should paused *****/
 					if (vptsdata && w<vptsval.length) { 
 						double ms1 = (double)(precount-vptsval[w+1]);
 						double ms2 = (double)(time_counter-vtime[w+1]);
-						if ( (double)Math.abs(ms2) <= Audio.Time_length/2.0 ) {
+						if ( (double)Math.abs(ms2) <= audio.Time_length/2.0 ) {
 							awrite=false;
 							w+=2;
 						}
-						else if ( (double)Math.abs(ms1) <= Audio.Time_length/2.0 ) {
+						else if ( (double)Math.abs(ms1) <= audio.Time_length/2.0 ) {
 							awrite=false;
 							w+=2;
 						}
@@ -10820,7 +10750,7 @@ public boolean processAudio(String[] args)
 							System.out.println(" ö"+ms3+"/"+ms4+"/"+(ms4-ms3));
 
 						if (!awrite && (double)Math.abs((time_counter - vtime[v]) -
-								(precount - vptsval[v]) ) <= (double)Audio.Time_length/2.0 ) {
+								(precount - vptsval[v]) ) <= (double)audio.Time_length/2.0 ) {
 							awrite=true;
 							v+=2;
 							double ms1 = precount-vptsval[v-2], ms2 = time_counter-vtime[v-2];
@@ -10832,7 +10762,7 @@ public boolean processAudio(String[] args)
 
 					/****** calculate A/V Offset for true *****/
 					if ((v < vptsval.length) ) {
-						if ( (double)Math.abs(vptsval[v] - precount) <= (double)Audio.Time_length/2.0 )  {
+						if ( (double)Math.abs(vptsval[v] - precount) <= (double)audio.Time_length/2.0 )  {
 							awrite=true;
 							v+=2;
 							double ms1 = precount-vptsval[v-2], ms2 = time_counter-vtime[v-2];
@@ -10843,7 +10773,7 @@ public boolean processAudio(String[] args)
 
 						/****** calculate A/V Offset for false *****/
 						if (awrite && Math.abs((time_counter - vtime[v-2]) -
-								(precount - vptsval[v-2]) ) > Audio.Time_length/2.0 ) {
+								(precount - vptsval[v-2]) ) > audio.Time_length/2.0 ) {
 							awrite=false;
 							v-=2;
 						}
@@ -10863,11 +10793,11 @@ public boolean processAudio(String[] args)
 
 					if (awrite) {
 						if (options[16]==1) {		// copy last frame
-							if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
+							if (audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
 								audiooutL.write(MPAD.decodeArray(copyframe[0]));
 								if (options[10]>=4) 
 									audiooutR.write(MPAD.get2ndArray());
-							} else if (Audio.Layer>1 && options[10]>0) {
+							} else if (audio.Layer>1 && options[10]>0) {
 								newframes = MPAConverter.modifyframe(copyframe[0],options); 
 								audiooutL.write(newframes[0]); 
 								if (options[10]>=4) 
@@ -10889,11 +10819,11 @@ public boolean processAudio(String[] args)
 							//if (padding_counter==padding) padding_counter=0;	//reset padd count
 							//else if (samplerate==0) padding_counter++;		//count padding
 
-							if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
+							if (audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
 								audiooutL.write(MPAD.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
 								if (options[10]>=4) 
 									audiooutR.write(MPAD.get2ndArray());
-							} else if (Audio.Layer>1 && options[10]>0) {
+							} else if (audio.Layer>1 && options[10]>0) {
 								newframes = MPAConverter.modifyframe(silent_Frame[(padding_counter>0)?0:1],options);
 								audiooutL.write(newframes[0]);
 								if (options[10]>=4) 
@@ -10914,12 +10844,12 @@ public boolean processAudio(String[] args)
 							}
 						}
 						frame_counter++;
-						time_counter+=Audio.Time_length;
+						time_counter+=audio.Time_length;
 						cb++;
 						ins[1]++;
 					}
 
-					precount += Audio.Time_length;
+					precount += audio.Time_length;
 					if (options[30]==1) 
 						System.out.println("(5)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0f)) ));
 
@@ -10929,7 +10859,7 @@ public boolean processAudio(String[] args)
 				audioin.unread(frame);
 
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg(Resource.getString("audio.msg.summary.pre-insert", "" + ins[1], FramesToTime((int)ins[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.pre-insert", "" + ins[1], FramesToTime((int)ins[1],audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				continue readloop;
 			} 
@@ -10937,7 +10867,7 @@ public boolean processAudio(String[] args)
 
 			/****** check if frame write should paused *****/
 			if (vptsdata) { 
-				awrite = SyncCheck(time_counter,Audio.Time_length,timeline,frame_counter,v,w,vptsval,vtime,awrite);
+				awrite = SyncCheck(time_counter,audio.Time_length,timeline,frame_counter,v,w,vptsval,vtime,awrite);
 				v = (int)(options[49]>>>32);
 				w = (int)(0xffffffffL & options[49]);
 			}
@@ -10962,18 +10892,18 @@ public boolean processAudio(String[] args)
 				{
 					String str = sms.format(new java.util.Date((long)(time_counter / 90.0f)));
 
-					Msg(Resource.getString("audio.msg.source", Audio.MPA_displayHeader()) + " " + str);
+					Msg(Resource.getString("audio.msg.source", audio.MPA_displayHeader()) + " " + str);
 
 					//DM01102004 081.8.02 add
 					if (cBox[63].isSelected())
-						chapters.addChapter(str, Audio.MPA_displayHeader());
+						chapters.addChapter(str, audio.MPA_displayHeader());
 				}
 
 				else if (options[47] == 100) 
 					Msg(Resource.getString("audio.msg.source.max"));
 
 				else if (options[30]==1) 
-					System.out.println("=> src_audio: "+Audio.MPA_displayHeader()+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
+					System.out.println("=> src_audio: "+audio.MPA_displayHeader()+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
 
 				options[47]++;
 				yield();
@@ -10987,11 +10917,11 @@ public boolean processAudio(String[] args)
 				System.out.println(" x"+((x<ptspos.length-1)?x+"/"+ptsval[x+1]+"/"+ptspos[x+1]:"-"));
 
 			/****** pts for next frame!! ****/
-			timeline += Audio.Time_length;
+			timeline += audio.Time_length;
 
 			/****** delete CRC ****/
-			if (Audio.Layer>1 && options[9]==1) 
-				frame = Audio.MPA_deleteCRC(frame);
+			if (audio.Layer>1 && options[9]==1) 
+				frame = audio.MPA_deleteCRC(frame);
 
 			/****** copy frame header ****/
 			System.arraycopy(frame,0,header_copy,0,4);
@@ -11016,11 +10946,11 @@ public boolean processAudio(String[] args)
 				if (vptsdata && !awrite) 
 					continue readloop;
 
-				if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
+				if (audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
 					audiooutL.write(MPAD.decodeArray(frame));
 					if (options[10]>=4) 
 						audiooutR.write(MPAD.get2ndArray());
-				} else if (Audio.Layer>1 && options[10]>0) {
+				} else if (audio.Layer>1 && options[10]>0) {
 					newframes = MPAConverter.modifyframe(frame,options);
 					audiooutL.write(newframes[0]);
 					if (options[10]>=4) 
@@ -11039,25 +10969,25 @@ public boolean processAudio(String[] args)
 						riffw[0].RiffData(afc.RiffFormat(frame)); 
 				}
 				frame_counter++;
-				time_counter+=Audio.Time_length;
+				time_counter+=audio.Time_length;
 				continue readloop;
 			}
 
 			minSync=0; //DM151003 test 081.5++ simple sync
 
 			/******** frame is on pes packet corner *****/
-			if ( (double)Math.abs( ptsval[x+1] - timeline) < (double)Audio.Time_length/2.0 )  {
+			if ( (double)Math.abs( ptsval[x+1] - timeline) < (double)audio.Time_length/2.0 )  {
 				timeline=ptsval[x+1];
 				x++;
 
 				if (vptsdata && !awrite) 
 					continue readloop;
 
-				if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
+				if (audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
 					audiooutL.write(MPAD.decodeArray(frame));
 					if (options[10]>=4) 
 						audiooutR.write(MPAD.get2ndArray());
-				} else if (Audio.Layer>1 && options[10]>0) {
+				} else if (audio.Layer>1 && options[10]>0) {
 					newframes = MPAConverter.modifyframe(frame,options);
 					audiooutL.write(newframes[0]);
 					if (options[10]>=4) 
@@ -11076,7 +11006,7 @@ public boolean processAudio(String[] args)
 						riffw[0].RiffData(afc.RiffFormat(frame)); 
 				}
 				frame_counter++;
-				time_counter += Audio.Time_length;
+				time_counter += audio.Time_length;
 				continue readloop;
 			}
 
@@ -11093,8 +11023,8 @@ public boolean processAudio(String[] args)
 
 			if (slloop) {
 
-				silent_Frame[0]=new byte[Audio.Size_base];	//silence without padd, std
-				silent_Frame[1]=new byte[Audio.Size];		//silence with padd for 22.05, 44.1
+				silent_Frame[0]=new byte[audio.Size_base];	//silence without padd, std
+				silent_Frame[1]=new byte[audio.Size];		//silence with padd for 22.05, 44.1
 				for (int a=0;a<2;a++){
 					System.arraycopy(header_copy,0,silent_Frame[a],0,4);	//copy last header data
 					silent_Frame[a][1] |= 1;				//mark noCRC
@@ -11104,16 +11034,16 @@ public boolean processAudio(String[] args)
 				long[] ins = { (long)time_counter,0 };
 		
 				// solange nächster ptsval minus nächster framebeginn  ist größer der halben framezeit, füge stille ein
-				while ( ptsval[x+1] > (timeline-(Audio.Time_length/2.0)) ) {
+				while ( ptsval[x+1] > (timeline-(audio.Time_length/2.0)) ) {
 
 					if (vptsdata && w<vptsval.length) { 
 						/********059d******/
-						double ms1 = (double)(timeline-Audio.Time_length-vptsval[w+1]);
+						double ms1 = (double)(timeline-audio.Time_length-vptsval[w+1]);
 						double ms2 = (double)(time_counter-vtime[w+1]);
-						if ( (double)Math.abs(ms2) <= Audio.Time_length/2.0 ) {
+						if ( (double)Math.abs(ms2) <= audio.Time_length/2.0 ) {
 							awrite=false;
 							w+=2;
-						} else if ( (double)Math.abs(ms1) <= Audio.Time_length/2.0 ) {
+						} else if ( (double)Math.abs(ms1) <= audio.Time_length/2.0 ) {
 							awrite=false;
 							w+=2;
 						}
@@ -11122,8 +11052,8 @@ public boolean processAudio(String[] args)
 					// neu 047  
 					if (vptsdata && (v < vptsval.length)) {
 						if (!awrite && (double)Math.abs((time_counter - vtime[v]) -
-								(timeline-Audio.Time_length-vptsval[v]) ) <= (double)Audio.Time_length/2.0 ) {
-							double ms1 = (double)(timeline-Audio.Time_length-vptsval[v]);
+								(timeline-audio.Time_length-vptsval[v]) ) <= (double)audio.Time_length/2.0 ) {
+							double ms1 = (double)(timeline-audio.Time_length-vptsval[v]);
 							double ms2 = (double)(time_counter-vtime[v]);
  							msoff.setText(""+(int)(ms1/90)+"/"+(int)(ms2/90)+"/"+(int)((ms2-ms1)/90));
 							if (options[30]==1) 
@@ -11134,8 +11064,8 @@ public boolean processAudio(String[] args)
 					} 
 
 					if (vptsdata && (v < vptsval.length)) {
-						if ( (double)Math.abs(vptsval[v] - (timeline-Audio.Time_length)) <= ((double)Audio.Time_length/2.0) )  {
-							double ms1 = (double)(timeline-Audio.Time_length-vptsval[v]), ms2 = (double)(time_counter-vtime[v]);
+						if ( (double)Math.abs(vptsval[v] - (timeline-audio.Time_length)) <= ((double)audio.Time_length/2.0) )  {
+							double ms1 = (double)(timeline-audio.Time_length-vptsval[v]), ms2 = (double)(time_counter-vtime[v]);
 							msoff.setText(""+(int)(ms1/90)+"/"+(int)(ms2/90)+"/"+(int)((ms2-ms1)/90));
 							if (options[30]==1) 
 								System.out.println(" ß"+ms1+"/"+ms2+"/"+(ms2-ms1));
@@ -11145,7 +11075,7 @@ public boolean processAudio(String[] args)
 
 						//neu 047
 						if (awrite && (double)Math.abs((time_counter - vtime[v-2]) -
-								(timeline-Audio.Time_length-vptsval[v-2]) ) > (double)Audio.Time_length/2.0 ) {
+								(timeline-audio.Time_length-vptsval[v-2]) ) > (double)audio.Time_length/2.0 ) {
 							awrite=false;
 							v-=2;
 						}
@@ -11161,11 +11091,11 @@ public boolean processAudio(String[] args)
 						if (options[16]==1) {
 
 
-							if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
+							if (audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
 								audiooutL.write(MPAD.decodeArray(copyframe[0]));
 								if (options[10]>=4) 
 									audiooutR.write(MPAD.get2ndArray());
-							} else if (Audio.Layer>1 && options[10]>0) {
+							} else if (audio.Layer>1 && options[10]>0) {
 								newframes = MPAConverter.modifyframe(copyframe[0],options); 
 								audiooutL.write(newframes[0]);
 								if (options[10]>=4) 
@@ -11188,11 +11118,11 @@ public boolean processAudio(String[] args)
 							//if (padding_counter==padding) padding_counter=0;	//reset padd count
 							//else if (samplerate==0) padding_counter++;		//count padding
 
-							if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
+							if (audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
 								audiooutL.write(MPAD.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
 								if (options[10]>=4) 
 									audiooutR.write(MPAD.get2ndArray());
-							} else if (Audio.Layer>1 && options[10]>0) {
+							} else if (audio.Layer>1 && options[10]>0) {
 								newframes = MPAConverter.modifyframe(silent_Frame[(padding_counter>0)?0:1],options);
 								audiooutL.write(newframes[0]);
 								if (options[10]>=4) 
@@ -11213,7 +11143,7 @@ public boolean processAudio(String[] args)
 							}
 						}
 						frame_counter++;
-						time_counter+=Audio.Time_length;
+						time_counter+=audio.Time_length;
 						cc++;
 						ins[1]++;
 					}
@@ -11224,15 +11154,15 @@ public boolean processAudio(String[] args)
 						System.out.println(" x"+((x<ptspos.length-1)?x+"/"+ptsval[x+1]+"/"+ptspos[x+1]:"-"));
 					}
 
-					timeline += Audio.Time_length;
+					timeline += audio.Time_length;
 
 				} // end while
 
-				timeline -= Audio.Time_length;
+				timeline -= audio.Time_length;
 				slloop=false;
 				x++;
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg(Resource.getString("audio.msg.summary.insert", "" + ins[1], FramesToTime((int)ins[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.insert", "" + ins[1], FramesToTime((int)ins[1],audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				/*** reset PTS after inserting 081.5a ***/
 				timeline=ptsval[x];
@@ -11240,7 +11170,7 @@ public boolean processAudio(String[] args)
 				continue readloop;
 			}
 
-			if ( (actframe + Audio.Size) >= audiosize ) 
+			if ( (actframe + audio.Size) >= audiosize ) 
 				break readloop; 
 
 		}  // end while
@@ -11252,11 +11182,11 @@ public boolean processAudio(String[] args)
 
 		if (args[2].equals("mp") && options[38]==1 && vptsdata && awrite && (w < vptsval.length)) {
 
-			timeline += Audio.Time_length;
+			timeline += audio.Time_length;
 			addf[0]=(long)time_counter;
 
-			silent_Frame[0]=new byte[Audio.Size_base];	//silence without padd, std
-			silent_Frame[1]=new byte[Audio.Size];		//silence with padd for 22.05, 44.1
+			silent_Frame[0]=new byte[audio.Size_base];	//silence without padd, std
+			silent_Frame[1]=new byte[audio.Size];		//silence with padd for 22.05, 44.1
 			for (int a=0;a<2;a++){
 				System.arraycopy(header_copy,0,silent_Frame[a],0,4);	//copy last header data
 				silent_Frame[a][1] |= 1;				//mark noCRC
@@ -11267,14 +11197,14 @@ public boolean processAudio(String[] args)
 			while ( w < vptsval.length ) {
 
 				while ( vtime[w+1] > time_counter && 
-					(double)Math.abs(vtime[w+1]-time_counter) > (double)Audio.Time_length/2.0 )  {
+					(double)Math.abs(vtime[w+1]-time_counter) > (double)audio.Time_length/2.0 )  {
 
 					if (options[16]==1) {				//add_copy prev. frame
-						if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
+						if (audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
 							audiooutL.write(MPAD.decodeArray(copyframe[0]));
 							if (options[10]>=4) 
 								audiooutR.write(MPAD.get2ndArray());
-						} else if (Audio.Layer>1 && options[10]>0) {		//modify frame
+						} else if (audio.Layer>1 && options[10]>0) {		//modify frame
 							newframes = MPAConverter.modifyframe(copyframe[0],options); 
 							audiooutL.write(newframes[0]);
 							if (options[10]>=4) 
@@ -11300,11 +11230,11 @@ public boolean processAudio(String[] args)
 						//if (padding_counter==padding) padding_counter=0;	//reset padd count
 						//else if (samplerate==0) padding_counter++;		//count padding
 
-						if (Audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
+						if (audio.Layer>0 && cBox[50].isSelected()) { //DM30122003 081.6 int10 changed
 							audiooutL.write(MPAD.decodeArray(silent_Frame[(padding_counter>0)?0:1]));
 							if (options[10]>=4) 
 								audiooutR.write(MPAD.get2ndArray());
-						} else if (Audio.Layer>1 && options[10]>0) {		//modify frame
+						} else if (audio.Layer>1 && options[10]>0) {		//modify frame
 							newframes = MPAConverter.modifyframe(silent_Frame[(padding_counter>0)?0:1],options);
 							audiooutL.write(newframes[0]);
 							if (options[10]>=4) 
@@ -11325,22 +11255,22 @@ public boolean processAudio(String[] args)
 						}
 					}
 
-					timeline += Audio.Time_length;
+					timeline += audio.Time_length;
 					cd++;
 					frame_counter++;
 					addf[1]++;
-					time_counter += Audio.Time_length;
+					time_counter += audio.Time_length;
 					audiostatusLabel.setText(Resource.getString("audio.status.add")); //DM18022004 081.6 int17 changed
 
 					if (options[30]==1) {
 						System.out.println("(4)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0f)) ));
-						System.out.print(" t)"+(long)(timeline-Audio.Time_length)+" w)"+w);
+						System.out.print(" t)"+(long)(timeline-audio.Time_length)+" w)"+w);
 					}
 				}
 				w+=2;
 			}
 			w-=2;
-			timeline -= Audio.Time_length;
+			timeline -= audio.Time_length;
 			if (options[30]==1) 
 				System.out.println(" eot_video:"+(vptsval[w+1]/90)+"ms, eot_audio:"+((timeline)/90)+"ms                             ");
 
@@ -11356,20 +11286,20 @@ public boolean processAudio(String[] args)
 			// parse header
 			frame=new byte[1000];
 			audioin.read(frame);
-			Audio.WAV_parseHeader(frame,0);
-			audioin.unread(frame,Audio.Emphasis,1000-Audio.Emphasis);
-			Msg(Resource.getString("audio.msg.source", Audio.WAV_saveAnddisplayHeader()) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f))));
+			audio.WAV_parseHeader(frame,0);
+			audioin.unread(frame,audio.Emphasis,1000-audio.Emphasis);
+			Msg(Resource.getString("audio.msg.source", audio.WAV_saveAnddisplayHeader()) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f))));
 			layertype = 5;
 
-			n = Audio.Emphasis; //start of pcm data
-			long pcm_end_pos = Audio.Emphasis + Audio.Size_base; //whole sample data size
+			n = audio.Emphasis; //start of pcm data
+			long pcm_end_pos = audio.Emphasis + audio.Size_base; //whole sample data size
 			timeline = ptsval[0];
 
-			audiooutL.write(Audio.getRiffHeader());
+			audiooutL.write(audio.getRiffHeader());
 
 			long sample_bytes, skip_bytes;
 			long sample_pts, skip_pts;
-			int sample_size, read_size = 960000 / Audio.Mode;
+			int sample_size, read_size = 960000 / audio.Mode;
 
 			// Size/8 * Channel = bytes per sample
 			// 16bit/8 * 2  = 4
@@ -11393,7 +11323,7 @@ public boolean processAudio(String[] args)
 					if (vptsdata && vptsval[a] < timeline)  //jump back (not yet) or insert silent samples
 					{
 						sample_pts = vptsval[a+1] > timeline ? timeline - vptsval[a] : vptsval[a+1] - vptsval[a];
-						sample_bytes = (long)Math.round(1.0 * Audio.Sampling_frequency * sample_pts / 90000.0) * Audio.Mode;
+						sample_bytes = (long)Math.round(1.0 * audio.Sampling_frequency * sample_pts / 90000.0) * audio.Mode;
 
 						if (options[30]==1)
 							System.out.println("a "+sample_pts+"/"+sample_bytes+"/"+n+"/"+timeline);
@@ -11406,12 +11336,12 @@ public boolean processAudio(String[] args)
 							audiooutL.write(frame);
 						}
 						time_counter += sample_pts;
-						frame_counter += (sample_bytes / Audio.Mode);
+						frame_counter += (sample_bytes / audio.Mode);
 
 						if (vptsval[a+1] > timeline)
 						{
 							sample_pts = vptsval[a+1] - timeline;
-							sample_bytes = (long)Math.round(1.0 * Audio.Sampling_frequency * sample_pts / 90000.0) * Audio.Mode;
+							sample_bytes = (long)Math.round(1.0 * audio.Sampling_frequency * sample_pts / 90000.0) * audio.Mode;
 
 							if (options[30]==1)
 								System.out.println("b "+sample_pts+"/"+sample_bytes+"/"+n+"/"+timeline);
@@ -11427,16 +11357,16 @@ public boolean processAudio(String[] args)
 							n += sample_bytes;
 							timeline += sample_pts;
 							time_counter += sample_pts;
-							frame_counter += (sample_bytes / Audio.Mode);
+							frame_counter += (sample_bytes / audio.Mode);
 						}
 					}
 					else
 					{
 						skip_pts = vptsdata ? vptsval[a] - timeline : 0;
-						skip_bytes = (long)Math.round(1.0 * Audio.Sampling_frequency * skip_pts / 90000.0) * Audio.Mode;
+						skip_bytes = (long)Math.round(1.0 * audio.Sampling_frequency * skip_pts / 90000.0) * audio.Mode;
 
-						sample_pts = vptsdata ? vptsval[a+1] - vptsval[a] : (long)(1.0 * (Audio.Size_base / Audio.Mode) / Audio.Sampling_frequency * 90000.0);
-						sample_bytes = (long)Math.round(1.0 * Audio.Sampling_frequency * sample_pts / 90000.0) * Audio.Mode;
+						sample_pts = vptsdata ? vptsval[a+1] - vptsval[a] : (long)(1.0 * (audio.Size_base / audio.Mode) / audio.Sampling_frequency * 90000.0);
+						sample_bytes = (long)Math.round(1.0 * audio.Sampling_frequency * sample_pts / 90000.0) * audio.Mode;
 
 						for (long skip_pos = 0; skip_pos < skip_bytes; )
 							skip_pos += audioin.skip(skip_bytes - skip_pos);
@@ -11456,7 +11386,7 @@ public boolean processAudio(String[] args)
 						n += sample_bytes;
 						timeline += (skip_pts + sample_pts);
 						time_counter += sample_pts;
-						frame_counter += (sample_bytes / Audio.Mode);
+						frame_counter += (sample_bytes / audio.Mode);
 					}
 					if (options[30]==1)
 						System.out.println("(4w)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0f)) ));
@@ -11479,7 +11409,7 @@ public boolean processAudio(String[] args)
 
 
 	if (addf[1]>0) //DM17012004 081.6 int11 changed
-		Msg(Resource.getString("audio.msg.summary.add", "" + addf[1], FramesToTime((int)addf[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(addf[0]/90L)));
+		Msg(Resource.getString("audio.msg.summary.add", "" + addf[1], FramesToTime((int)addf[1],audio.Time_length)) + " " + sms.format(new java.util.Date(addf[0]/90L)));
 
 	audiostatusLabel.setText(Resource.getString("audio.status.finish")); //DM18022004 081.6 int17 changed
 
@@ -11511,7 +11441,7 @@ public boolean processAudio(String[] args)
 		}
 	}
 
-	if (cBox[50].isSelected() && Audio.Layer>1) {
+	if (cBox[50].isSelected() && audio.Layer>1) {
 		if (MPAD.WAVE) {
 			for (int g=1; g<4; g++)
 			{
@@ -11558,7 +11488,7 @@ public boolean processAudio(String[] args)
 	/*** make riff ***/
 	if (cBox[50].isSelected() && args[2].equals("mp") && MPAD.WAVE)
 	{
-		if (Audio.Layer>1)
+		if (audio.Layer>1)
 		{
 			MPAD.fillRIFF(newnameL);
 			if (options[10]>=4) 
@@ -11574,7 +11504,7 @@ public boolean processAudio(String[] args)
 	//DM07022004 081.6 int16 new
 	else if (cBox[50].isSelected() && args[2].equals("mp") && RButton[9].isSelected())
 	{
-		if (Audio.Layer>1)
+		if (audio.Layer>1)
 		{
 			MPAD.fillAiff(newnameL,(long)(time_counter/90.0f));
 			if (options[10]>=4) 
@@ -11616,7 +11546,7 @@ public boolean processAudio(String[] args)
 	}
 	else if (args[2].equals("wa")) //DM24012004 081.6 int11 add
 	{
-		Audio.fillRiffHeader(newnameL);
+		audio.fillRiffHeader(newnameL);
 	}
 
 
@@ -13613,7 +13543,7 @@ public void processLPCM(String[] args)
 	yield();
 
 
-	out.write( Audio.getRiffHeader()); //wav header
+	out.write( audio.getRiffHeader()); //wav header
 
 	readloop:
 	while ( count < size )
@@ -13669,13 +13599,13 @@ public void processLPCM(String[] args)
 		if (options[30]==1)
 			System.out.println(" "+(count-packetlength)+"/ "+packetlength+"/ "+source_pts);
 
-		if (Audio.LPCM_parseHeader(parse16, 10) < 0)
+		if (audio.LPCM_parseHeader(parse16, 10) < 0)
 			continue readloop;
 
-		if (Audio.LPCM_compareHeader() > 0 || samples == 0 )
+		if (audio.LPCM_compareHeader() > 0 || samples == 0 )
 			newformat=true;
 
-		Audio.saveHeader();
+		audio.saveHeader();
 
 		if (ptsdata)
 		{
@@ -13708,7 +13638,7 @@ public void processLPCM(String[] args)
 			if (newformat)
 			{
 				if (options[47] < 100) 
-					Msg(Resource.getString("lpcm.msg.source", Audio.LPCM_displayHeader()) + " " + sms.format(new java.util.Date( (long)(new_pts / 90.0f))));
+					Msg(Resource.getString("lpcm.msg.source", audio.LPCM_displayHeader()) + " " + sms.format(new java.util.Date( (long)(new_pts / 90.0f))));
 
 				else if (options[47] == 100) 
 					Msg(Resource.getString("lpcm.msg.source.max"));
@@ -13753,7 +13683,7 @@ public void processLPCM(String[] args)
 	else
 	{ 
 
-		Audio.fillRiffHeader(pcmfile); //update riffheader
+		audio.fillRiffHeader(pcmfile); //update riffheader
 		Msg(Resource.getString("msg.newfile") + " " + pcmfile);
 		options[39] += pcmfile1.length();
 
