@@ -41,43 +41,101 @@
  */
 
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-import java.util.Arrays.*;
-import java.beans.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import javax.swing.filechooser.*;
-import javax.swing.plaf.basic.BasicComboBoxUI;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.PushbackInputStream;
+import java.io.RandomAccessFile;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 public class X extends JPanel
 {
 
-static String version[] = { 
-	"ProjectX 0.81.8",
-	"30.08.2004",
-	"TEST PROJECT ONLY",
-	", User: " + System.getProperty("user.name")
-};
-
-static String terms[] = { 
-	" ",
-	"TERMS OF CONDITIONS:",
-	"(1) this is a free Java based demux utility.",
-	"(2) It is intended for educational purposes only, as a non-commercial test project.",
-	"(3) It may not be used otherwise. Most parts are only experimental.",
-	"(4) released under the terms of the GNU GPL",
-	"(5) there is NO WARRANTY of any kind attached to this software",
-	"(6) use it at your own risk and for your own education as it was meant",
-	" ",
-};
-
+/** Project-X resource bundle */
+public static final ResourceBundle RESOURCE = ResourceBundle.getBundle("pjxresources");
+	
 //DM18062004 081.7 int05 add
 RawInterface raw_interface = new RawInterface();
 static int loadSizeForward = 2560000;
@@ -235,24 +293,24 @@ public X()	//DM20032004 081.6 int18 changed
 //DM20032004 081.6 int18 moved
 protected void buildPopupMenu()
 {
-	popup = new JPopupMenu("what");
+	popup = new JPopupMenu(RESOURCE.getString("popup.what"));
 
-	JMenuItem menuitem_1 = popup.add("open Cut/Specials..");
+	JMenuItem menuitem_1 = popup.add(RESOURCE.getString("popup.cutspecials"));
 	menuitem_1.setActionCommand("openCut");
 	popup.addSeparator();
 
-	JMenuItem menuitem_2 = popup.add("add");
-	JMenuItem menuitem_3 = popup.add("remove");
+	JMenuItem menuitem_2 = popup.add(RESOURCE.getString("popup.add"));
+	JMenuItem menuitem_3 = popup.add(RESOURCE.getString("popup.remove"));
 	popup.addSeparator();
 
-	JMenuItem menuitem_4 = popup.add("rename");
+	JMenuItem menuitem_4 = popup.add(RESOURCE.getString("popup.rename"));
 	popup.addSeparator();
 
-	JMenuItem menuitem_5 = popup.add("open in Hexviewer..");
+	JMenuItem menuitem_5 = popup.add(RESOURCE.getString("popup.openhex"));
 	menuitem_5.setActionCommand("viewAsHex");
-	JMenuItem menuitem_6 = popup.add("patch Video Basics..");
+	JMenuItem menuitem_6 = popup.add(RESOURCE.getString("popup.patchbasics"));
 	menuitem_6.setActionCommand("editBasics");
-	JMenuItem menuitem_7 = popup.add("sendTo CL#3..");
+	JMenuItem menuitem_7 = popup.add(RESOURCE.getString("popup.sendtocl3"));
 	menuitem_7.setActionCommand("sendTo3");
 
 	popup.pack();
@@ -303,21 +361,21 @@ protected void buildMenus()
 //DM20032004 081.6 int18 add
 protected JMenu buildFileMenu()
 {
-	JMenu file = new JMenu("File");
+	JMenu file = new JMenu(RESOURCE.getString("file.menu"));
 
-	JMenuItem add = new JMenuItem("Add..");
+	JMenuItem add = new JMenuItem(RESOURCE.getString("file.add"));
 	add.setActionCommand("add");
 	add.setMnemonic('a');
 
-	JMenuItem remove = new JMenuItem("Remove");
+	JMenuItem remove = new JMenuItem(RESOURCE.getString("file.remove"));
 	remove.setActionCommand("remove");
 	remove.setMnemonic('r');
 
-	JMenuItem rename = new JMenuItem("Rename..");
+	JMenuItem rename = new JMenuItem(RESOURCE.getString("file.rename"));
 	rename.setActionCommand("rename");
 	rename.setMnemonic('n');
 
-	JMenuItem exit = new JMenuItem("Exit");
+	JMenuItem exit = new JMenuItem(RESOURCE.getString("file.exit"));
 	exit.setActionCommand("exit");
 	exit.setMnemonic('x');
 
@@ -339,9 +397,9 @@ protected JMenu buildFileMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildLanguageMenu()
 {
-	JMenu language = new JMenu("Language");
+	JMenu language = new JMenu(RESOURCE.getString("language.menu"));
 
-	JMenuItem item_eng = new JMenuItem("English");
+	JMenuItem item_eng = new JMenuItem(RESOURCE.getString("language.english"));
 	item_eng.setEnabled(false);
 
 	language.add(item_eng);
@@ -352,8 +410,8 @@ protected JMenu buildLanguageMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildSettingsMenu()
 {
-	JMenu setting = new JMenu("Settings");
-	JMenuItem open = new JMenuItem("Settings..");
+	JMenu setting = new JMenu(RESOURCE.getString("settings.menu"));
+	JMenuItem open = new JMenuItem(RESOURCE.getString("settings.settings"));
 	open.setMnemonic('s');
 
 	setting.add(open);
@@ -364,7 +422,7 @@ protected JMenu buildSettingsMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildGeneralMenu()
 {
-	JMenu general = new JMenu("General");
+	JMenu general = new JMenu(RESOURCE.getString("general.menu"));
 
 	ActionListener Al = new ActionListener()
 	{
@@ -408,30 +466,30 @@ protected JMenu buildGeneralMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildViewerMenu()
 {
-	JMenu preview = new JMenu("Options");
+	JMenu preview = new JMenu(RESOURCE.getString("options.menu"));
 
-	JMenuItem video = new JMenuItem("open VideoCut/Specials..");
+	JMenuItem video = new JMenuItem(RESOURCE.getString("options.opencutspecials"));
 	video.setActionCommand("openCut");
 	video.setMnemonic('v');
 
 	preview.add(video);
 	preview.addSeparator();
 
-	JMenuItem hex = new JMenuItem("open in HexViewer..");
+	JMenuItem hex = new JMenuItem(RESOURCE.getString("options.openhexview"));
 	hex.setActionCommand("viewAsHex");
 	hex.setMnemonic('h');
 
 	preview.add(hex);
 	preview.addSeparator();
 
-	JMenuItem basic = new JMenuItem("patch Video Basics..");
+	JMenuItem basic = new JMenuItem(RESOURCE.getString("options.pachtbasics"));
 	basic.setActionCommand("editBasics");
 	basic.setMnemonic('p');
 
 	preview.add(basic);
 	preview.addSeparator();
 
-	JMenuItem subtitle = new JMenuItem("show Subtitle Preview..");
+	JMenuItem subtitle = new JMenuItem(RESOURCE.getString("options.subtitlepreview"));
 	subtitle.setActionCommand("subpreview");
 	subtitle.setMnemonic('s');
 
@@ -440,7 +498,7 @@ protected JMenu buildViewerMenu()
 	//DM17042004 081.7 int02 add+
 	preview.addSeparator();
 
-	JMenuItem pagematrix = new JMenuItem("show TeletextPageMatrix..");
+	JMenuItem pagematrix = new JMenuItem(RESOURCE.getString("options.teletext"));
 	pagematrix.setActionCommand("pagematrix");
 	pagematrix.setMnemonic('t');
 
@@ -460,13 +518,13 @@ protected JMenu buildViewerMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildHelpMenu()
 {
-	JMenu help = new JMenu("Help");
+	JMenu help = new JMenu(RESOURCE.getString("help.menu"));
 
-	JMenuItem about = new JMenuItem("About..");
+	JMenuItem about = new JMenuItem(RESOURCE.getString("help.about"));
 	about.setActionCommand("about");
 	about.setMnemonic('a');
 
-	JMenuItem openHtml = new JMenuItem("Help..");
+	JMenuItem openHtml = new JMenuItem(RESOURCE.getString("help.help"));
 	openHtml.setActionCommand("helphtml");
 	openHtml.setMnemonic('h');
 
@@ -483,7 +541,7 @@ protected JMenu buildHelpMenu()
 //DM20032004 081.6 int18 add
 protected void showAboutBox()
 {
-	JOptionPane.showMessageDialog(this, terms, "About..", JOptionPane.INFORMATION_MESSAGE);
+	JOptionPane.showMessageDialog(this, getTerms(), RESOURCE.getString("about.title"), JOptionPane.INFORMATION_MESSAGE);
 }
 
 // file panel
@@ -4836,27 +4894,12 @@ public static void loadIDs(String nIDs) {  //DM28112003 081.5++
 
 
 public static void main(String[] args) {
-
+	
+	String[] version = getVersion();
 	System.out.println(version[0]+"/"+version[1]+" "+version[2]+" "+version[3]);
 	System.out.println();
 
-	System.out.println("quick CL usage: (Note: CL also loads the GUI components, without displaying)");
-	System.out.println("without options  ...to start the GUI");
-	System.out.println("[options] <sourcefile 1>...[<sourcefile x>]");
-	System.out.println(" ");
-	System.out.println("options: -dvx1..4, -c <x>, -o <x>, -n <x>, -l, -p <x>, -i <x>, -g");
-	System.out.println("-c [path]inifile  ...use that specified iniFile instead of the standard");
-	System.out.println("-dvx1  ...create a .d2v ProjectFile on demux");
-	System.out.println("-dvx2  ...create a .d2v ProjectFile + .ac3.wav (RIFF WAVE Header)");
-	System.out.println("-dvx3  ...create a .d2v ProjectFile + .mpa.wav (RIFF WAVE Header)");
-	System.out.println("-dvx4  ...create a .d2v ProjectFile + .ac3.wav + mpa.wav (RIFF WAVE Header)");
-	System.out.println("-o <path>  ...use that specified directory for output");
-	System.out.println("-n <filename>  ...use that specified filename for output");
-	System.out.println("-p <file>  ...use that text based file as cutpoint list");
-	System.out.println("-i <tokens>  ...use only these (P)IDs, separated by comma \",\"");
-	System.out.println("-g  ...display the GUI using all given CLI options");
-	System.out.println("-l  ...write the normal logfile");
-	System.out.println("use -dvx OR -c & -o/-n/-l/-p/-i/-g or no options (for std)");
+	System.out.println(RESOURCE.getString("usage"));
 	System.out.println(" ");
 	System.out.println("java.version\t"+System.getProperty("java.version"));
 	System.out.println("java.vendor\t"+System.getProperty("java.vendor"));
@@ -4872,9 +4915,7 @@ public static void main(String[] args) {
 
 	System.out.println();
 
-	for (int a=0;a<terms.length;a++) 
-		System.out.println(terms[a]);
-	System.out.println();
+	System.out.println(RESOURCE.getString("terms"));
 
 	//DM15022004 081.6 int17 new
 	StartUp startup = new StartUp();
@@ -5076,11 +5117,38 @@ public static void setButton(int button, boolean selected)
 	RButton[button].setSelected(selected);
 }
 
-//DM20032004 081.6 int18 add
+/**
+ * Returns the terms of condition
+ * 
+ * @return String[]
+ */
 public static String[] getTerms()
 {
-	return terms;
+	List terms = new ArrayList();
+	StringTokenizer st = new StringTokenizer(RESOURCE.getString("terms"), "\n");
+	while (st.hasMoreTokens())
+	{
+		terms.add(st.nextToken());
+	}
+	
+	return (String[])terms.toArray(new String[0]);
 }
+
+/**
+ * Returns the Version information
+ * 
+ * @return String[]
+ */
+public static String[] getVersion()
+{
+	return new String[]{ 
+		RESOURCE.getString("version.name"),
+		RESOURCE.getString("version.date"),
+		RESOURCE.getString("version.info"),
+		RESOURCE.getString("version.user") + System.getProperty("user.name")
+	};
+}
+
 
 /************
  * messages *
@@ -5341,7 +5409,7 @@ public void run() {
 
 	if (options[33]==-1) {
 		TextArea.setText(java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(new Date())+"  "+java.text.DateFormat.getTimeInstance(java.text.DateFormat.FULL).format(new Date()));
-		Msg(""+version[0]+" ("+version[1]+")");
+		Msg(""+RESOURCE.getString("version.name")+" ("+RESOURCE.getString("version.date")+")");
 		if (cBox[18].isSelected()) 
 			b = comBox[0].getItemCount();
 		else {
@@ -11394,7 +11462,7 @@ public void processTeletext(String[] args)
 				break;
 
 			case 7:
-				String[] STLhead = Teletext.getSTLHead(version[0]+" on "+java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(new java.util.Date(System.currentTimeMillis())));
+				String[] STLhead = Teletext.getSTLHead(RESOURCE.getString("version.name")+" on "+java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(new java.util.Date(System.currentTimeMillis())));
 				for (int a=0;a<STLhead.length;a++) 
 					print_buffer.println(STLhead[a]);
 				print_buffer.flush();

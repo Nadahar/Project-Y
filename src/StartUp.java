@@ -44,14 +44,14 @@ public class StartUp extends JFrame
 		{
 			String actName = e.getActionCommand();
 
-			if (actName.equals("I agree")) 
+			if (actName.equals("agree")) 
 			{
 				setVisible(false);
 				X.setButton(1, true);
 				X.setVisible0(true);
 			}
 
-			else if (actName.equals("I disagree (closing)")) 
+			else if (actName.equals("disagree")) 
 			{
 				System.exit(0);
 			}
@@ -60,7 +60,7 @@ public class StartUp extends JFrame
 
 	public StartUp()
 	{
-		open("X Startup,  loading components...");
+		open(X.RESOURCE.getString("startup.title"));
 	}
 
 	public StartUp(String title)
@@ -81,9 +81,11 @@ public class StartUp extends JFrame
 		for (int a=0; a<terms.length; a++) 
 			container.add(new JLabel(terms[a]));
 
-		disagree = new JRadioButton("I disagree (closing)");
+		disagree = new JRadioButton(X.RESOURCE.getString("terms.disagree"));
+		disagree.setActionCommand("disagree");
 		disagree.setOpaque(false);
-		agree = new JRadioButton("I agree");
+		agree = new JRadioButton(X.RESOURCE.getString("terms.agree"));
+		agree.setActionCommand("agree");
 		agree.setOpaque(false);
 		agree.setEnabled(false); //DM16042004 081.7 int01 add
 
