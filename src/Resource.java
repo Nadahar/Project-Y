@@ -107,7 +107,7 @@ public class Resource {
 					{
 						String lang = line.substring(5);
 						System.out.println("lang="+lang);
-						locale=new Locale(lang);
+						locale=new Locale(lang, "");
 						System.out.println("locale="+locale);
 						try {
 							resource = ResourceBundle.getBundle("pjxresources", locale);
@@ -391,7 +391,7 @@ public class Resource {
 								{
 									code = code.substring(0, pos);
 								}
-								Locale locale = new Locale(code);
+								Locale locale = new Locale(code, "");
 								locales.add(locale);
 							}
 						}
@@ -420,7 +420,7 @@ public class Resource {
 									{
 										code = code.substring(0, pos);
 									}
-									Locale locale = new Locale(code);
+									Locale locale = new Locale(code, "");
 									locales.add(locale);
 								} catch (Exception e) {
 									System.out.println(e);

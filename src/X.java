@@ -4993,7 +4993,7 @@ public static void main(String[] args) {
 		startup.show();
 
 	panel.buildGUI();
-	panel.iniload();
+	//panel.iniload();
 	
 	comchange=true;
 	UIManager.LookAndFeelInfo[] lfi =  UIManager.getInstalledLookAndFeels();
@@ -5002,6 +5002,8 @@ public static void main(String[] args) {
 		comBox[16].addItem(lfi[a].getClassName());
 
 	comchange=false;
+
+	panel.iniload();
 
 	frametitle = version[0]+"/"+version[1]+" "+version[2]+" "+version[3];
 	frame.setTitle(frametitle); //DM20032004 081.6 int18 changed
