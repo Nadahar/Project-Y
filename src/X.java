@@ -1937,50 +1937,50 @@ protected JPanel buildaudioPanel() {
 
 	JPanel audio0 = new JPanel();
 	audio0.setLayout( new ColumnLayout() );
-	audio0.setBorder( BorderFactory.createTitledBorder("audio conversions") );
+	audio0.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.audio.title1")) );
 
-	audio0.add(new JLabel("direct losless conversion (still limited"));
-	audio0.add(new JLabel("to MPEG-1, Layer2, 48kHz, 56..384kbps) :"));
-	audio0.setToolTipText("if conversion is chosen, bitrate & channelmode will be constant over the complete file");
+	audio0.add(new JLabel(Resource.getString("tab.audio.conv.tip1")));
+	audio0.add(new JLabel(Resource.getString("tab.audio.conv.tip2")));
+	audio0.setToolTipText(Resource.getString("tab.audio.conv.tip"));
 
 	Object conversionmode[] = { 
-		"no conversion",
-		"single to dual (ch.A=original, B=quiet)",
-		"single to stereo (L+R = original)",
-		"single to jointstereo (L+R = original)",
-		"split 2channel into 2 single (1=L,2=R)" 
+		Resource.getString("tab.audio.conv.mode0"),
+		Resource.getString("tab.audio.conv.mode1"),
+		Resource.getString("tab.audio.conv.mode2"),
+		Resource.getString("tab.audio.conv.mode3"),
+		Resource.getString("tab.audio.conv.mode4")
 	};
 	comBox[7] = new JComboBox(conversionmode);
-	comBox[7].setPreferredSize(new Dimension(250,20));
-	comBox[7].setMaximumSize(new Dimension(250,20));
+	comBox[7].setPreferredSize(new Dimension(270,20));
+	comBox[7].setMaximumSize(new Dimension(270,20));
 	audio0.add(comBox[7]);
-        comBox[7].addActionListener(mytabListener);
+	comBox[7].addActionListener(mytabListener);
 
 	audio0.add(new JLabel(" "));
 
-	cBox[50] = new JCheckBox("decode MPEG Layer1,2 to PCM:");
-	cBox[50].setToolTipText("MPEG-Audio Decoder (not for Layer3), std output into stereo pcm");
+	cBox[50] = new JCheckBox(Resource.getString("tab.audio.decode"));
+	cBox[50].setToolTipText(Resource.getString("tab.audio.decode.tip"));
 	cBox[50].setSelected(false);
-	cBox[50].setPreferredSize(new Dimension(250,20));
-	cBox[50].setMaximumSize(new Dimension(250,20));
+	cBox[50].setPreferredSize(new Dimension(270,20));
+	cBox[50].setMaximumSize(new Dimension(270,20));
 	audio0.add(cBox[50]);
         cBox[50].addActionListener(mytabListener);
 
 	Object resamplemode[] = { 
-		"no resampling",
-		"linear resampling 48kHz to 32kHz",
-		"linear resampling 48kHz to 44.1kHz" 
+		Resource.getString("tab.audio.decode.resample.mode0"),
+		Resource.getString("tab.audio.decode.resample.mode1"),
+		Resource.getString("tab.audio.decode.resample.mode2")
 	};
 	comBox[1] = new JComboBox(resamplemode);
-	comBox[1].setPreferredSize(new Dimension(250,20));
-	comBox[1].setMaximumSize(new Dimension(250,20));
+	comBox[1].setPreferredSize(new Dimension(270,20));
+	comBox[1].setMaximumSize(new Dimension(270,20));
 	audio0.add(comBox[1]);
 
 	//DM10042004 081.7 int01 changed
-	RButton[2] = new JRadioButton("normalize to % : ");
-	RButton[2].setPreferredSize(new Dimension(120,20));
-	RButton[2].setMaximumSize(new Dimension(120,20));
-	RButton[2].setToolTipText("normalize L+R equally, values from 0...100 are possible, std is 98%; forces restarts if necessary");
+	RButton[2] = new JRadioButton(Resource.getString("tab.audio.decode.normalize"));
+	RButton[2].setPreferredSize(new Dimension(180,20));
+	RButton[2].setMaximumSize(new Dimension(180,20));
+	RButton[2].setToolTipText(Resource.getString("tab.audio.decode.normalize.tip"));
 
 	exefield[8] = new JTextField("98");  //DM10042004 081.7 int01 changed
 	exefield[8].setPreferredSize(new Dimension(50,20));
@@ -1992,31 +1992,31 @@ protected JPanel buildaudioPanel() {
 	audio5.add(exefield[8]);
 	audio0.add(audio5);
 
-	RButton[3] = new JRadioButton("downmix and output as one channel");
-	RButton[3].setPreferredSize(new Dimension(250,20));
-	RButton[3].setMaximumSize(new Dimension(250,20));
-	RButton[3].setToolTipText("downmix stereo/2channel source to one single channel");
+	RButton[3] = new JRadioButton(Resource.getString("tab.audio.decode.downmix"));
+	RButton[3].setPreferredSize(new Dimension(270,20));
+	RButton[3].setMaximumSize(new Dimension(270,20));
+	RButton[3].setToolTipText(Resource.getString("tab.audio.decode.downmix.tip"));
 	audio0.add(RButton[3]);
 
-	RButton[4] = new JRadioButton("save in Motorola byte order");
+	RButton[4] = new JRadioButton(Resource.getString("tab.audio.decode.byteorder"));
 	RButton[4].setPreferredSize(new Dimension(250,20));
-	RButton[4].setMaximumSize(new Dimension(250,20));
-	RButton[4].setToolTipText("== MSB first, nonIntel type");
+	RButton[4].setMaximumSize(new Dimension(270,20));
+	RButton[4].setToolTipText(Resource.getString("tab.audio.decode.byteorder.tip"));
 	audio0.add(RButton[4]);
 
-	RButton[5] = new JRadioButton("add RIFF(RIFX) header to PCM (.wav)");
-	RButton[5].setPreferredSize(new Dimension(250,20));
-	RButton[5].setMaximumSize(new Dimension(250,20));
-	RButton[5].setToolTipText("PC standard");
+	RButton[5] = new JRadioButton(Resource.getString("tab.audio.decode.riff"));
+	RButton[5].setPreferredSize(new Dimension(270,20));
+	RButton[5].setMaximumSize(new Dimension(270,20));
+	RButton[5].setToolTipText(Resource.getString("tab.audio.decode.riff.tip"));
 	RButton[5].setSelected(true);
 	RButton[5].setActionCommand("riff");//DM07022004 081.6 int16 add
 	audio0.add(RButton[5]);
 
 	//DM07022004 081.6 int16 new
-	RButton[9] = new JRadioButton("add AIFF header to PCM (.aif)");
-	RButton[9].setPreferredSize(new Dimension(250,20));
-	RButton[9].setMaximumSize(new Dimension(250,20));
-	RButton[9].setToolTipText("Apple standard");
+	RButton[9] = new JRadioButton(Resource.getString("tab.audio.decode.aiff"));
+	RButton[9].setPreferredSize(new Dimension(270,20));
+	RButton[9].setMaximumSize(new Dimension(270,20));
+	RButton[9].setToolTipText(Resource.getString("tab.audio.decode.aiff.tip"));
 	RButton[9].setSelected(false);
 	RButton[9].setActionCommand("aiff");
 	audio0.add(RButton[9]);
@@ -2028,45 +2028,45 @@ protected JPanel buildaudioPanel() {
 
 	JPanel audio1 = new JPanel();
 	audio1.setLayout( new ColumnLayout() );
-	audio1.setBorder( BorderFactory.createTitledBorder("audio manipulations") );
+	audio1.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.audio.title2")) );
 
 	//DM10042004 081.7 int01 add
-	RButton[16] = new JRadioButton("check CRC of AC-3 / MPEG-Audio L1,2");
-	RButton[16].setToolTipText("if enabled, this ensures lowest erroneous output on costs of performance");
-	RButton[16].setPreferredSize(new Dimension(250,20));
-	RButton[16].setMaximumSize(new Dimension(250,20));
+	RButton[16] = new JRadioButton(Resource.getString("tab.audio.crc.check"));
+	RButton[16].setToolTipText(Resource.getString("tab.audio.crc.check.tip"));
+	RButton[16].setPreferredSize(new Dimension(270,20));
+	RButton[16].setMaximumSize(new Dimension(270,20));
 
-	cBox[1] = new JCheckBox("delete CRC in MPEG-Audio Layer1,2");
-	cBox[1].setToolTipText("if enabled, this may prevent some audio error messages");
-	cBox[1].setPreferredSize(new Dimension(250,20));
-	cBox[1].setMaximumSize(new Dimension(250,20));
+	cBox[1] = new JCheckBox(Resource.getString("tab.audio.crc.delete"));
+	cBox[1].setToolTipText(Resource.getString("tab.audio.crc.delete.tip"));
+	cBox[1].setPreferredSize(new Dimension(270,20));
+	cBox[1].setMaximumSize(new Dimension(270,20));
 
-	cBox[0] = new JCheckBox("fill gaps with prev. frame");
-	cBox[0].setToolTipText("instead of inserting silent frames; is std for AC-3, when ac3.bin doesn't contain a suitable silent frame for AC-3");
+	cBox[0] = new JCheckBox(Resource.getString("tab.audio.fillgaps"));
+	cBox[0].setToolTipText(Resource.getString("tab.audio.fillgaps.tip"));
 	cBox[0].setSelected(false);
 
-	cBox[20] = new JCheckBox("add frames");
-	cBox[20].setToolTipText("if audio ends before video, to reach the video time length");
+	cBox[20] = new JCheckBox(Resource.getString("tab.audio.add"));
+	cBox[20].setToolTipText(Resource.getString("tab.audio.add.tip"));
 	cBox[20].setSelected(true);
 
-	cBox[9] = new JCheckBox("patch 1st AC-3 header to 3/2 ch-mode");
-	cBox[9].setToolTipText("some AC-3 decoding software needs it to decode all channels even if there are less");
-	cBox[9].setPreferredSize(new Dimension(250,20));
-	cBox[9].setMaximumSize(new Dimension(250,20));
+	cBox[9] = new JCheckBox(Resource.getString("tab.audio.ac3.patch"));
+	cBox[9].setToolTipText(Resource.getString("tab.audio.ac3.patch.tip"));
+	cBox[9].setPreferredSize(new Dimension(270,20));
+	cBox[9].setMaximumSize(new Dimension(270,20));
 
-	cBox[10] = new JCheckBox("replace all non-3/2 AC-3 by 3/2lfe silence");
-	cBox[10].setToolTipText("enable, to mask unwanted 2/0 frames by 3/2 silence (48khz,448kbps, ac3.bin required)");
-	cBox[10].setPreferredSize(new Dimension(250,20));
-	cBox[10].setMaximumSize(new Dimension(250,20));
+	cBox[10] = new JCheckBox(Resource.getString("tab.audio.ac3.replace"));
+	cBox[10].setToolTipText(Resource.getString("tab.audio.ac3.replace.tip"));
+	cBox[10].setPreferredSize(new Dimension(270,20));
+	cBox[10].setMaximumSize(new Dimension(270,20));
 
-	cBox[12] = new JCheckBox("add RIFF WAVE header to AC-3 Audio");
-	cBox[12].setToolTipText("create a .wav file, using the AC-3 Wave Format (tag 0x2000) Header");
+	cBox[12] = new JCheckBox(Resource.getString("tab.audio.ac3.riff"));
+	cBox[12].setToolTipText(Resource.getString("tab.audio.ac3.riff.tip"));
 	cBox[12].setSelected(false);
 
 	JPanel audio3 = new JPanel();
 	audio3.setLayout(new BoxLayout(audio3, BoxLayout.X_AXIS));
-	audio3.setPreferredSize(new Dimension(250,20));
-	audio3.setMaximumSize(new Dimension(250,20));
+	audio3.setPreferredSize(new Dimension(270,20));
+	audio3.setMaximumSize(new Dimension(270,20));
 	audio3.add(cBox[0]);  
 	audio3.add(cBox[20]);  
 
@@ -2077,36 +2077,36 @@ protected JPanel buildaudioPanel() {
 	audio1.add(cBox[9]);  
 	audio1.add(cBox[12]);
 
-	cBox[4] = new JCheckBox("add RIFF WAVE header to MPEGAudio: ");
-	cBox[4].setToolTipText("create a .wav file, using the Broadcast (tag 0x0050) or ACM (0x0055) Wave Format Header");
+	cBox[4] = new JCheckBox(Resource.getString("tab.audio.mpa.riff"));
+	cBox[4].setToolTipText(Resource.getString("tab.audio.mpa.riff.tip"));
 	cBox[4].setSelected(false);
-	cBox[4].setPreferredSize(new Dimension(250,20));
-	cBox[4].setMaximumSize(new Dimension(250,20));
+	cBox[4].setPreferredSize(new Dimension(270,20));
+	cBox[4].setMaximumSize(new Dimension(270,20));
 	cBox[4].addActionListener(mytabListener);
 	audio1.add(cBox[4]);
 
 	JPanel audio2 = new JPanel();
 	audio2.setLayout(new BoxLayout(audio2, BoxLayout.X_AXIS));
-	audio2.setPreferredSize(new Dimension(250,20));
-	audio2.setMaximumSize(new Dimension(250,20));
+	audio2.setPreferredSize(new Dimension(270,20));
+	audio2.setMaximumSize(new Dimension(270,20));
 
-	RButton[14] = new JRadioButton("Layer1,2");
-	RButton[14].setToolTipText("Broadcast Wave Format (tag 0x0050), better for MPEG Layer 1 & 2 ");
+	RButton[14] = new JRadioButton(Resource.getString("tab.audio.mpa.riff.layer12"));
+	RButton[14].setToolTipText(Resource.getString("tab.audio.mpa.riff.layer12.tip"));
 	RButton[14].setSelected(true);
 
-	RButton[15] = new JRadioButton("Layer3");
-	RButton[15].setToolTipText("more usual ACM Wave Format (tag 0x0055), better for MPEG Layer 3 ");
+	RButton[15] = new JRadioButton(Resource.getString("tab.audio.mpa.riff.layer3"));
+	RButton[15].setToolTipText(Resource.getString("tab.audio.mpa.riff.layer3.tip"));
 
 	ButtonGroup audioGroup2 = new ButtonGroup();
 	audioGroup2.add(RButton[14]);
 	audioGroup2.add(RButton[15]);   
-	audio2.add(new JLabel("choose tag:  "));
+	audio2.add(new JLabel(Resource.getString("tab.audio.mpa.riff.tag")));
 	audio2.add(RButton[14]);
 	audio2.add(RButton[15]);
 	audio1.add(audio2);
 
-	cBox[51] = new JCheckBox("discard every xxx Audioframe: ");
-	cBox[51].setToolTipText("compress/pitch Audio (ES only)");
+	cBox[51] = new JCheckBox(Resource.getString("tab.audio.pitch"));
+	cBox[51].setToolTipText(Resource.getString("tab.audio.pitch.tip"));
 
 	JPanel audio4 = new JPanel();
 	audio4.setLayout(new BoxLayout(audio4, BoxLayout.X_AXIS));
@@ -2124,10 +2124,10 @@ protected JPanel buildaudioPanel() {
 
 	//DM30122003 081.6 int10 new
 
-	RButton[7] = new JRadioButton("allow spaces between frames (h.w.c.!)");
-	RButton[7].setPreferredSize(new Dimension(250,20));
-	RButton[7].setMaximumSize(new Dimension(250,20));
-	RButton[7].setToolTipText("only detect valid frame headers, but without verifying frame length! (resulting in psb. incorrect sizes)");
+	RButton[7] = new JRadioButton(Resource.getString("tab.audio.spaces"));
+	RButton[7].setPreferredSize(new Dimension(270,20));
+	RButton[7].setMaximumSize(new Dimension(270,20));
+	RButton[7].setToolTipText(Resource.getString("tab.audio.spaces.tip"));
 	RButton[7].setSelected(false);
 	audio1.add(RButton[7]);
 
@@ -7583,6 +7583,14 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 			//DM15072004 081.7 int06 changed
  			if ( push189[0] != 0x47 || (cBox[33].isSelected() && push189[188] != 0x47) )
 			{
+				//DM11092004 081.8.02 add, humax .vid workaround
+				if (!cBox[33].isSelected() && !cBox[53].isSelected() && push189[0] == 0x7F && push189[1] == 0x41 && push189[2] == 4 && push189[3] == (byte)0xFD)
+				{
+					in.skip(995);
+					count += 1184;
+					continue pvaloop;
+				}
+
 				//in.unread(push189,1,188);
 				//ghost 23012004 081.6 int11 changed
 				if (dontread && cBox[53].isSelected())
@@ -7596,8 +7604,10 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 
 				if (!cBox[3].isSelected() && !miss) //DM03112003 081.5++ info
 					Msg("!> missing sync. byte @ "+count);
+
 				miss=true;
 				count++;
+
 				continue pvaloop;
 			}
 			else if (dontread && cBox[53].isSelected())
@@ -8083,7 +8093,8 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 			progress.setStringPainted(true);
 
 			//Ghost23012004 081.6 int11 add
-			if ( cBox[53].isSelected() && rd < 189 && fsize >= (189-rd))
+			//DM04092004 081.8 int01 fix
+			if ( cBox[53].isSelected() && rd < 188 && fsize >= (189-rd))
 			{
 				dontread=true;
 				rd=in.read(push189, rd, 189-rd);
