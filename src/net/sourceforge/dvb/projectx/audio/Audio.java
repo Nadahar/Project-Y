@@ -351,10 +351,10 @@ public class Audio
 		", CM" , ", ME" , ", K:VI" , ", K:HI" , ", K:D" , ", K:C" , ", K:E" , ", K:VO"
 	};
 	String cmixlev[] = {
-		",cm-3.0dB",",cm-4.5dB",",cm-6.0dB",",cm-4.5dB"
+		"", ", cm-3.0dB", ", cm-4.5dB", ", cm-6.0dB", ", cm-4.5dB"
 	};
 	String surmixlev[] = {
-		",sm-3dB",",sm-6dB",",sm 0dB",",sm-6dB"
+		"", ", sm-3dB", ", sm-6dB", ", sm 0dB", ", sm-6dB"
 	};
 	String dsurmod[] = {
 		"" , ", notDS" , ", DS" , ""
@@ -374,37 +374,52 @@ public class Audio
 	};
 	
 	/*** parse ac3 Header ***/
-	public int AC3_parseHeader(byte[] frame, int pos) {
+	public int AC3_parseHeader(byte[] frame, int pos)
+	{
 	
-		if ( (0xFF&frame[pos])!=0xB || (0xFF&frame[pos+1])!=0x77 ) 
+		if ( (0xFF & frame[pos]) != 0xB || (0xFF & frame[pos+1]) != 0x77 ) 
 			return -1;
 	
 		ID = 0;
 		Emphasis = 0;
+		Private_bit = 0;
+
 		Protection_bit = 0 ^ 1;
-		if ( (Sampling_frequency = ac3_frequency_index[3&frame[pos+4]>>>6]) < 1) 
+
+		if ( (Sampling_frequency = ac3_frequency_index[3 & frame[pos+4]>>>6]) < 1) 
 			return -4;
-		if ( (Bitrate = ac3_bitrate_index[0x1F&frame[pos+4]>>>1]) < 1) 
+
+		if ( (Bitrate = ac3_bitrate_index[0x1F & frame[pos+4]>>>1]) < 1) 
 			return -3;
 	
-		Layer = 7&frame[pos+5];       //bsmod
-		Padding_bit = 1&frame[pos+4];
-		Private_bit = 0;
-		Mode = 7&frame[pos+6]>>>5;
+		Layer = 7 & frame[pos+5];       //bsmod
+		Padding_bit = 1 & frame[pos+4];
+		Mode = 7 & frame[pos+6]>>>5;
 		Mode_extension = 0;
 	
-		int mode = (0xFF&frame[pos+6])<<8 | (0xFF&frame[pos+7]);
+		int mode = (0xFF & frame[pos+6])<<8 | (0xFF & frame[pos+7]);
 		int skip=0;
-		if ( (Mode&1) >0 && Mode!=1)
+
+		if ( (Mode & 1) > 0 && Mode != 1)  // cmix
+		{
+			Emphasis = 1 + (3 & frame[pos+6]>>>3);
 			skip++;
-		if ( (Mode&4) > 0)
+		}
+
+		if ( (Mode & 4) > 0) //surmix
+		{
+			Private_bit = 1 + (3 & frame[pos+6]>>>(skip > 0 ? 1 : 3));
 			skip++;
-		if ( Mode==2 ){
-		        Mode_extension |= 6 & mode>>>(10-(2*skip));  //DS
+		}
+
+		if ( Mode == 2 )
+		{
+		        Mode_extension |= 6 & mode>>>(10 - (2 * skip));  //DS
 			skip++;
 		}
 	
-		switch (skip){  //lfe
+		switch (skip)
+		{  //lfe
 		case 0:
 		        Mode_extension |= 1 & mode>>>12;
 			break;
@@ -418,50 +433,61 @@ public class Audio
 		        Mode_extension |= 1 & mode>>>6;
 		}
 	
-		Channel = ac3_channels[Mode] + (1&Mode_extension);
+		Channel = ac3_channels[Mode] + (1 & Mode_extension);
 		Copyright = 0;
 		Original = 0;
-		Time_length = 138240000.0/Sampling_frequency;
-		Size = (Size_base = ac3_size_table[3&frame[pos+4]>>>6][0x1F&frame[pos+4]>>>1]) + Padding_bit*2;
+		Time_length = 138240000.0 / Sampling_frequency;
+		Size = (Size_base = ac3_size_table[3 & frame[pos+4]>>>6][0x1F & frame[pos+4]>>>1]) + Padding_bit * 2;
+
 		return 1;
 	}
 	
 	/*** parse ac3 Header ***/
-	public int AC3_parseNextHeader(byte[] frame, int pos) {
+	public int AC3_parseNextHeader(byte[] frame, int pos)
+	{
 	
-		if ( (0xFF&frame[pos])!=0xB || (0xFF&frame[pos+1])!=0x77 ) 
+		if ( (0xFF & frame[pos]) != 0xB || (0xFF & frame[pos+1]) != 0x77 ) 
 			return -1;
 	
 		nID = 0;
 		nEmphasis = 0;
+		nPrivate_bit = 0;
+
 		nProtection_bit = 0 ^ 1;
 	
-		if ( (nSampling_frequency = ac3_frequency_index[3&frame[pos+4]>>>6]) < 1) 
+		if ( (nSampling_frequency = ac3_frequency_index[3 & frame[pos+4]>>>6]) < 1) 
 			return -4;
 	
-		if ( (nBitrate = ac3_bitrate_index[0x1F&frame[pos+4]>>>1]) < 1) 
+		if ( (nBitrate = ac3_bitrate_index[0x1F & frame[pos+4]>>>1]) < 1) 
 			return -3;
 	
-		nLayer = 7&frame[pos+5];       //bsmod
-		nPadding_bit = 1&frame[pos+4];
-		nPrivate_bit = 0;
+		nLayer = 7 & frame[pos+5];       //bsmod
+		nPadding_bit = 1 & frame[pos+4];
 	
-		nMode = 7&frame[pos+6]>>>5;
-		int mode = (0xFF&frame[pos+6])<<8 | (0xFF&frame[pos+7]);
+		nMode = 7 & frame[pos+6]>>>5;
+		int mode = (0xFF & frame[pos+6])<<8 | (0xFF & frame[pos+7]);
 		int skip=0;
 	
-		if ( (nMode&1) >0 && nMode!=1)  //cmix
+		if ( (nMode & 1) > 0 && nMode != 1)
+		{  //cmix
+			nEmphasis = 1 + (3 & frame[pos+6]>>>3);
 			skip++;
-	
-		if ( (nMode&4) > 0)  //surmix
-			skip++;
-	
-		if ( nMode==2 ){  //DS mode
-		        nMode_extension |= 6 & mode>>>(10-(2*skip));  //DS
+		}
+
+		if ( (nMode & 4) > 0)
+		{  //surmix
+			nPrivate_bit = 1 + (3 & frame[pos+6]>>>(skip > 0 ? 1 : 3));
 			skip++;
 		}
 	
-		switch (skip){  //lfe
+		if ( nMode == 2 )
+		{  //DS mode
+		        nMode_extension |= 6 & mode>>>(10 - (2 * skip));  //DS
+			skip++;
+		}
+	
+		switch (skip)
+		{  //lfe
 		case 0:
 		        nMode_extension |= 1 & mode>>>12;
 			break;
@@ -475,39 +501,61 @@ public class Audio
 		        nMode_extension |= 1 & mode>>>6;
 		}
 	
-		nChannel = ac3_channels[Mode] + (1&nMode_extension);
+		nChannel = ac3_channels[Mode] + (1 & nMode_extension);
 		nCopyright = 0;
 		nOriginal = 0;
-		nTime_length = 138240000.0/nSampling_frequency;
-		nSize = (nSize_base = ac3_size_table[3&frame[pos+4]>>>6][5&frame[pos+4]>>>1]) + nPadding_bit*2;
+		nTime_length = 138240000.0 / nSampling_frequency;
+		nSize = (nSize_base = ac3_size_table[3 & frame[pos+4]>>>6][5 & frame[pos+4]>>>1]) + nPadding_bit * 2;
+
 		return 1;
 	}
 	
 	/*** verify current & last ac3 header ***/
-	public int AC3_compareHeader() {
-		if (lLayer!=Layer)
+	public int AC3_compareHeader()
+	{
+		if (lLayer != Layer)
 			return 1;
-		else if (lBitrate!=Bitrate) 
+
+		else if (lBitrate != Bitrate) 
 			return 2;
-		else if (lSampling_frequency!=Sampling_frequency) 
+
+		else if (lSampling_frequency != Sampling_frequency) 
 			return 3;
-		else if (lMode!=Mode)
+
+		else if (lMode != Mode)
 			return 4;
-		else if (lMode_extension!=Mode_extension)
+
+		else if (lMode_extension != Mode_extension)
 			return 5;
+
 		else 
 			return 0;
 	}
 	
 	/*** display last ac3 header ***/
-	public String AC3_displayHeader() {
-		return ("AC-3" + bsmod[lLayer] + ", " + acmod[lMode] + lfe[1][1&lMode_extension] + 
-			"(" + ac3_channels[lMode] + lfe[0][1&lMode_extension] + ")" + dsurmod[lMode_extension>>>1] + ", " + lSampling_frequency + "Hz, " + (lBitrate/1000) + "kbps");
+	public String AC3_displayHeader()
+	{
+		return ("AC-3" + bsmod[lLayer] + 
+			", " + 
+			acmod[lMode] + 
+			lfe[1][1 & lMode_extension] + 
+			"(" + 
+			ac3_channels[lMode] + 
+			lfe[0][1 & lMode_extension] + 
+			")" + 
+			dsurmod[lMode_extension>>>1] + 
+			cmixlev[lEmphasis] + 
+			surmixlev[lPrivate_bit] + 
+			", " + 
+			lSampling_frequency + "Hz, " + 
+			(lBitrate / 1000) + "kbps");
 	}
 	
 	/*** display last ac3 header ***/
-	public String AC3_saveAnddisplayHeader() {
+	public String AC3_saveAnddisplayHeader()
+	{
 		saveHeader();
+
 		return AC3_displayHeader();
 	}
 	
