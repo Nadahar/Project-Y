@@ -163,7 +163,6 @@ static String newOutName = "";
 
 static long[] options = new long[58];
 static byte[] headerrescue= new byte[1];
-Object[] aspratio = {"don't change","1.000 (1:1)","0.6735 (4:3)","0.7031 (16:9)","0.7615 (2.21:1)","0.8055","0.8437","0.9375","0.9815","1.0255","1.0695","1.1250","1.1575","1.2015" };
 Object[] DAR = {"1.000 (1:1)","0.6735 (4:3)","0.7031 (16:9)","0.7615 (2.21:1)","0.8055","0.8437","0.9375","0.9815","1.0255","1.0695","1.1250","1.1575","1.2015" };
 Object[] H_RESOLUTION = { "304","320","352","384","480","528","544","576","640","704","720" };
 
@@ -1286,11 +1285,11 @@ protected JPanel buildidPanel()
 
 	JPanel idPanel3 = new JPanel();
 	idPanel3.setLayout ( new ColumnLayout() );
-	idPanel3.setBorder( BorderFactory.createTitledBorder("specials 1") );
+	idPanel3.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.specials.title1")) );
 
 	//DM14052004 081.7 int02 moved++
-	JLabel gpts = new JLabel("global PTS shift (in hours): ");
-	gpts.setToolTipText("try 'auto or 1..13', in case of source A/V PTS mismatch, or if it doesn't demux audio (std=0)");
+	JLabel gpts = new JLabel(Resource.getString("tab.specials.ptsshift") + " ");
+	gpts.setToolTipText(Resource.getString("tab.specials.ptsshift.tip"));
 	comBox[27] = new JComboBox();
 	comBox[27].addItem("auto");
 	for (int d=0;d<14;d++) 
@@ -1308,78 +1307,74 @@ protected JPanel buildidPanel()
 	//DM14052004 081.7 int02 moved--
 
 	//DM14052004 081.7 int02 moved
-	cBox[48] = new JCheckBox("check for overlapping PVAs on read");
-	cBox[48].setPreferredSize(new Dimension(250,20));
-	cBox[48].setMaximumSize(new Dimension(250,20));
+	cBox[48] = new JCheckBox(Resource.getString("tab.specials.pva.overlap"));
+	cBox[48].setPreferredSize(new Dimension(270,20));
+	cBox[48].setMaximumSize(new Dimension(270,20));
 	cBox[48].setSelected(false);
-	cBox[48].setToolTipText("disable, if multiple PVA's of one recording has been recorded without overlap");
+	cBox[48].setToolTipText(Resource.getString("tab.specials.pva.overlap.tip"));
 	idPanel3.add(cBox[48]);
 
 	//DM14052004 081.7 int02 moved
-	cBox[28] = new JCheckBox("strictly PVA specs. for audio streams");
-	cBox[28].setToolTipText("enable to avoid audio detection errors; but on some recordings there are missing flags! (MD)");
-	cBox[28].setPreferredSize(new Dimension(250,20));
-	cBox[28].setMaximumSize(new Dimension(250,20));
+	cBox[28] = new JCheckBox(Resource.getString("tab.specials.pva.audio"));
+	cBox[28].setToolTipText(Resource.getString("tab.specials.pva.audio.tip"));
+	cBox[28].setPreferredSize(new Dimension(270,20));
+	cBox[28].setMaximumSize(new Dimension(270,20));
 	idPanel3.add(cBox[28]);
 
 	//DM14052004 081.7 int02 add
-	idPanel3.add(new JLabel("only TS related:"));
+	idPanel3.add(new JLabel(Resource.getString("tab.specials.ts")));
 
-	cBox[38] = new JCheckBox("ignore scrambled packets");
-	cBox[38].setToolTipText("disable, if you think the packets are not, but marked as scrambled");
-	cBox[38].setPreferredSize(new Dimension(250,20));
-	cBox[38].setMaximumSize(new Dimension(250,20));
+	cBox[38] = new JCheckBox(Resource.getString("tab.specials.ts.scramble"));
+	cBox[38].setToolTipText(Resource.getString("tab.specials.ts.scramble.tip"));
+	cBox[38].setPreferredSize(new Dimension(270,20));
+	cBox[38].setMaximumSize(new Dimension(270,20));
 	cBox[38].setSelected(true);
 	idPanel3.add(cBox[38]);
 
 	//DM15072004 081.7 int06 add
-	cBox[61] = new JCheckBox("enhanced search for open packets");
-	cBox[61].setToolTipText("enable, if the PID detection stops the search at unknown payload");
-	cBox[61].setPreferredSize(new Dimension(250,20));
-	cBox[61].setMaximumSize(new Dimension(250,20));
+	cBox[61] = new JCheckBox(Resource.getString("tab.specials.ts.search"));
+	cBox[61].setToolTipText(Resource.getString("tab.specials.ts.search.tip"));
+	cBox[61].setPreferredSize(new Dimension(270,20));
+	cBox[61].setMaximumSize(new Dimension(270,20));
 	idPanel3.add(cBox[61]);
 
 	//Ghost23012004 081.6 int11 add
 	//DM14052004 081.7 int02 moved
-	cBox[53] = new JCheckBox("join TS file segments (of Dreambox)");
-	cBox[53].setToolTipText("enable to join incomplete TS packets on boundaries of multiple file segments");
-	cBox[53].setPreferredSize(new Dimension(250,20));
-	cBox[53].setMaximumSize(new Dimension(250,20));
+	cBox[53] = new JCheckBox(Resource.getString("tab.specials.ts.join"));
+	cBox[53].setToolTipText(Resource.getString("tab.specials.ts.join.tip"));
+	cBox[53].setPreferredSize(new Dimension(270,20));
+	cBox[53].setMaximumSize(new Dimension(270,20));
 	idPanel3.add(cBox[53]);
 
-	cBox[41] = new JCheckBox("generate PMT stream dependent");
-	cBox[41].setToolTipText("disable, to generate an independent pre-defined PMT that also fit most streams");
+	cBox[41] = new JCheckBox(Resource.getString("tab.specials.ts.pmt"));
+	cBox[41].setToolTipText(Resource.getString("tab.specials.ts.pmt.tip"));
 	cBox[41].setSelected(true);
-	cBox[41].setPreferredSize(new Dimension(250,20));
-	cBox[41].setMaximumSize(new Dimension(250,20));
+	cBox[41].setPreferredSize(new Dimension(270,20));
+	cBox[41].setMaximumSize(new Dimension(270,20));
 	idPanel3.add(cBox[41]);
 
-	cBox[42] = new JCheckBox("generate info TTX service (test)");
-	cBox[42].setToolTipText("add a teletext service stream (Pid 0x9F) for status informations on page 150 (only @ autoPMT)"); //DM10032004 081.6 int18 changed
+	cBox[42] = new JCheckBox(Resource.getString("tab.specials.ts.ttx"));
+	cBox[42].setToolTipText(Resource.getString("tab.specials.ts.ttx.tip")); //DM10032004 081.6 int18 changed
 	cBox[42].setSelected(false);
-	cBox[42].setPreferredSize(new Dimension(250,20));
-	cBox[42].setMaximumSize(new Dimension(250,20));
+	cBox[42].setPreferredSize(new Dimension(270,20));
+	cBox[42].setMaximumSize(new Dimension(270,20));
 	idPanel3.add(cBox[42]);
 
-	/**
-	cBox[35] = new JCheckBox("add Topfield TF4000 header to TS"); //DM10032004 081.6 int18 changed
-	cBox[35].setSelected(false);
-	cBox[35].setPreferredSize(new Dimension(250,20));
-	cBox[35].setMaximumSize(new Dimension(250,20));
-	//idPanel3.add(cBox[35]);
-	**/
-
 	//DM09082004 081.7 int08 add
-	Object ts_headers[] = { "no additional TS header", "add TF4000 header to TS", "add TF5000 header to TS" };
+	Object ts_headers[] = { 
+		Resource.getString("tab.specials.ts.header0"), 
+		Resource.getString("tab.specials.ts.header1"), 
+		Resource.getString("tab.specials.ts.header2") 
+	};
 	comBox[20] = new JComboBox(ts_headers);
-	comBox[20].setPreferredSize(new Dimension(250,22));
-	comBox[20].setMaximumSize(new Dimension(250,22));
+	comBox[20].setPreferredSize(new Dimension(270,22));
+	comBox[20].setMaximumSize(new Dimension(270,22));
 	idPanel3.add(comBox[20]);
 
-	cBox[37] = new JCheckBox("TF-header: set AC3 as main AudioTrack");
+	cBox[37] = new JCheckBox(Resource.getString("tab.specials.ts.mainac3"));
 	cBox[37].setSelected(false);
-	cBox[37].setPreferredSize(new Dimension(250,20));
-	cBox[37].setMaximumSize(new Dimension(250,20));
+	cBox[37].setPreferredSize(new Dimension(270,20));
+	cBox[37].setMaximumSize(new Dimension(270,20));
 	idPanel3.add(cBox[37]);
 
 	idbigPanel.add(idPanel3);
@@ -1387,78 +1382,78 @@ protected JPanel buildidPanel()
 
 	JPanel idPanel2 = new JPanel();
 	idPanel2.setLayout ( new ColumnLayout() );
-	idPanel2.setBorder( BorderFactory.createTitledBorder("specials 2") );
+	idPanel2.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.specials.title2")) );
 
 	//DM14052004 081.7 int02 moved
 	//DM15072004 081.7 int06 changed
-	cBox[33] = new JCheckBox("get only enclosed PES/TS packets");
-	cBox[33].setToolTipText("disable, if no packets were found (on packet end, the next mpeg-startcode is missing, e.g. on Images)");
+	cBox[33] = new JCheckBox(Resource.getString("tab.specials.misc.enclosed"));
+	cBox[33].setToolTipText(Resource.getString("tab.specials.misc.enclosed.tip"));
 	cBox[33].setSelected(true);
-	cBox[33].setPreferredSize(new Dimension(250,20));
-	cBox[33].setMaximumSize(new Dimension(250,20));
+	cBox[33].setPreferredSize(new Dimension(270,20));
+	cBox[33].setMaximumSize(new Dimension(270,20));
 	idPanel2.add(cBox[33]);
 
-	cBox[49] = new JCheckBox("concatenate different recordings");
-	cBox[49].setPreferredSize(new Dimension(250,20));
-	cBox[49].setMaximumSize(new Dimension(250,20));
+	cBox[49] = new JCheckBox(Resource.getString("tab.specials.misc.concatenate"));
+	cBox[49].setPreferredSize(new Dimension(270,20));
+	cBox[49].setMaximumSize(new Dimension(270,20));
 	cBox[49].setSelected(true);
-	cBox[49].setToolTipText("enable, if you want merge equal types of PVA, MPEG or VDR files from different recording times");
+	cBox[49].setToolTipText(Resource.getString("tab.specials.misc.concatenate.tip"));
 	idPanel2.add(cBox[49]);
 
-	cBox[16] = new JCheckBox("rename all MPEG-Audios to *.mpa");
-	cBox[16].setToolTipText("instead of using the Layer number -> .mp1, .mp2, .mp3");
+	cBox[16] = new JCheckBox(Resource.getString("tab.specials.misc.renameaudio"));
+	cBox[16].setToolTipText(Resource.getString("tab.specials.misc.renameaudio.tip"));
 	cBox[16].addActionListener(mytabListener);
-	cBox[16].setPreferredSize(new Dimension(250,20));
-	cBox[16].setMaximumSize(new Dimension(250,20));
+	cBox[16].setPreferredSize(new Dimension(270,20));
+	cBox[16].setMaximumSize(new Dimension(270,20));
 	idPanel2.add(cBox[16]);
 
-	cBox[32] = new JCheckBox("rename all MPEG-Videos to *.mpv");
-	cBox[32].setToolTipText("instead of using the MPEG type -> .m1v, .m2v");
+	cBox[32] = new JCheckBox(Resource.getString("tab.specials.misc.renamevideo"));
+	cBox[32].setToolTipText(Resource.getString("tab.specials.misc.renamevideo.tip"));
 	cBox[32].setSelected(true);
-	cBox[32].setPreferredSize(new Dimension(250,20));
-	cBox[32].setMaximumSize(new Dimension(250,20));
+	cBox[32].setPreferredSize(new Dimension(270,20));
+	cBox[32].setMaximumSize(new Dimension(270,20));
 	idPanel2.add(cBox[32]);
 
-	cBox[24] = new JCheckBox("use only first Audio PTS for sync");
-	cBox[24].setToolTipText("counts the audiotime from its framelengths after syncing the A/V-startpoint, skip errors");
-	cBox[24].setPreferredSize(new Dimension(250,20));
-	cBox[24].setMaximumSize(new Dimension(250,20));
+	cBox[24] = new JCheckBox(Resource.getString("tab.specials.audio.ignoreerror"));
+	cBox[24].setToolTipText(Resource.getString("tab.specials.audio.ignoreerror.tip"));
+	cBox[24].setPreferredSize(new Dimension(270,20));
+	cBox[24].setMaximumSize(new Dimension(270,20));
 	idPanel2.add(cBox[24]);
 
 	//DM151003 081.5++ simplesync
-	cBox[15] = new JCheckBox("limit points of Audio PTS for sync");
-	cBox[15].setToolTipText("better than 1st Audio PTS only (as above), Audio may keep in sync");
-	cBox[15].setPreferredSize(new Dimension(250,20));
-	cBox[15].setMaximumSize(new Dimension(250,20));
+	cBox[15] = new JCheckBox(Resource.getString("tab.specials.audio.limitpts"));
+	cBox[15].setToolTipText(Resource.getString("tab.specials.audio.limitpts.tip"));
+	cBox[15].setPreferredSize(new Dimension(270,20));
+	cBox[15].setMaximumSize(new Dimension(270,20));
 	idPanel2.add(cBox[15]);
 
-	cBox[39] = new JCheckBox("ignore Video errors after 1st PTS/GOP");
-	cBox[39].setToolTipText("enable, if probably only Video PTS errors occurs (Pics seems ok)");
+	cBox[39] = new JCheckBox(Resource.getString("tab.specials.video.ignoreerror"));
+	cBox[39].setToolTipText(Resource.getString("tab.specials.video.ignoreerror.tip"));
 	cBox[39].setSelected(false);
-	cBox[39].setPreferredSize(new Dimension(250,20));
-	cBox[39].setMaximumSize(new Dimension(250,20));
+	cBox[39].setPreferredSize(new Dimension(270,20));
+	cBox[39].setMaximumSize(new Dimension(270,20));
 	idPanel2.add(cBox[39]);
 
 	//DM14052004 081.7 int02 add
-	idPanel2.add(new JLabel("only to'XYZ' conversions related:"));
+	idPanel2.add(new JLabel(Resource.getString("tab.specials.conv")));
 
-	cBox[23] = new JCheckBox("ensure 1st PES-packet start with video");
-	cBox[23].setToolTipText("enable, if some players have problems if it's not;  disable for audio-only conversions");
+	cBox[23] = new JCheckBox(Resource.getString("tab.specials.conv.videostart"));
+	cBox[23].setToolTipText(Resource.getString("tab.specials.conv.videostart.tip"));
 	cBox[23].setSelected(true);
 	cBox[23].setPreferredSize(new Dimension(270,20));
 	cBox[23].setMaximumSize(new Dimension(270,20));
 	idPanel2.add(cBox[23]);
 
 	//DM14052004 081.7 int02 moved++
-	cBox[36] = new JCheckBox("generate PCR/SCR from PTS");
+	cBox[36] = new JCheckBox(Resource.getString("tab.specials.conv.pcr"));
 	cBox[36].setSelected(true);
-	cBox[36].setToolTipText("specify the PCR-Offset, DVB needs more than DVD, high bitrates needs more than low");
+	cBox[36].setToolTipText(Resource.getString("tab.specials.conv.pcr.tip"));
 	cBox[36].setPreferredSize(new Dimension(192,20));
 	cBox[36].setMaximumSize(new Dimension(192,20));
 
-	cBox[46] = new JCheckBox("incTScnt");
+	cBox[46] = new JCheckBox(Resource.getString("tab.specials.conv.count"));
 	cBox[46].setSelected(false);
-	cBox[46].setToolTipText("increment TS-packet counter even without payload(PCR-only); non-conform, but sometimes necessary!");
+	cBox[46].setToolTipText(Resource.getString("tab.specials.conv.count.tip"));
 	cBox[46].setPreferredSize(new Dimension(80,20));
 	cBox[46].setMaximumSize(new Dimension(80,20));
 
@@ -1492,11 +1487,11 @@ protected JPanel buildsplitPanel()
 
 	JPanel op1 = new JPanel();
 	op1.setLayout( new ColumnLayout() );
-	op1.setBorder( BorderFactory.createTitledBorder("split output") );
+	op1.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.out.split")) );
 
-	cBox[5] = new JCheckBox("split @ appr. xxx MB");
+	cBox[5] = new JCheckBox(Resource.getString("tab.out.splitat"));
 	cBox[5].setSelected(false);
-	cBox[5].setToolTipText("edit field for another size; currently, split size is referred to written videofilesize! (mpv)");
+	cBox[5].setToolTipText(Resource.getString("tab.out.splitat.tip"));
 
 	Object[] es = { "650","700","735","792","2000","4700" };
 	comBox[2] = new JComboBox(es);
@@ -1513,15 +1508,18 @@ protected JPanel buildsplitPanel()
 	sp1.add(comBox[2]);  
 	op1.add(sp1);
 
-	Object[] so = { "no overlap","1 MB","2 MB","3 MB","4 MB","5 MB","6 MB","7 MB","8 MB","9 MB","10 MB" };
+	Object[] so = { 
+		Resource.getString("tab.out.split.nooverlap"),
+		"1 MB","2 MB","3 MB","4 MB","5 MB","6 MB","7 MB","8 MB","9 MB","10 MB"
+	};
 	comBox[25] = new JComboBox(so);
 	comBox[25].setMaximumRowCount(6);
-	comBox[25].setPreferredSize(new Dimension(110,22));
-	comBox[25].setMaximumSize(new Dimension(110,22));
+	comBox[25].setPreferredSize(new Dimension(180,22));
+	comBox[25].setMaximumSize(new Dimension(180,22));
 	comBox[25].setSelectedIndex(0);
 	op1.add(comBox[25]);
-	op1.add(new JLabel("if enabled, each collection will be splitted!"));
-	op1.add(new JLabel("disabled, if main source doesn't contain video"));
+	op1.add(new JLabel(Resource.getString("tab.out.split.tip1")));
+	op1.add(new JLabel(Resource.getString("tab.out.split.tip2")));
 
 	splits.add(op1);
 
@@ -1532,21 +1530,21 @@ protected JPanel buildsplitPanel()
 	// main id panel disabled with 081.7 int06 
  	// is now replaced by a global stream type 'enabler'
 	JPanel idPanel = new JPanel();
-	idPanel.setBorder(BorderFactory.createTitledBorder("stream types to process"));
+	idPanel.setBorder(BorderFactory.createTitledBorder(Resource.getString("tab.out.streamtypes")));
 	idPanel.setLayout(new BoxLayout(idPanel, BoxLayout.X_AXIS));
-	idPanel.setToolTipText("de-/select stream types you want to process (does not applies to ES as input)");
+	idPanel.setToolTipText(Resource.getString("tab.out.streamtypes.tip"));
 
-	cBox[55] = new JCheckBox("Mpg Video");
+	cBox[55] = new JCheckBox(Resource.getString("tab.out.streamtypes.mpgvideo"));
 	cBox[55].setSelected(true);
-	cBox[56] = new JCheckBox("Mpg Audio");
+	cBox[56] = new JCheckBox(Resource.getString("tab.out.streamtypes.mpgaudio"));
 	cBox[56].setSelected(true);
-	cBox[57] = new JCheckBox("AC3/DTS Audio");
+	cBox[57] = new JCheckBox(Resource.getString("tab.out.streamtypes.ac3audio"));
 	cBox[57].setSelected(true);
-	cBox[58] = new JCheckBox("LPCM Audio");
+	cBox[58] = new JCheckBox(Resource.getString("tab.out.streamtypes.pcmaudio"));
 	cBox[58].setSelected(true);
-	cBox[59] = new JCheckBox("Teletext");
+	cBox[59] = new JCheckBox(Resource.getString("tab.out.streamtypes.ttx"));
 	cBox[59].setSelected(true);
-	cBox[60] = new JCheckBox("Subpicture");
+	cBox[60] = new JCheckBox(Resource.getString("tab.out.streamtypes.subpic"));
 	cBox[60].setSelected(true);
 
 	JPanel panel_1 = new JPanel();
@@ -1570,14 +1568,14 @@ protected JPanel buildsplitPanel()
 
 	JPanel op4 = new JPanel();
 	op4.setLayout( new ColumnLayout() );
-	op4.setBorder( BorderFactory.createTitledBorder("write options for conversion & demux") );
-	op4.setToolTipText("that affects also the 'to VDR/MPG/PVA/TS' function to include Audio and/or Video ES");
+	op4.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.out.write")) );
+	op4.setToolTipText(Resource.getString("tab.out.write.tip"));
 
-	cBox[6] = new JCheckBox("write all video data");
+	cBox[6] = new JCheckBox(Resource.getString("tab.out.write.video"));
 	cBox[6].setSelected(true);
 	cBox[6].addActionListener(mytabListener);
 
-	cBox[7] = new JCheckBox("write all other data"); //DM13042004 081.7 int01 changed
+	cBox[7] = new JCheckBox(Resource.getString("tab.out.write.audio")); //DM13042004 081.7 int01 changed
 	cBox[7].setSelected(true);
 	cBox[7].addActionListener(mytabListener);
 
@@ -1590,7 +1588,7 @@ protected JPanel buildsplitPanel()
 
 	comBox[21] = new JComboBox(fs);
 	comBox[21].setSelectedIndex(0);
-	op6.add(new JLabel("quick demux/convert of 1st xx MB :"));
+	op6.add(new JLabel(Resource.getString("tab.out.write.infoscan")));
 	op6.add(comBox[21]);
 
 	op4.add(op6);
@@ -1600,11 +1598,11 @@ protected JPanel buildsplitPanel()
 
 	JPanel op5 = new JPanel();
 	op5.setLayout( new ColumnLayout() );
-	op5.setBorder( BorderFactory.createTitledBorder("additional time offset") );
+	op5.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.out.addoffset")) );
 
-	cBox[8] = new JCheckBox("enable offset");
+	cBox[8] = new JCheckBox(Resource.getString("tab.out.addoffset.enable"));
 	cBox[8].setSelected(false);
-	cBox[8].setToolTipText("original start of stream will be moved with the given offset");
+	cBox[8].setToolTipText(Resource.getString("tab.out.addoffset.enable.tip"));
 
 	comBox[8] = new JComboBox();
 	comBox[8].setMaximumRowCount(1);
@@ -1617,8 +1615,8 @@ protected JPanel buildsplitPanel()
 
 	op5.add(cBox[8]);
 	op5.add(comBox[8]);
-	op5.add(new JLabel("enter time offset in milliseconds, hit enter"));
-	op5.add(new JLabel("affects all streams, which follows on a video"));
+	op5.add(new JLabel(Resource.getString("tab.out.addoffset.tip1")));
+	op5.add(new JLabel(Resource.getString("tab.out.addoffset.tip2")));
 
 	splits.add(op5);
 
@@ -1634,81 +1632,87 @@ protected JPanel buildvideo1Panel() {
 	//DM30122003 081.6 int10 moved+
 	JPanel video2Panel = new JPanel();
 	video2Panel.setLayout( new ColumnLayout() );
-	video2Panel.setBorder( BorderFactory.createTitledBorder("video corrections") );
+	video2Panel.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.video.title1")) );
 
 	JPanel vbvsPanel = new JPanel();
 	vbvsPanel.setLayout(new BoxLayout(vbvsPanel, BoxLayout.X_AXIS));
-	vbvsPanel.setToolTipText("sometimes it's better to define the maximum size");
+	vbvsPanel.setToolTipText(Resource.getString("tab.video.vbvbuf.tip"));
 
 	comBox[4] = new JComboBox();
-	comBox[4].addItem("don't change");
-	comBox[4].addItem("maximum (112*16384)");
+	comBox[4].addItem(Resource.getString("tab.video.keep"));
+	comBox[4].addItem(Resource.getString("tab.video.vbvbuf.val1"));
 	comBox[4].setSelectedIndex(0);
 	comBox[4].setPreferredSize(new Dimension(150,20));
 	comBox[4].setMaximumSize(new Dimension(150,20));
-	vbvsPanel.add(new JLabel ("vbv buffer:  "));
+	vbvsPanel.add(new JLabel (Resource.getString("tab.video.vbvbuf")));
 	vbvsPanel.add(comBox[4]);
 
 	JPanel vbvdPanel = new JPanel();
 	vbvdPanel.setLayout(new BoxLayout(vbvdPanel, BoxLayout.X_AXIS));
-	vbvdPanel.setToolTipText("max. time recommended");
+	vbvdPanel.setToolTipText(Resource.getString("tab.video.vbvdelay.tip"));
 	comBox[5] = new JComboBox();
-	comBox[5].addItem("don't change");
-	comBox[5].addItem("max. time (0xFFFF)");
+	comBox[5].addItem(Resource.getString("tab.video.keep"));
+	comBox[5].addItem(Resource.getString("tab.video.vbvdelay.val1"));
 	comBox[5].setSelectedIndex(1);
 	comBox[5].setPreferredSize(new Dimension(150,20));
 	comBox[5].setMaximumSize(new Dimension(150,20));
-	vbvdPanel.add(new JLabel ("vbv delay:  "));
+	vbvdPanel.add(new JLabel (Resource.getString("tab.video.vbvdelay")));
 	vbvdPanel.add(comBox[5]);
 
 	JPanel aspPanel = new JPanel();
 	aspPanel.setLayout(new BoxLayout(aspPanel, BoxLayout.X_AXIS));
-	aspPanel.setToolTipText("change if you mean it's necessary");
+	aspPanel.setToolTipText(Resource.getString("tab.video.ratio.tip"));
+
+	Object[] aspratio = {
+		Resource.getString("tab.video.keep"),
+		"1.000 (1:1)","0.6735 (4:3)","0.7031 (16:9)","0.7615 (2.21:1)","0.8055","0.8437","0.9375","0.9815","1.0255","1.0695","1.1250","1.1575","1.2015"
+	};
+
 	comBox[6] = new JComboBox(aspratio);
 	comBox[6].setSelectedIndex(0);
 	comBox[6].setPreferredSize(new Dimension(150,20));
 	comBox[6].setMaximumSize(new Dimension(150,20));
-	aspPanel.add(new JLabel ("aspect ratio: "));
+	aspPanel.add(new JLabel (Resource.getString("tab.video.ratio")));
 	aspPanel.add(comBox[6]);
 
-	cBox[13] = new JCheckBox("add sequence end code");
+	cBox[13] = new JCheckBox(Resource.getString("tab.video.endcode"));
 	cBox[13].setPreferredSize(new Dimension(250,20));
 	cBox[13].setMaximumSize(new Dimension(250,20));
 	cBox[13].setSelected(true);
-	cBox[13].setToolTipText("enable for a conform MPEG sequence end");
+	cBox[13].setToolTipText(Resource.getString("tab.video.endcode.tip"));
 
-	cBox[31] = new JCheckBox("patch all frames to progressive");
+	cBox[31] = new JCheckBox(Resource.getString("tab.video.patch.progr"));
 	cBox[31].setPreferredSize(new Dimension(250,20));
 	cBox[31].setMaximumSize(new Dimension(250,20));
 	cBox[31].setActionCommand("prog1");
 	cBox[31].setSelected(false);
-	cBox[31].setToolTipText("set the progressive bits to reduce the field number");
+	cBox[31].setToolTipText(Resource.getString("tab.video.patch.progr.tip"));
 
-	cBox[44] = new JCheckBox("patch all frames to interlaced");
+	cBox[44] = new JCheckBox(Resource.getString("tab.video.patch.interlaced"));
 	cBox[44].setPreferredSize(new Dimension(250,20));
 	cBox[44].setMaximumSize(new Dimension(250,20));
 	cBox[44].setActionCommand("prog2");
 	cBox[44].setSelected(false);
-	cBox[44].setToolTipText("delete the progressive bits");
+	cBox[44].setToolTipText(Resource.getString("tab.video.patch.interlaced.tip"));
 
-	cBox[45] = new JCheckBox("change field order");
+	cBox[45] = new JCheckBox(Resource.getString("tab.video.patch.fieldorder"));
 	cBox[45].setPreferredSize(new Dimension(250,20));
 	cBox[45].setMaximumSize(new Dimension(250,20));
 	cBox[45].setSelected(false);
-	cBox[45].setToolTipText("toggle the Top_field_first bit");
+	cBox[45].setToolTipText(Resource.getString("tab.video.patch.fieldorder.tip"));
 
-	cBox[27] = new JCheckBox("ensure each GOP has a sequenceheader");
+	cBox[27] = new JCheckBox(Resource.getString("tab.video.add.sequence"));
 	cBox[27].setPreferredSize(new Dimension(260,20));
 	cBox[27].setMaximumSize(new Dimension(260,20));
 	cBox[27].setSelected(false);
-	cBox[27].setToolTipText("re-init (resol. & q_matrix) of Picturedecoding on each GOP boundary (automatically on split)");
+	cBox[27].setToolTipText(Resource.getString("tab.video.add.sequence.tip"));
 
 	//DM29082004 081.7 int10 add
-	cBox[35] = new JCheckBox("patch c.d.flagged infos of pictures");
+	cBox[35] = new JCheckBox(Resource.getString("tab.video.patch.cdf"));
 	cBox[35].setPreferredSize(new Dimension(260,20));
 	cBox[35].setMaximumSize(new Dimension(260,20));
 	cBox[35].setSelected(false);
-	cBox[35].setToolTipText("may solve the 'green picture' prob. of some old HW decoder chipsets");
+	cBox[35].setToolTipText(Resource.getString("tab.video.patch.cdf.tip"));
 
 
 
@@ -1725,10 +1729,15 @@ protected JPanel buildvideo1Panel() {
 	//JLA14082003+
 	JPanel hPPanel = new JPanel();
 	hPPanel.setLayout(new BoxLayout(hPPanel, BoxLayout.X_AXIS));
-	hPPanel.setToolTipText("conditional patch 1st horiz. resolution");
-	hPPanel.add(new JLabel ("patch 1st h-res: "));
+	hPPanel.setToolTipText(Resource.getString("tab.video.patch.resol.tip"));
+	hPPanel.add(new JLabel (Resource.getString("tab.video.patch.resol")));
 
-	Object[] cHorizontalPatch = { "never","ever","if <> 352|720","if <> to 352|704|720" };
+	Object[] cHorizontalPatch = { 
+		Resource.getString("tab.video.patch.resol.val0"),
+		Resource.getString("tab.video.patch.resol.val1"),
+		Resource.getString("tab.video.patch.resol.val2"),
+		Resource.getString("tab.video.patch.resol.val3")
+	};
 	comBox[35]= new JComboBox(cHorizontalPatch);
 	comBox[35].setPreferredSize(new Dimension(150,20));
 	comBox[35].setMaximumSize(new Dimension(150,20));
@@ -1765,35 +1774,40 @@ protected JPanel buildvideo1Panel() {
 
 	JPanel newBrPanel = new JPanel();
 	newBrPanel.setLayout(new ColumnLayout());
-	newBrPanel.setBorder( BorderFactory.createTitledBorder("new bitrate values") );
+	newBrPanel.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.video.title2")) );
 
 	Object BRperSequence[] = {
-		"keep original","computed from GOP bitlength","computed from VBV","mark as VBR (MPEG-1 Video)",
-		"fix 1 Mbps","fix 2 Mbps","fix 3 Mbps","fix 4 Mbps","fix 5 Mbps","fix 6 Mbps",
-		"fix 7 Mbps","fix 8 Mbps","fix 9 Mbps","fix 10 Mbps","fix 11 Mbps",
-		"fix 12 Mbps","fix 13 Mbps","fix 14 Mbps","fix 15 Mbps"
+		Resource.getString("tab.video.patch.bitrate1.val0"),
+		Resource.getString("tab.video.patch.bitrate1.val1"),
+		Resource.getString("tab.video.patch.bitrate1.val2"),
+		Resource.getString("tab.video.patch.bitrate1.val3"),
+		Resource.getString("tab.video.patch.bitrate1.val4"),
+		Resource.getString("tab.video.patch.bitrate1.val5"),
+		Resource.getString("tab.video.patch.bitrate1.val6"),
+		Resource.getString("tab.video.patch.bitrate1.val7"),
+		Resource.getString("tab.video.patch.bitrate1.val8")
 	};
 	comBox[3] = new JComboBox(BRperSequence);
 	comBox[3].setPreferredSize(new Dimension(250,20));
 	comBox[3].setMaximumSize(new Dimension(250,20));
 	comBox[3].setSelectedIndex(1);
-	newBrPanel.add(new JLabel("bitrate values per sequence:"));
+	newBrPanel.add(new JLabel(Resource.getString("tab.video.patch.bitrate1")));
 	newBrPanel.add(comBox[3]);
 
         comBox[3].addActionListener(mytabListener);
 
 	Object BRperFile[] = {
-		"keep original",
-		"computed average (nominal)",
-		"computed maximum <= 9.8 Mbps(DVD)",
-		"computed maximum (e.g. HDTV)",
-		"mark as VBR (MPEG-1 Video)"
+		Resource.getString("tab.video.patch.bitrate2.val0"),
+		Resource.getString("tab.video.patch.bitrate2.val1"),
+		Resource.getString("tab.video.patch.bitrate2.val2"),
+		Resource.getString("tab.video.patch.bitrate2.val3"),
+		Resource.getString("tab.video.patch.bitrate2.val4")
 	};
 	comBox[15] = new JComboBox(BRperFile);
 	comBox[15].setPreferredSize(new Dimension(250,20));
 	comBox[15].setMaximumSize(new Dimension(250,20));
 	comBox[15].setSelectedIndex(2);
-	newBrPanel.add(new JLabel("bitrate value in first sequence:"));
+	newBrPanel.add(new JLabel(Resource.getString("tab.video.patch.bitrate2")));
 	newBrPanel.add(comBox[15]);
 
 	comBox[15].addActionListener(mytabListener);
@@ -1811,41 +1825,41 @@ protected JPanel buildexternPanel() { //DM30122003 081.6 int10 changed
 
 	JPanel video2Panel = new JPanel();
 	video2Panel.setLayout( new ColumnLayout() );
-	video2Panel.setBorder( BorderFactory.createTitledBorder(Resource.getString("externpanel.title1")) );
-	video2Panel.setToolTipText(Resource.getString("externpanel.title1.tip"));
+	video2Panel.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.extern.title1")) );
+	video2Panel.setToolTipText(Resource.getString("tab.extern.title1.tip"));
 
-	exeButton = new JButton(Resource.getString("externpanel.applications"));
+	exeButton = new JButton(Resource.getString("tab.extern.applications"));
 	exeButton.setActionCommand("exec");
 	exeButton.setPreferredSize(new Dimension(250,25));
 	video2Panel.add(exeButton);
 	exeButton.addActionListener(my0Listener);
 
 	//DM18022004 081.6 int17 new
-	cBox[54] = new JCheckBox(Resource.getString("externpanel.vdrindex") + Resource.getString("mainpanel.box.toVDR") + "\"");
+	cBox[54] = new JCheckBox(Resource.getString("tab.extern.vdrindex") + Resource.getString("mainpanel.box.toVDR") + "\"");
 	cBox[54].setPreferredSize(new Dimension(250,20));
 	cBox[54].setMaximumSize(new Dimension(250,20));
-	cBox[54].setToolTipText(Resource.getString("externpanel.vdrindex.tip"));
+	cBox[54].setToolTipText(Resource.getString("tab.extern.vdrindex.tip"));
 	video2Panel.add(cBox[54]);
 
 	//DM14052004 081.7 int02 moved
-	cBox[26] = new JCheckBox(Resource.getString("externpanel.celltimes"));
-	cBox[26].setToolTipText(Resource.getString("externpanel.celltimes.tip"));
+	cBox[26] = new JCheckBox(Resource.getString("tab.extern.celltimes"));
+	cBox[26].setToolTipText(Resource.getString("tab.extern.celltimes.tip"));
 	cBox[26].setPreferredSize(new Dimension(270,20));
 	cBox[26].setMaximumSize(new Dimension(270,20));
 	video2Panel.add(cBox[26]);
 
 	//DM18022004 081.6 int17 new
-	RButton[11] = new JRadioButton(Resource.getString("externpanel.exportpts"));
+	RButton[11] = new JRadioButton(Resource.getString("tab.extern.exportpts"));
 	RButton[11].setPreferredSize(new Dimension(250,20));
 	RButton[11].setMaximumSize(new Dimension(250,20));
-	RButton[11].setToolTipText(Resource.getString("externpanel.exportpts.tip"));
+	RButton[11].setToolTipText(Resource.getString("tab.extern.exportpts.tip"));
 	video2Panel.add(RButton[11]);
 
 	//DM26022004 081.6 int18 new
-	RButton[12] = new JRadioButton(Resource.getString("externpanel.saveframe"));
+	RButton[12] = new JRadioButton(Resource.getString("tab.extern.saveframe"));
 	RButton[12].setPreferredSize(new Dimension(250,20));
 	RButton[12].setMaximumSize(new Dimension(250,20));
-	RButton[12].setToolTipText(Resource.getString("externpanel.saveframe.tip"));
+	RButton[12].setToolTipText(Resource.getString("tab.extern.saveframe.tip"));
 	video2Panel.add(RButton[12]);
 
 	video2.add(video2Panel);
@@ -3673,11 +3687,11 @@ class COLLECTION extends JFrame
 		//DM17012004 081.6 int11 changed, DM18022004 081.6 int17 changed
 		Object[] cut_types = 
 		{ 
-			">> " + Resource.getString("collection.cutmode_bytepos"), 
-			">> " + Resource.getString("collection.cutmode_gop"),
-			">> " + Resource.getString("collection.cutmode_frame"),
-			">> " + Resource.getString("collection.cutmode_pts"),
-			">> " + Resource.getString("collection.cutmode_timecode")
+			Resource.getString("collection.cutmode_bytepos"), 
+			Resource.getString("collection.cutmode_gop"),
+			Resource.getString("collection.cutmode_frame"),
+			Resource.getString("collection.cutmode_pts"),
+			Resource.getString("collection.cutmode_timecode")
 		}; 
 		comBox[17] = new JComboBox(cut_types);
 		comBox[17].setPreferredSize(new Dimension(230,22));
@@ -4017,9 +4031,15 @@ class COLLECTION extends JFrame
 				continue;
 
 			//DM09032004 081.6 int18 add
+			//DM19092004 081.8.02 changed , lang
 			if (point.startsWith(">>")) 
 			{
-				comBox[17].setSelectedItem(point);
+				if (point.startsWith("("))
+					comBox[17].setSelectedIndex(Integer.parseInt(point.substring(1, 2)));
+
+				else
+					comBox[17].setSelectedItem(point);
+
 				continue;
 			}
 
@@ -4360,23 +4380,30 @@ public void updateState() {
 
 	/** BR in all sequ **/
 	int BRperSequ = comBox[3].getSelectedIndex();
-	if (BRperSequ==0){
+	if (BRperSequ==0)
+	{
 		options[0]=0; 
 		options[1]=0; 
 		options[2]=0; 
 		options[3]=1; 
 		options[4]=0;
-	}else if (BRperSequ==1){
+	}
+	else if (BRperSequ==1)
+	{
 		options[0]=0; 
 		options[3]=0; 
 		options[4]=0; 
-	}else if (BRperSequ==2){
+	}
+	else if (BRperSequ==2)
+	{
 		options[0]=1; 
 		options[4]=0; 
-	}else if (BRperSequ >3){
+	}
+	else if (BRperSequ >3)
+	{
 		options[0]=0; 
 		options[3]=0; 
-		options[4]=(comBox[3].getSelectedIndex()-3)*2500;
+		options[4]=(comBox[3].getSelectedIndex()-3) * 2500 * 3; //DM19092004 081.8.02 changed,lang
 	}
 
 	/** BR in 1st sequ **/
@@ -4562,8 +4589,15 @@ public void iniload()
 			ck = path.substring(path.indexOf("*") + 1, path.length());
 			int lfn = Integer.parseInt(path.substring( 1, path.indexOf("*")));
 
+			//DM19092004 081.8.02 changed, lang
 			if (lfn < comBox.length)
-				comBox[lfn].setSelectedItem(ck);
+			{
+				if (ck.startsWith("("))
+					comBox[lfn].setSelectedIndex(Integer.parseInt(ck.substring(1, 2)));
+
+				else
+					comBox[lfn].setSelectedItem(ck);
+			}
 
 			outchange=false;
 		}
@@ -4845,9 +4879,15 @@ public static void loadCutPoints(String file) {
 				continue;
 
 			//DM09032004 081.6 int18 add
+			//DM19092004 081.8.02 changed , lang
 			if (point.startsWith(">>")) 
 			{
-				comBox[17].setSelectedItem(point);
+				if (point.startsWith("("))
+					comBox[17].setSelectedIndex(Integer.parseInt(point.substring(1, 2)));
+
+				else
+					comBox[17].setSelectedItem(point);
+
 				continue;
 			}
 
@@ -7666,6 +7706,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 
 			if (options[30]==1) 
 				System.out.println(""+packet+"/"+Integer.toHexString(pid)+"/"+Integer.toHexString(pesID)+"/"+TSPid.isneeded()+"/"+ttx+"/"+error+"/"+start+"/"+scram+"/"+addfield+"/"+addlength);
+
 
 			if (!TSPid.isneeded()) 
 				continue pvaloop;        // PID not of interest
