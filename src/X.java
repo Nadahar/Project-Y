@@ -6939,7 +6939,7 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 	packsize0_buffer=packsize0_buffer>bs?bs:packsize0_buffer; //DM21112003 081.5++
 
 	boolean pes_alignment, pes_ext1, pes_ext2, mpeg2;
-	int pes_shift, pes_header_length, vdr_dvbsub;
+	int pes_shift, pes_header_length, pes_ext2_id;
 	Hashtable substreams = new Hashtable();
 
 
@@ -7175,13 +7175,11 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 			if (options[30]==1) 
 				System.out.print("\r"+Resource.getString("vdrparse.packs")+": "+pesID+"/"+clv[5]+"/"+(data.length-6)+"/"+((count*100/size))+"% "+(count));
 
-			count += 6+packlength;
+			count += 6 + packlength;
 
 			pes_header_length = 0xFF & data[8];
-
-			vdr_dvbsub = -1;
-
-			mpeg2 =  (0xC0 & data[6]) == 0x80 ? true : false;
+			pes_ext2_id = -1;
+			mpeg2 = (0xC0 & data[6]) == 0x80 ? true : false;
 			pes_alignment = mpeg2 && (4 & data[6]) != 0 ? true : false;
 
 			//vdr_dvbsub determination
@@ -7210,7 +7208,7 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 					if (pes_ext2 && packlength > pes_shift + 2)
 					{
 						pes_shift++; //skip ext2 length field
-						vdr_dvbsub = 0xFF & data[pes_shift]; //read byte0 (res.) of ext2
+						pes_ext2_id = 0xFF & data[pes_shift]; //read byte0 (res.) of ext2
 					}
 				}
 			}
