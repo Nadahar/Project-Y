@@ -343,21 +343,28 @@ public class Scan
 			else if ( id == 0xBD )
 			{
 				jump = 6 + ((0xFF & check[a+4])<<8 | (0xFF & check[a+5]));
+				int pes_headerlength = 0xFF & check[a + 8];
+				boolean pes_alignment = (4 & check[a + 6]) != 0 ? true : false;
 
 				//DM10032004 081.6 int18 add
-				if (check[a+8] == 0x24 && (0xF0 & check[a + 9 + 0x24])>>>4 == 1)
+				if (pes_headerlength == 0x24 && (0xF0 & check[a + 9 + pes_headerlength])>>>4 == 1)
 				{
-					text = "SubID 0x" + Integer.toHexString((0xFF & check[a + 9 + 0x24])).toUpperCase();
+					text = "SubID 0x" + Integer.toHexString((0xFF & check[a + 9 + pes_headerlength])).toUpperCase();
+				}
+
+				else if ( ((!mpg1 && !vdr) || (vdr && pes_alignment)) && ((0xF0 & check[a + 9 + pes_headerlength])>>>4 == 2 || (0xF0 & check[a + 9 + pes_headerlength])>>>4 == 3))
+				{
+					pics = "SubID 0x" + Integer.toHexString((0xFF & check[a + 9 + pes_headerlength])).toUpperCase();
 				}
 
 				else
 				{
 					if (!vdr)
 					{
-						id = 0xFF & check[a + 9 + (0xFF & check[a + 8])];
+						id = 0xFF & check[a + 9 + pes_headerlength];
 						str = String.valueOf(id);
 
-						check[a + 8] = (byte)(4 + (0xFF & check[a + 8]));
+						check[a + 8] = (byte)(4 + pes_headerlength);
 					}
 
 					if (!table.containsKey(str))
@@ -576,7 +583,6 @@ public class Scan
 					System.arraycopy(check,a,vbasic,0,12);
 					bytecheck.write(check,a,20);
 
-					//video = vfc.videoformatByte(bytecheck.toByteArray());
 					video_streams.add(vfc.videoformatByte(bytecheck.toByteArray()));
 
 					return;

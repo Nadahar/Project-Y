@@ -806,10 +806,10 @@ public class Picture extends JPanel implements Runnable
 		if ((isforced_status & 1) == 0)
 		{
 			if ((isforced_status & 2) > 0)
-				str = "-> display status: not forced";
+				str = Resource.getString("subpicture.msg.forced.no");
 
 			else
-				str = "-> display status: forced";
+				str = Resource.getString("subpicture.msg.forced.yes");
 		}
 
 		isforced_status |= 1;

@@ -6754,16 +6754,17 @@ public void pesparse(String file, String vptslog, int ismpg) {
 		}
 	}
 
-	// PESdemuxlist.clear();
 
 	}
-	catch (EOFException e1) { 
+	catch (EOFException e1)
+	{ 
 		//DM25072004 081.7 int07 add
-		Msg(Resource.getString("pesparse.eof.error")+" " + e1); 
+		Msg(Resource.getString("pesparse.eof.error") + " " + e1); 
 	}
-	catch (IOException e2) { 
+	catch (IOException e2)
+	{ 
 		//DM25072004 081.7 int07 add
-		Msg(Resource.getString("pesparse.io.error")+" " + e2); 
+		Msg(Resource.getString("pesparse.io.error") + " " + e2); 
 	}
 
 	System.gc();
@@ -6812,21 +6813,28 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 
 	if (options[19]==0) 
 		VDRdemuxlist.clear();
-	else {
-		for (int a=0;a<VDRdemuxlist.size();a++) {
+
+	else
+	{
+		for (int a=0; a < VDRdemuxlist.size(); a++)
+		{
 			demux = (PIDdemux)VDRdemuxlist.get(a);
 
 			//DM04032004 081.6 int18 fix
 			if (demux.getnewID()!=0)
 				newID[demux.getType()]++;
 
-			if (demux.getNum()==-1) 
+			if (demux.getNum() == -1) 
 				continue;
-			if (demux.getType()==3) { 
+
+			if (demux.getType() == 3)
+			{ 
 				demux.initVideo2(fparent,options);
+
 				if (pesID0==0) 
 					pesID0 = demux.getID();
-			} else 
+			}
+			else 
 				demux.init2(fparent,options);
 		}
 	}
@@ -6940,16 +6948,19 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 
 	boolean pes_alignment, pes_ext1, pes_ext2, mpeg2;
 	int pes_shift, pes_header_length, pes_ext2_id;
+	int source_type = ismpg;
+
 	Hashtable substreams = new Hashtable();
 
-
 	morepva:
-	while (true) {
+	while (true)
+	{
 
 		// start loop fileread
 		pvaloop:
 		while ( count < size )
 		{
+			ismpg = source_type;  //reset
 
 			while (qpause) 
 				pause();
@@ -7213,7 +7224,6 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 				}
 			}
 
-//Msg("" + mpeg2 + " / " + pes_alignment + " / 0x" + Integer.toHexString(pesID) + " / 0x" + Integer.toHexString(vdr_dvbsub));
 
 			ttx = false;
 			subID = 0;
@@ -7227,6 +7237,10 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 				{
 					subID = 0xFF & data[off];
 					ttx = (pes_header_length == 0x24 && subID>>>4 == 1) ? true : false; 
+
+					//subpic in vdr_pes
+					if (pes_alignment && !ttx && (subID>>>4 == 2 || subID>>>4 == 3))
+						ismpg = 2;  //will be resetted for next packet
 
 					if (ismpg == 0 && !ttx) 
 						subID = 0;
@@ -7250,6 +7264,9 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 			//DM14062004 081.7 int04 add
 			if (ToVDR == 5)
 			{
+				if (subID != 0)
+					data[6] |= 4; //set alignment
+
 				makevdr.writePacket(data, 0, 6 + packlength);
 				continue pvaloop;
 			}
@@ -8287,106 +8304,104 @@ public String rawparse(String file, int[] pids, int ToVDR)
 					//DM23072004 081.7 int07 changed
 					if (type.equals(""))
 					{
-						switch (psiID)
-						{
+						if (pid == 0 && psiID == 0)
+							type = "(PAT)";
 
-						case 0:
-							type = "(PAT)"; 
-							break;
-						case 1: 
+						else if (pid == 1 && psiID == 1)
 							type = "(CAT)"; 
-							break;
-						case 2: 
-							type = "(PMT)"; 
-							break;
-						case 3: 
-							type = "(TSD)"; 
-							break;
-						case 4: 
-							type = "(PSI)"; 
-							break;
-						case 6: 
-						case 0x40: 
-						case 0x41: 
-							type = "(NIT)"; 
-							break;
-						case 0x42: 
-						case 0x46: 
-							type = "(SDT)"; 
-							break;
-						case 0x4A: 
-							type = "(BAT)"; 
-							break;
-						case 0x4E: 
-						case 0x4F: 
-						case 0x50: 
-						case 0x60: 
-							type = "(EIT)"; 
-							break;
-						case 0x70: 
-							type = "(TDS)"; 
-							break;
-						case 0x71: 
-							type = "(RS)"; 
-							break;
-						case 0x72: 
-							type = "(ST)"; 
-							break;
-						case 0x73: 
-							type = "(TO)"; 
-							break;
-						case 0x7E: 
-							type = "(DI)"; 
-							break;
-						case 0x7F: 
-							type = "(SIT)"; 
-							break;
-						case 0x82: 
-							type = "(EMM)"; 
-							break;
-						case 0x80:
-						case 0x81:
-						case 0x83:
-						case 0x84: 
-							type = "(ECM)"; 
-							break;
-						case 0x43: 
-						case 0x44: 
-						case 0x45: 
-						case 0x47: 
-						case 0x48: 
-						case 0x49: 
-						case 0x4B: 
-						case 0x4C: 
-						case 0x4D: 
-						case 0xFF: 
-							type = "(res.)"; 
-							break;
-						default:
-							if (psiID >= 0x50 && psiID <= 0x6F)
-							{
-								type = "(EIT)"; 
-								break;
-							}
 
-							if ((psiID >= 4 && psiID <= 3F) || (psiID >= 0x74 && psiID <= 0x7D))
+						else if (pid == 2 && psiID == 3)
+							type = "(TSDT)"; 
+
+						else if (pid == 0x10 && (psiID == 6 || psiID == 0x40 || psiID == 0x41))
+							type = "(NIT)"; 
+
+						else if (pid == 0x11 && (psiID == 0x42 || psiID == 0x46))
+							type = "(SDT)"; 
+
+						else if (pid == 0x11 && psiID == 0x4A)
+							type = "(BAT)"; 
+
+						else if (pid == 0x12 && psiID >= 0x4E && psiID <= 0x6F)
+							type = "(EIT)"; 
+
+						else if (pid == 0x13 && psiID == 0x71)
+							type = "(RST)"; 
+
+						else if (pid == 0x1F && psiID == 0x7F)
+							type = "(SIT)"; 
+
+						else if (pid == 0x1E && psiID == 0x7E)
+							type = "(DIT)"; 
+
+						else if (pid == 0x14 && psiID == 0x70)
+							type = "(TDS)"; 
+
+						else if (pid == 0x14 && psiID == 0x73)
+							type = "(TOT)"; 
+
+						else if (psiID == 0x72 && pid >= 0x10 && pid <= 0x14)
+							type = "(ST)"; 
+
+						else
+						{
+							switch (psiID)
 							{
+							case 2: 
+								type = "(PMT)"; 
+								break;
+
+							case 4: 
+								type = "(PSI)"; 
+								break;
+
+							case 0x82: 
+								type = "(EMM)"; 
+								break;
+
+							case 0x80:
+							case 0x81:
+							case 0x83:
+							case 0x84: 
+								type = "(ECM)"; 
+								break;
+
+							case 0x43: 
+							case 0x44: 
+							case 0x45: 
+							case 0x47: 
+							case 0x48: 
+							case 0x49: 
+							case 0x4B: 
+							case 0x4C: 
+							case 0x4D: 
+							case 0xFF: 
 								type = "(res.)"; 
 								break;
-							}
 
-							if (psiID >= 0x80 && psiID < 0xFF)
-							{
-								type = "(user def. 0x" + Integer.toHexString(psiID).toUpperCase() + ")"; 
-								break;
-							}
+							default:
+								if ((psiID >= 4 && psiID <= 3F) || (psiID >= 0x74 && psiID <= 0x7D))
+								{
+									type = "(res.)"; 
+									break;
+								}
 
-							type += "(payload: ";
-							for (int f=0; f < 8; f++) {
-								String val = Integer.toHexString((0xFF&push189[4+addlength+f])).toUpperCase();
-								type += " " + ((val.length()<2) ? ("0"+val) : val);
+								if (psiID >= 0x80 && psiID < 0xFF)
+								{
+									type = "(user def. 0x" + Integer.toHexString(psiID).toUpperCase() + ")"; 
+									break;
+								}
+	
+								type += "(payload: ";
+
+								for (int f=0; f < 8; f++)
+								{
+									String val = Integer.toHexString((0xFF&push189[4+addlength+f])).toUpperCase();
+									type += " " + ((val.length()<2) ? ("0"+val) : val);
+								}
+
+								type += " ..)";
 							}
-							type += " ..)";
 						}
 
 						if (scram>0 && !cBox[38].isSelected())
@@ -16118,6 +16133,7 @@ class makeVDR
 	ByteArrayOutputStream buf = new ByteArrayOutputStream();
 	long scr=0, pmtcount=0;
 	int toVdr=0; //DM18022004 081.6 int17 new
+	boolean brokenlink = false;
 
 	public void init(String name, long[] options, int buffersize, int toVdr, int filenumber) {
 		this.name = name;
@@ -16132,6 +16148,8 @@ class makeVDR
 		writedata[0] = ((1L&options[26])!=0) ? true : false;  // do write video?
 		writedata[1] = ((2L&options[26])!=0) ? true : false;  // do write audio?
 		java.util.Arrays.fill(fills,(byte)0xff);
+
+		brokenlink = false;
 
 		buf.reset();
 		if (options[19]==0) 
@@ -16153,12 +16171,35 @@ class makeVDR
 		}
 	}
 
+	// set broken link after cut
+	private void setBrokenLink(byte[] data, int overhead)
+	{
+		for (int i = 0, j = data.length - 7 - overhead; i < j; i++)
+		{
+			if (data[i] != 0 || data[i + 1] != 0 || data[i + 2] != 1 || data[i + 3] != (byte)0xB8)
+				continue;
+
+			data[i + 7] |= 0x20;
+			break;
+		}
+
+		brokenlink = true;
+
+		return;
+	}
+
 	// entry point and pre functions
 	public long[] write(int format, byte[] data, long[] options, PIDdemux demux, int overhead, long cutposition)
 	{
 		//cut-off determination
 		if (comBox[17].getSelectedIndex() == 0 && !qinfo && !makecut(cutposition + 5) )
+		{
+			brokenlink = false;
 			return options;
+		}
+
+		if (demux.getType() == 3 && !brokenlink)
+			setBrokenLink(data, overhead);
 
 		switch(format)
 		{
