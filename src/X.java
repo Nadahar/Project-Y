@@ -2883,6 +2883,8 @@ class FileListener implements ActionListener
 			list3.setListData(collectionlist);
 
 
+
+
 		}
 		else if (actName.equals("co") && outchange==false)
 		{
@@ -9587,7 +9589,7 @@ public boolean processAudio(String[] args)
 					audioin.unread(pushback,1,9); 
 
 					if (!cBox[3].isSelected() && !miss) //DM04112003 081.5++ info 
-						Msg(Resource.getString("audio.msg.syncword.lost", "" + (n-10)) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f)))); //DM07022004 081.6 int16 changed
+						Msg(Resource.getString("audio.msg.syncword.lost", " " + (n-10)) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f)))); //DM07022004 081.6 int16 changed
 
 					miss=true; 
 					n-=9; 
@@ -9659,7 +9661,7 @@ public boolean processAudio(String[] args)
 			//DM10042004 081.7 int01
 			if (is_AC3 && !is_DTS && RButton[16].isSelected() && (ERRORCODE = CRC.checkCRC16ofAC3(frame, 2, Audio.Size)) != 0 )
 			{
-				Msg(Resource.getString("audio.msg.crc.error", "" + ERRORCODE) + actframe);
+				Msg(Resource.getString("audio.msg.crc.error", "" + ERRORCODE) + " " + actframe);
 				audioin.unread(frame, 2, frame.length - 2);
 				n = actframe + 2;
 				continue readloopdd; 
@@ -10170,7 +10172,7 @@ public boolean processAudio(String[] args)
 				audioin.unread(pushmpa,1,3);
 
 				if (!cBox[3].isSelected() && !miss) //DM04112003 081.5++ info
-					Msg(Resource.getString("audio.msg.syncword.lost", "" + (n-4)) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f)))); //DM07022004 081.6 int16 changed
+					Msg(Resource.getString("audio.msg.syncword.lost", " " + (n-4)) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f)))); //DM07022004 081.6 int16 changed
 
 				miss=true;
 				n-=3;
@@ -10239,14 +10241,14 @@ public boolean processAudio(String[] args)
 			//DM10042004 081.7 int01
 			if (RButton[16].isSelected() && (ERRORCODE = CRC.checkCRC16ofMPA(Audio, frame)) != 0 )
 			{
-				Msg(Resource.getString("audio.msg.crc.error", "") + actframe);
+				Msg(Resource.getString("audio.msg.crc.error", "") + " " + actframe);
 				audioin.unread(frame, 2, frame.length - 2);
 				n = actframe + 2;
 				continue readloop;
 			}
 
 			if (!cBox[3].isSelected() && miss) //DM04112003 081.5++ info
-				Msg(Resource.getString("audio.msg.syncword.found") + actframe);
+				Msg(Resource.getString("audio.msg.syncword.found") + " " + actframe);
 
 			miss=false;
 
@@ -11394,11 +11396,11 @@ public void processTeletext(String[] args)
 			}
 			else
 			{
-				Msg("!> no output format for teletext specified...");
+				Msg(Resource.getString("teletext.msg.nooutput"));
 				break;
 			}
 
-			Msg("-> export format: " + ttxfile.substring(ttxfile.length() - 3));
+			Msg(Resource.getString("teletext.msg.output") + " " + ttxfile.substring(ttxfile.length() - 3));
 
 
 			java.text.DateFormat timeformat_1 = new java.text.SimpleDateFormat("HH:mm:ss.SSS");
@@ -11423,17 +11425,17 @@ public void processTeletext(String[] args)
 			ByteArrayOutputStream byte_buffer = new ByteArrayOutputStream();
 			PrintWriter print_buffer = new PrintWriter(byte_buffer, true);
 
-			Msg("-> temp. file: " + filename + "  (" + size + " bytes)"); //DM18052004 081.7 int02 changed
+			Msg(Resource.getString("teletext.msg.tmpfile", filename, "" + size)); //DM18052004 081.7 int02 changed
 
-			progress.setString("searching & decoding "+(subtitle_type==0 ? "MegaRadio mp3-stream":"page number "+page));
+			progress.setString(Resource.getString("teletext.progress") + " " + (subtitle_type==0 ? Resource.getString("teletext.megaradio") : Resource.getString("teletext.msg.page") + " " + page));
 			progress.setStringPainted(true);
 			progress.setValue(0);
 
-			Msg("-> looking for "+(subtitle_type==0 ? "MegaRadio mp3-stream":"page number "+page));
+			Msg(Resource.getString("teletext.msg.search") + " " + (subtitle_type==0 ? Resource.getString("teletext.megaradio") : Resource.getString("teletext.msg.page") + " " + page));
 
 			long[] pts_value = {0}, pts_position = {0}, video_pts_value = {0}, vtime = {0};
 
-			showExportStatus("pages:", seiten);
+			showExportStatus(Resource.getString("teletext.status"), seiten);
 
 			System.gc();
 
@@ -11480,7 +11482,7 @@ public void processTeletext(String[] args)
 				}
 				if (aa<logsize)
 				{
-					Msg("!> "+(logsize-aa)+" PTS's discarded in stream");
+					Msg(Resource.getString("teletext.msg.discard", "" + (logsize-aa)));
 					long tmp[][] = new long[2][aa];
 					System.arraycopy(pts_value,0,tmp[0],0,aa);
 					System.arraycopy(pts_position,0,tmp[1],0,aa);
@@ -11497,11 +11499,11 @@ public void processTeletext(String[] args)
 
 				if (!( (pts_value[0]==0xffffffffL) || (pts_value[0] == 0) ))
 				{
-					Msg("Teletext PTS: first packet "+timeformat_1.format(new java.util.Date(pts_value[0]/90))+", last packet "+timeformat_1.format(new java.util.Date(pts_value[pts_value.length-2]/90)));
+					Msg(Resource.getString("teletext.msg.pts.start_end", timeformat_1.format(new java.util.Date(pts_value[0]/90))) + " " + timeformat_1.format(new java.util.Date(pts_value[pts_value.length-2]/90)));
 					ptsdata=true; 
 				}
 				else  
-					Msg(" teletext stream doesn't use PTS's, sync impossible");
+					Msg(Resource.getString("teletext.msg.pts.missed"));
 			}
 
 
@@ -11527,7 +11529,7 @@ public void processTeletext(String[] args)
 				}
 				vbin.close();
 
-				Msg("Video PTS: start 1.GOP "+timeformat_1.format(new java.util.Date(video_pts_value[0]/90))+", end last GOP "+timeformat_1.format(new java.util.Date(video_pts_value[video_pts_value.length-1]/90)));
+				Msg(Resource.getString("video.msg.pts.start_end", timeformat_1.format(new java.util.Date(video_pts_value[0]/90))) + " " + timeformat_1.format(new java.util.Date(video_pts_value[video_pts_value.length-1]/90)));
 				vptsdata=true;
 			}
 
@@ -11579,7 +11581,7 @@ public void processTeletext(String[] args)
 
 				if (jump < 0)
 				{
-					Msg("-> !! video & teletext PTS doesn't match at any time!");  
+					Msg(Resource.getString("teletext.msg.pts.mismatch"));  
 					vptsdata = false; 
 					x = 0; 
 				}
@@ -11587,32 +11589,18 @@ public void processTeletext(String[] args)
 				else
 					x = jump;
 
-				/**
-				timebase:
-				while ( pts_value.length>2 && Math.abs(pts_value[x] - video_pts_value[0]) > 20000000 )
-				{
-					x++;
-					if (x >= pts_value.length-1)
-					{ 
-						Msg("-> !! video & teletext PTS doesn't match at any time!"); 
-						vptsdata=false; 
-						x=0; 
-						break timebase; 
-					}
-				}
-				**/
 			}
 
 
 			if (vptsdata && ptsdata) 
 			{
-				Msg("->adjusting teletext at video-timeline"); //DM24012004 081.6 int11 changed  //DM22032004 081.6 int18 changed
+				Msg(Resource.getString("teletext.msg.adjust.at.video")); //DM24012004 081.6 int11 changed  //DM22032004 081.6 int18 changed
 				time_difference = video_pts_value[0];
 			}
 
 			if (!vptsdata && ptsdata)
 			{
-				Msg("-> adjusting teletext at its own timeline ");
+				Msg(Resource.getString("teletext.msg.adjust.at.own"));
 				time_difference = 0;
 			}
 
@@ -11665,7 +11653,7 @@ public void processTeletext(String[] args)
 				if (packet[1] != 0x2C && packet[47] != 0x2C && packet[1] != 0x5A && (0xFF & packet[1]) != 0x88)
 				{
 					if (!cBox[3].isSelected() && !miss)
-						Msg("!> missing syncword @ "+count);
+						Msg(Resource.getString("teletext.msg.syncword.lost") + " " + count);
 
 					miss = true;
 					count++;
@@ -11688,7 +11676,7 @@ public void processTeletext(String[] args)
 					in.unread(packet,46,2);
 
 				if (!cBox[3].isSelected() && miss)
-					Msg("!> found syncword @ "+count);
+					Msg(Resource.getString("teletext.msg.syncword.found") + " " + count);
 				miss = false;
 
 				count += 46;
@@ -11779,7 +11767,7 @@ public void processTeletext(String[] args)
 					if (!vps_status.equals(vps_str))
 					{
 						vps_str = vps_status;
-						Msg("-> VPS status: " + vps_str + " @ PTS " + timeformat_1.format( new java.util.Date( source_pts / 90)) );
+						Msg(Resource.getString("teletext.msg.vps", vps_str) + " " + timeformat_1.format( new java.util.Date( source_pts / 90)) );
 					}
 
 					continue readloop;
@@ -11791,7 +11779,7 @@ public void processTeletext(String[] args)
 				if (magazine == 3 && row == 31 && packet[7] == 0x40 && packet[8] == 0x57 && provider.equals(""))
 				{
 					provider = Teletext.makestring(packet, 10, 34, 31, 0, 0, false).trim();
-					Msg("-> provider: " + provider);
+					Msg(Resource.getString("teletext.msg.provider") + " " + provider);
 				}
 
 				//DM24072004 081.7 int07 add
@@ -11803,7 +11791,7 @@ public void processTeletext(String[] args)
 					if (!str.equals(program_title))
 					{
 						program_title = str;
-						Msg("-> program: " + program_title);
+						Msg(Resource.getString("teletext.msg.program") + " " + program_title);
 					}
 				}
 
@@ -12064,7 +12052,7 @@ public void processTeletext(String[] args)
 								}
 
 								seiten++;
-								showExportStatus("pages:", seiten);
+								showExportStatus(Resource.getString("teletext.status"), seiten);
 								break;
 							}
 						}
@@ -12298,7 +12286,7 @@ public void processTeletext(String[] args)
 					}
 
 					seiten++;
-					showExportStatus("pages:", seiten);
+					showExportStatus(Resource.getString("teletext.status"), seiten);
 					break;
 				}
 			}
@@ -12306,10 +12294,10 @@ public void processTeletext(String[] args)
 			if (options[30]==1) 
 				System.out.println();
 
-			Msg(" " + seiten + " pages of No. " + page + " written..");
+			Msg(Resource.getString("teletext.msg.summary", "" + seiten, page));
 
 			if (seiten>0) 
-				Msg("===> new File "+ttxfile);
+				Msg(Resource.getString("teletext.msg.newfile") + " " + ttxfile);
 
 			yield();
 
@@ -12336,7 +12324,7 @@ public void processTeletext(String[] args)
 				log.close();
 				String[] synchit = { ttxfile,fparent+".pts","mp","-1" };
 				Msg(synchit[0]);
-				Msg("=> File is MPEG Audio ES");
+				Msg(Resource.getString("working.file.mpeg.audio"));
 				yield();
 				mpt(synchit);      /* audiofile goes to synch methode */
 				new File(synchit[0]).delete();
@@ -12354,19 +12342,19 @@ public void processTeletext(String[] args)
 
 				//DM04032004 081.6 int18 changed
 				//DM15072004 081.7 int06 changed
-				InfoAtEnd.add("Teletext " + (NoOfPictures++) + ":\t" + seiten + " pages of No. " + page + "\t" + infoPTSMatch(args, vptsdata, ptsdata) + " \t " + ttxfile1);
+				InfoAtEnd.add(Resource.getString("teletext.summary", "" + (NoOfPictures++), "" + seiten, "" + page, infoPTSMatch(args, vptsdata, ptsdata)) + " " + ttxfile1);
 			}
 
 			}  // end try
 			catch (EOFException e1)
 			{ 
 				//DM25072004 081.7 int07 add
-				Msg(" EOF reached in error: " + e1); 
+				Msg(Resource.getString("teletext.error.eof") + " " + e1); 
 			}
 			catch (IOException e2)
 			{ 
 				//DM25072004 081.7 int07 add
-				Msg("File I/O error: "+filename + " / " + e2); 
+				Msg(Resource.getString("teletext.error.io", filename) + " " + e2); 
 			}
 
 		System.gc();
@@ -12378,7 +12366,7 @@ public void processTeletext(String[] args)
 		else
 		{ 
 			subpicture.picture.set2();
-			Msg("-> perform 2nd SUP Yoffset");
+			Msg(Resource.getString("teletext.msg.newrun"));
 		}
 
 	}  // end for
