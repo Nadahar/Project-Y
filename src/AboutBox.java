@@ -66,8 +66,8 @@ public class AboutBox extends JDialog
 		container.setBackground(BACKGROUND_COLOR);
 		
 		JLabel logo = new JLabel(Resource.loadIcon("px.gif"));
-		logo.setBackground(BACKGROUND_COLOR);
 		logo.setOpaque(true);
+		logo.setBackground(BACKGROUND_COLOR);
 
 		String credits[] = Resource.getStringByLines("credits");
 
@@ -91,13 +91,15 @@ public class AboutBox extends JDialog
 		});
 
 		JPanel container2 = new JPanel(new BorderLayout());
-		container2.setBorder( BorderFactory.createRaisedBevelBorder());
+		//container2.setBorder( BorderFactory.createRaisedBevelBorder());
 		container2.setBackground(BACKGROUND_COLOR);
+		container2.setOpaque(true);
 		container2.add(logo, BorderLayout.NORTH);
 		container2.add(container, BorderLayout.CENTER);
 		container2.add(ok, BorderLayout.SOUTH);
 
 		getContentPane().add(container2);
+		
 		pack();
 		setLocation(200,200);
 		setResizable(false); //DM17042004 081.7 int02 add
@@ -108,7 +110,7 @@ public class AboutBox extends JDialog
 			}
 		});
 
-		show();
+		setVisible(true);
 	}
 
 }
