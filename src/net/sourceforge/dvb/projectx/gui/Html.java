@@ -46,7 +46,7 @@ public class Html extends JFrame
 		setBounds( 200, 25, 600, 400);
 		HtmlPane html = new HtmlPane();
 		setContentPane(html);
-		setTitle("Html Frame");
+		setTitle(Resource.getString("html.title"));		
 
 		addWindowListener(new WindowAdapter()
 		{
