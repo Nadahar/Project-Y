@@ -1,0 +1,21 @@
+
+ Project X 0.81.9  
+ xx.xx.2004
+
+
+ modified sources:  all ;)
+
+	- change: GUI options modified, some old ini parameters replaced
+	- new: language menu is now available, starting with the system standard language
+	ATM, there is an english language file (required) and optional german and danish
+	- fix: PTS continue problem combining file segments > 2GB
+	- change: adaption (new option) for parsing of special Humax file format
+	- change: some standard settings changed
+	- fix: failed renaming of right soundtrack file when split 2channel to 2 singel channel
+	- new: creation of a chapter file (txt) incl. all mode changes of audio + video (timecode + comment, esp. for M2S)
+	- change: "out of sequence" msg. carries the latest video timecode
+	- fix: exception on enabled d2v option, but missing video export
+
+ history of 081.8:
+
+

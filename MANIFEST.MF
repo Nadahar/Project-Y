@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: net.sourceforge.dvb.projectx.X
+Created-By: 1.2.2 (Sun Microsystems Inc.)
+
