@@ -2,10 +2,11 @@
 
 rem System dependend paths to the JDK
 set JAVA_HOME=C:\Programme\jdk14205
-set PATH=C:\Programme\jdk14205\bin
+set PATH=%JAVA_HOME%\bin
 
 del ProjectX.jar
 
+mkdir build
 cd build
 
 del *.gif
