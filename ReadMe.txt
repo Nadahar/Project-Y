@@ -65,6 +65,9 @@
        build the .jar file and
        copies the resource files from the resource folder into the new .jar,
 
+       Note: now, we made a package for the sources
+             the file source.lst points to all required sourcefiles and its location
+
    (C) additional received resource files (e.g. other language files) can be added 
        to the .jar file, later, 
        or you put them into the same folder where the compiled .jar is executed.
