@@ -123,10 +123,12 @@ public final class Common
 	//DM13062004 081.7 int04 add
 	public static Object[] checkUserColourTable(String file) throws IOException
 	{
-		if ( !(new File(file).exists()) )
+		URL url = Resource.getResourceURL(COLOUR_TABLES_FILENAME);
+
+		if (url == null)
 			return null;
 
-		BufferedReader table = new BufferedReader( new FileReader(file));
+		BufferedReader table = new BufferedReader( new InputStreamReader(url.openStream()));
 		ArrayList list = new ArrayList();
 		String line;
 
@@ -245,5 +247,5 @@ public final class Common
 	public static ArrayList getAC3list() {
 		return AC3list;
 	}
-	
+
 }
