@@ -291,6 +291,9 @@ void buildGUI()
 	vpatch = new PatchPanel(frame);
 	dialog = new COLLECTION();
 	executePane = new EXECUTE();
+
+	brm.surf.repaint();
+
 }
 
 //DM20032004 081.6 int18 moved
@@ -1243,7 +1246,7 @@ protected JPanel buildStatusPanel()
 	status.add(progress);
 
 	splitLabel = new JLabel(" " + options[19] + " ");
-	splitLabel.setToolTipText("actual part of splitted output");
+	splitLabel.setToolTipText(Resource.getString("run.splitpart"));
 	status.add(splitLabel);
 
 	return status;
@@ -2150,36 +2153,36 @@ protected JPanel buildsubtitlePanel()
 
 	JPanel tt0 = new JPanel();
 	tt0.setLayout( new ColumnLayout() );
-	tt0.setBorder( BorderFactory.createTitledBorder("DVB teletext, DVB subtitles") ); //DM18052004 0817. int02 changed
+	tt0.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.subtitle.title")) ); //DM18052004 0817. int02 changed
 
-	cBox[17] = new JCheckBox("test only: export MegaRadio MP3-stream (from NBC/Giga Teletext)");
-	cBox[17].setToolTipText("formerly transmitted via Hotbird 13°E, 11.054GHz Hor., SR 27500, FEC 5/6, TTX-PID 553");
+	cBox[17] = new JCheckBox(Resource.getString("tab.subtitle.megaradio"));
+	cBox[17].setToolTipText(Resource.getString("tab.subtitle.megaradio.tip"));
 	cBox[17].setPreferredSize(new Dimension(500,22));
 	cBox[17].setMaximumSize(new Dimension(500,22));
 	tt0.add(cBox[17]);
 
-	cBox[22] = new JCheckBox("advanced: decode hidden rows of teletext (id 0xFF, means offline pages)");
-	cBox[22].setToolTipText("some pages or complete teletexts/subtitles are hidden, so that may help");
+	cBox[22] = new JCheckBox(Resource.getString("tab.subtitle.hidden"));
+	cBox[22].setToolTipText(Resource.getString("tab.subtitle.hidden.tip"));
 	cBox[22].setPreferredSize(new Dimension(500,22));
 	cBox[22].setMaximumSize(new Dimension(500,22));
 	tt0.add(cBox[22]);
 
 	//DM22072004 081.7 int07 add
-	cBox[62] = new JCheckBox("advanced: re-build TTX-PTS from 1st MpgAudio stream in a stream file");
-	cBox[62].setToolTipText("use it ONLY for TTX streams included in a stream file (TS,PES..) but w/o proper time base to video");
+	cBox[62] = new JCheckBox(Resource.getString("tab.subtitle.pts"));
+	cBox[62].setToolTipText(Resource.getString("tab.subtitle.pts.tip"));
 	cBox[62].setPreferredSize(new Dimension(500,22));
 	cBox[62].setMaximumSize(new Dimension(500,22));
 	tt0.add(cBox[62]);
 
 	//DM09032004 081.6 int18 add
-	RButton[13] = new JRadioButton("advanced: keep original Timecode (PTS) on independent decoding");
-	RButton[13].setToolTipText("without a leading video to demux, new Timecode doesn't start at 0");
+	RButton[13] = new JRadioButton(Resource.getString("tab.subtitle.timecode"));
+	RButton[13].setToolTipText(Resource.getString("tab.subtitle.timecode.tip"));
 	RButton[13].setPreferredSize(new Dimension(500,25));
 	RButton[13].setMaximumSize(new Dimension(500,25));
 	tt0.add(RButton[13]);
 
-	JLabel page_decode = new JLabel("teletext pages to decode: (fields editable, set to 'null' to ignore a field)");
-	page_decode.setToolTipText("autodetection of special characters based on Teletext Level 1.5 codepages in unicode");
+	JLabel page_decode = new JLabel(Resource.getString("tab.subtitle.pages"));
+	page_decode.setToolTipText(Resource.getString("tab.subtitle.pages.tip"));
 	tt0.add(page_decode);
 
 	Object[] pagenumber = {"null","149","150","691","692","693","694","777","779","784","785","786","881","882","884","885","886","887","888","889"};
@@ -2195,23 +2198,23 @@ protected JPanel buildsubtitlePanel()
 	}
 
 	//DM09082004 081.7 int08 add++
-	JLabel lang_decode = new JLabel("  language: ");
-	lang_decode.setToolTipText("fix to a language pair, if an automatic switch is not supported by the broadcaster");
+	JLabel lang_decode = new JLabel(Resource.getString("tab.subtitle.language"));
+	lang_decode.setToolTipText(Resource.getString("tab.subtitle.language.tip"));
 	tt1.add(lang_decode);
 
 	Object lang_pairs[] = { 
 		"auto", 
-		"basic LATIN", 
-		"force polish", 
-		"force turkish", 
-		"force cro,rom", 
-		"force est,rus",
+		"basic latin", 
+		"polish", 
+		"turkish", 
+		"cro,slo,rum", 
+		"est,lit,rus",
 		"res.",
-		"force greek", 
+		"greek,latin", 
 		"res.", 
-		"force arabic", 
+		"arabic,latin", 
 		"res.", 
-		"force hebrew"
+		"hebrew,arabic"
 	};
 
 	comBox[18] = new JComboBox(lang_pairs);
@@ -2223,34 +2226,34 @@ protected JPanel buildsubtitlePanel()
 
 	JPanel ttPanel = new JPanel();
 	ttPanel.setLayout(new BoxLayout(ttPanel, BoxLayout.X_AXIS));
-	ttPanel.setToolTipText("select your favourite export format");
+	ttPanel.setToolTipText(Resource.getString("tab.subtitle.format.tip"));
 
 	ButtonGroup ttGroup = new ButtonGroup();
-	RButton[18] = new JRadioButton("free");
-	RButton[18].setToolTipText("teletext only; free text format ");
+	RButton[18] = new JRadioButton(Resource.getString("tab.subtitle.format.free"));
+	RButton[18].setToolTipText(Resource.getString("tab.subtitle.format.free.tip"));
 
 	RButton[19] = new JRadioButton("SC");
-	RButton[19].setToolTipText("teletext only; text, special sub format 1 (timecount & multilines)");
+	RButton[19].setToolTipText(Resource.getString("tab.subtitle.format.sc.tip"));
 
 	RButton[20] = new JRadioButton("SUB");
-	RButton[20].setToolTipText("teletext only; text, special sub format 2 (framecount & multilines)");
+	RButton[20].setToolTipText(Resource.getString("tab.subtitle.format.sub.tip"));
 	RButton[20].setSelected(true);
 
 	RButton[21] = new JRadioButton("SRT");
-	RButton[21].setToolTipText("teletext only; text, special sub format 3 (timecount & multilines)");
+	RButton[21].setToolTipText(Resource.getString("tab.subtitle.format.srt.tip"));
 
 	RButton[24] = new JRadioButton("STL");
-	RButton[24].setToolTipText("teletext only; text, special sub format 4 (timecount & multilines)");
+	RButton[24].setToolTipText(Resource.getString("tab.subtitle.format.stl.tip"));
 
 	RButton[22] = new JRadioButton("SSA");
-	RButton[22].setToolTipText("teletext only; text, Sub Station Alpha Script V4, with color support");
+	RButton[22].setToolTipText(Resource.getString("tab.subtitle.format.ssa.tip"));
 
 	//DM14052004 081.7 int02 add
 	RButton[17] = new JRadioButton("SON");
-	RButton[17].setToolTipText("DVB sub's only; text + binary(bitmap), special sub format 5 (timecount & multilines)");
+	RButton[17].setToolTipText(Resource.getString("tab.subtitle.format.son.tip"));
 
 	RButton[23] = new JRadioButton("SUP");
-	RButton[23].setToolTipText("teletext, DVB & DVD sub's; binary, 2-bit coloured RLE");
+	RButton[23].setToolTipText(Resource.getString("tab.subtitle.format.sup.tip"));
 
 	ttGroup.add(RButton[17]); //DM14052004 081.7 int02 add
 	ttGroup.add(RButton[18]);
@@ -2261,7 +2264,7 @@ protected JPanel buildsubtitlePanel()
 	ttGroup.add(RButton[23]);
 	ttGroup.add(RButton[24]);
 
-	ttPanel.add(new JLabel("subtitle export formats: "));
+	ttPanel.add(new JLabel(Resource.getString("tab.subtitle.format")));
 	ttPanel.add(RButton[18]);
 	ttPanel.add(RButton[19]);
 	ttPanel.add(RButton[20]);
@@ -2274,35 +2277,39 @@ protected JPanel buildsubtitlePanel()
 	tt0.add(ttPanel);
 
 	//DM24042004 081.7 int02 add++
-	Object model[] = { "4 colors", "16 colors", "256 colors" };
+	Object model[] = { 
+		Resource.getString("tab.subtitle.model.mode0"), 
+		Resource.getString("tab.subtitle.model.mode1"), 
+		Resource.getString("tab.subtitle.model.mode2")
+	};
 	comBox[11] = new JComboBox(model);
 	comBox[11].setSelectedIndex(1);
-	comBox[11].setPreferredSize(new Dimension(100,22));
-	comBox[11].setMaximumSize(new Dimension(100,22));
+	comBox[11].setPreferredSize(new Dimension(130,22));
+	comBox[11].setMaximumSize(new Dimension(130,22));
 
 	d2vfield[9] = new JTextField("");
 	d2vfield[9].setEditable(true);
 	d2vfield[9].setPreferredSize(new Dimension(40,22));
 	d2vfield[9].setMaximumSize(new Dimension(100,22));
-	d2vfield[9].setToolTipText("empty field = use what comes, else: key in the page ID of interest (depends on broadcast)");
+	d2vfield[9].setToolTipText(Resource.getString("tab.subtitle.pageid.tip"));
 
 	JPanel IRDPanel = new JPanel();
 	IRDPanel.setLayout(new BoxLayout(IRDPanel, BoxLayout.X_AXIS));
 
-	JLabel color_model = new JLabel("simulate DVB Subpictures IRD color model:  ");
-	color_model.setToolTipText("that extremely affects the look of exported subtitles, best setting depends on what you want");
+	JLabel color_model = new JLabel(Resource.getString("tab.subtitle.model"));
+	color_model.setToolTipText(Resource.getString("tab.subtitle.model.tip"));
 
 	IRDPanel.add(color_model);
 	IRDPanel.add(comBox[11]);
-	IRDPanel.add(new JLabel("  fix to pageID: "));
+	IRDPanel.add(new JLabel(Resource.getString("tab.subtitle.pageid")));
 	IRDPanel.add(d2vfield[9]);
 
 	tt0.add(IRDPanel);
 	//DM24042004 081.7 int02 add--
 
-	tt0.add(new JLabel("settings for SUP format only:"));
+	tt0.add(new JLabel(Resource.getString("tab.subtitle.sup.special")));
 
-	picButton = new JButton("show Subtitle Preview");
+	picButton = new JButton(Resource.getString("tab.subtitle.preview"));
 	picButton.setPreferredSize(new Dimension(180,25));
 	picButton.setActionCommand("picview");
 	picButton.addActionListener(my0Listener);
@@ -2315,13 +2322,13 @@ protected JPanel buildsubtitlePanel()
 	d2vfield[6] = new JTextField("26;10;32;80;560;720;576;-1;4"); //DM26052004 081.7 int03 changed
 	d2vfield[6].setEditable(true);
 	d2vfield[6].setPreferredSize(new Dimension(170,20));
-	d2vfield[6].setToolTipText("(offsets from left bottom) Font pointsize; BckGrd Alpha; Yoffset; Xoffset; Xwidth; H(unused); V; Yoffset2");
+	d2vfield[6].setToolTipText(Resource.getString("tab.subtitle.sup.values.tip"));
 
 	JPanel picPanel = new JPanel();
 	picPanel.setLayout(new BoxLayout(picPanel, BoxLayout.X_AXIS));
 	picPanel.add(picButton);
 	picPanel.add(comBox[26]);
-	picPanel.add(new JLabel(" Val:"));
+	picPanel.add(new JLabel(Resource.getString("tab.subtitle.sup.values")));
 	picPanel.add(d2vfield[6]);
 	tt0.add(picPanel);
 
@@ -7676,6 +7683,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 
 			// PES id, if packet start
 			pesID = (start) ? ((255&push189[4+addlength])<<24 | (255&push189[5+addlength])<<16 |
+
 					(255&push189[6+addlength])<<8 | (255&push189[7+addlength])) : 0;
 			// PSI id, if packet start
 			psiID = (start) ? pesID>>>16 : 0;
