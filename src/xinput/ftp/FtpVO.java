@@ -1,16 +1,21 @@
-package xinput;
+package xinput.ftp;
 
-class FtpVO {
+import org.apache.commons.net.ftp.FTPFile;
+
+public class FtpVO implements Cloneable {
+
 	private String server = null;
 	private String user = null;
 	private String password = null;
 	private String directory = null;
+	private FTPFile ftpFile = null;
 
-	public FtpVO(String server, String user, String password, String directory) {
+	public FtpVO(String server, String user, String password, String directory, FTPFile ftpFile) {
 		this.server = server;
 		this.user = user;
 		this.password = password;
 		this.directory = directory;
+		this.ftpFile = ftpFile;
 	}
 
 	public void reset() {
@@ -79,5 +84,24 @@ class FtpVO {
 	 */
 	public void setUser(String user) {
 		this.user = user;
+	}
+	/**
+	 * @return Returns the ftpFile.
+	 */
+	public FTPFile getFtpFile() {
+		return ftpFile;
+	}
+	/**
+	 * @param aFtpFile The ftpFile to set.
+	 */
+	public void setFtpFile(FTPFile aFtpFile) {
+		ftpFile = aFtpFile;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	public Object clone() {
+		return new FtpVO(server, user, password, directory, ftpFile);
 	}
 }

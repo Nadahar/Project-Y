@@ -6,15 +6,15 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-class XInputStream extends FilterInputStream {
+public class XInputStream extends FilterInputStream {
 
 	boolean debug = false;
 	FileWriter fw = null;
 
 	/**
-	 * Create stream, which is able to handle special needs of a XInputFile
+	 * Create stream, which is able to handle special needs of the xinput package.
 	 * 
-	 * @param aIs InputStream to XInputFile
+	 * @param aIs InputStream
 	 * @see java.io.FilterInputStream#FilterInputStream(InputStream in)
 	 */
 	public XInputStream(InputStream aIs) {
@@ -30,6 +30,9 @@ class XInputStream extends FilterInputStream {
 	}
 
 	/**
+	 * Takes care, that always the full amount of data is read (if possible).
+	 * Blocks until it succeeds.
+	 * 
 	 * @see java.io.InputStream#read()
 	 */
 	public int read() throws IOException {
@@ -42,6 +45,10 @@ class XInputStream extends FilterInputStream {
 	}
 
 	/**
+	 * Takes care, that always the full amount of data is read (if possible).
+	 * Blocks until it succeeds.
+	 * 
+	 * @param aBuffer Buffer to fill with data
 	 * @see java.io.InputStream#read(byte[])
 	 */
 	public int read(byte[] aBuffer) throws IOException {
@@ -53,6 +60,12 @@ class XInputStream extends FilterInputStream {
 	}
 
 	/**
+	 * Takes care, that always the full amount of data is read (if possible).
+	 * Blocks until it succeeds.
+	 * 
+	 * @param aBuffer Buffer to keep data
+	 * @param off     Offset in buffer
+	 * @param len     Length of data to read
 	 * @see java.io.InputStream#read(byte[], int, int)
 	 */
 	public int read(byte[] aBuffer, int off, int len) throws IOException {
@@ -86,7 +99,7 @@ class XInputStream extends FilterInputStream {
 					fw.write("Wanted: " + len + ", Read: " + readBytes
 							+ ", Difference: " + (len - readBytes) + "\n");
 				} else {
-					//fw.write("Wanted: " + len + ", Read: " + readBytes + "\n");
+					fw.write("Wanted: " + len + ", Read: " + readBytes + "\n");
 				}
 			}
 		}

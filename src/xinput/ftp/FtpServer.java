@@ -1,4 +1,4 @@
-package xinput;
+package xinput.ftp;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,7 +7,9 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
-class FtpServer {
+import xinput.XInputFile;
+
+public class FtpServer {
 
 	private FtpVO ftpVO;
 	private StringCommandListener scl;
@@ -87,7 +89,9 @@ class FtpServer {
 			ftpInputFiles = new XInputFile[ftpFiles.length];
 
 			for (int i = 0; i < ftpFiles.length; i++) {
-				ftpInputFiles[i] = new XInputFile(ftpVO, ftpFiles[i]);
+				FtpVO tempFtpVO = (FtpVO)ftpVO.clone();
+				tempFtpVO.setFtpFile(ftpFiles[i]);
+				ftpInputFiles[i] = new XInputFile(tempFtpVO);
 			}
 
 		} catch (IOException e) {

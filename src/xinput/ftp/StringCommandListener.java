@@ -1,4 +1,4 @@
-package xinput;
+package xinput.ftp;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -1,4 +1,4 @@
-package xinput;
+package xinput.ftp;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import xinput.XInputDirectory;
 
 /**
  * <p>
@@ -344,7 +346,7 @@ public class FtpChooser extends JDialog {
 	}
 
 	void testButton_actionPerformed(ActionEvent e) {
-		FtpVO ftpVO = new FtpVO(tfServer.getText(), tfUser.getText(), tfPassword.getText(), tfDirectory.getText());
+		FtpVO ftpVO = new FtpVO(tfServer.getText(), tfUser.getText(), tfPassword.getText(), tfDirectory.getText(), null);
 		xInputDirectory = new XInputDirectory(ftpVO);
 		isTested = xInputDirectory.test();
 		if (!isTested) {

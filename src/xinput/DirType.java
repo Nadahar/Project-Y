@@ -4,37 +4,37 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-public class FileType {
+public class DirType {
 
 	/**
-	 * Stores all instances of FileType
+	 * Stores all instances of DirType
 	 */
-	private final static Collection fileTypes = new ArrayList(10);
+	private final static Collection dirTypes = new ArrayList(10);
 
 	/**
-	 *  File in a normal filesystem
+	 *  Directory in a normal filesystem
 	 */
-	public final static FileType FILE = new FileType(0, "FILE", xinput.file.XInputFileImpl.class);
+	public final static DirType FILE_DIR = new DirType(0, "FILE_DIR", xinput.file.XInputDirectoryImpl.class);
 
 	/**
-	 *  File on a ftp server
+	 *  Directory on a ftp server
 	 */
-	public final static FileType FTP = new FileType(1, "FTP", xinput.ftp.XInputFileImpl.class);
+	public final static DirType FTP_DIR = new DirType(1, "FTP_DIR", xinput.ftp.XInputDirectoryImpl.class);
 
 	/**
-	 *  Default FileType
+	 *  Default DirType
 	 */
-	public final static FileType DEFAULT = FILE;
+	public final static DirType DEFAULT = FILE_DIR;
 
 	private int type;
 	private String name;
 	private Class implementation;
 
-	private FileType(int aType, String aName, Class aImplementation) {
+	private DirType(int aType, String aName, Class aImplementation) {
 		type = aType;
 		name = aName;
 		implementation = aImplementation;
-		fileTypes.add(this);
+		dirTypes.add(this);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class FileType {
 	/**
 	 * @return Returns the fileTypes.
 	 */
-	public static Collection getFileTypes() {
-		return fileTypes;
+	public static Collection getDirTypes() {
+		return dirTypes;
 	}
 }

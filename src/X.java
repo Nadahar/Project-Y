@@ -130,9 +130,9 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import xinput.FtpChooser;
 import xinput.XInputDirectory;
 import xinput.XInputFile;
+import xinput.ftp.FtpChooser;
 // roehrist changes 10.06.2004 end
 
 

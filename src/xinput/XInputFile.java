@@ -7,432 +7,204 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Iterator;
 
 import org.apache.commons.net.ftp.FTPFile;
 
-public class XInputFile {
+import xinput.file.*;
+import xinput.ftp.*;
 
-	// Members, which are type independent
-	private FileType fileType = null;
-	private boolean isopen = false;
-	private InputStream inputStream = null;
+public class XInputFile implements XInputFileIF {
 
-	// Members used for type FileType.FILE
-	private File file = null;
-	private RandomAccessFile randomAccessFile = null;
+	// Implementation class
+	private XInputFileIF impl = null;
 
-	// Members used for type FileType.FTP
-	private FtpVO ftpVO = null;
-	private FTPFile ftpFile = null;
+	private boolean debug = true;
 
+	/**
+	 * Private Constructor, don't use!
+	 */
 	private XInputFile() {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * Create a XInputFile of type FileType.FILE.
-	 * 
-	 * @param aFile
-	 *            File data to use
-	 * @throws IllegalArgumentException
-	 *             If aFile is not a file
 	 */
-	public XInputFile(File aFile) {
-		if (!aFile.isFile()) {
-			throw new IllegalArgumentException("aFile is not a file!");
+	public XInputFile(Object aVO) {
+
+		FileType fileType = null;
+		Class[] parameterTypes = { aVO.getClass() };
+		Object[] parameterValues = { aVO };
+
+		for (Iterator fileTypes = FileType.getFileTypes().iterator(); fileTypes.hasNext();) {
+			fileType = (FileType) fileTypes.next();
+
+			if (fileType.equals(FileType.DEFAULT)) {
+				continue;
+			}
+
+			try {
+				if (debug) System.out.println("Try FileType '" + fileType.getName() + "'");
+				impl = (XInputFileIF) fileType.getImplementation().getConstructor(parameterTypes).newInstance(parameterValues);
+				if (debug) System.out.println("Use FileType '" + fileType.getName() + "' for file '" + impl.toString() + "'");
+				return;
+			} catch (Exception e) {
+				// Failed, try next type
+				impl = null;
+			}
 		}
-		file = aFile;
-		fileType = FileType.FILE;
+		try {
+			fileType = FileType.DEFAULT;
+			if (debug) System.out.println("Try default FileType '" + fileType.getName() + "'");
+			impl = (XInputFileIF) fileType.getImplementation().getConstructor(parameterTypes).newInstance(parameterValues);
+			if (debug) System.out.println("Use default FileType '" + fileType.getName() + "' for file '" + impl.toString() + "'");
+			return;
+		} catch (Exception e) {
+			// Failed, no type left, so this is final failure
+			impl = null;
+			String s = "No matching FileType found or file doesn't exist";
+			if (debug) System.out.println(s);
+			throw new IllegalArgumentException(s);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object aObj) {
+		return impl.equals(aObj);
 	}
 
 	/**
-	 * Create a XInputFile of type FileType.FTP.
-	 * 
-	 * @param aFtpVO
-	 *            Directory data to use
-	 * @param aFtpFile
-	 *            File data to use
-	 */
-	public XInputFile(FtpVO aFtpVO, FTPFile aFtpFile) {
-		ftpVO = aFtpVO;
-		ftpFile = aFtpFile;
-		fileType = FileType.FTP;
-	}
-
-	/**
-	 * Get String representation of the object.
-	 * 
-	 * @return String representation of the object
-	 */
-	public String toString() {
-
-		String s = null;
-
-		if (fileType == FileType.FILE) {
-			s = file.getAbsolutePath();
-		}
-
-		if (fileType == FileType.FTP) {
-			String name = ftpFile.getName();
-			name = name.replaceAll("Ã¤", "ä");
-			name = name.replaceAll("Ã¶", "ö");
-			name = name.replaceAll("Ã¼", "ü");
-			name = name.replaceAll("Ã„", "Ä");
-			name = name.replaceAll("Ã–", "Ö");
-			name = name.replaceAll("Ãœ", "Ü");
-			name = name.replaceAll("ÃŸ", "ß");
-			name = name.replaceAll("Ã¡", "á");
-			name = name.replaceAll("Ã ", "à");
-			name = name.replaceAll("Ã©", "é");
-			name = name.replaceAll("Ã¨", "è");
-			name = name.replaceAll("Ã­", "í");
-			name = name.replaceAll("Ã¬", "ì");
-			name = name.replaceAll("Ã³", "ó");
-			name = name.replaceAll("Ã²", "ò");
-			name = name.replaceAll("Ãº", "ú");
-			name = name.replaceAll("Ã¹", "ù");
-			
-			s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@"
-					+ ftpVO.getServer() + ftpVO.getDirectory() + "/" + name;
-		}
-		return s;
-	}
-
-	/**
-	 * Get url representation of the object.
-	 * 
-	 * @return String with url
-	 */
-	public String getUrl() {
-
-		String s = null;
-
-		if (fileType == FileType.FILE) {
-			s = "file://" + file.getAbsolutePath();
-		}
-
-		if (fileType == FileType.FTP) {
-			s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@"
-					+ ftpVO.getServer() + ftpVO.getDirectory() + "/"
-					+ ftpFile.getName() + ";type=b";
-		}
-		return s;
-	}
-
-	/**
-	 * Length of file in bytes.
-	 * 
-	 * @return Length of file in bytes
-	 */
-	public long length() {
-
-		long l = 0;
-
-		if (fileType == FileType.FILE) {
-			l = file.length();
-		}
-
-		if (fileType == FileType.FTP) {
-			l = ftpFile.getSize();
-		}
-		return l;
-	}
-
-	/**
-	 * Time in milliseconds from the epoch.
-	 * 
-	 * @return Time in milliseconds from the epoch
-	 */
-	public long lastModified() {
-
-		long l = 0;
-
-		if (fileType == FileType.FILE) {
-			l = file.lastModified();
-		}
-
-		if (fileType == FileType.FTP) {
-			l = ftpFile.getTimestamp().getTimeInMillis();
-		}
-		return l;
-	}
-
-	/**
-	 * Checks if file exists
-	 * 
-	 * @return Result of check
+	 * @return
 	 */
 	public boolean exists() {
-
-		boolean b = false;
-
-		if (fileType == FileType.FILE) {
-			b = file.exists();
-		}
-
-		if (fileType == FileType.FTP) {
-			try {
-				b = true;
-				inputStream = getInputStream();
-				inputStream.close();
-				inputStream = null;
-			} catch (Exception e) {
-				b = false;
-			}
-		}
-		return b;
+		return impl.exists();
 	}
 
 	/**
-	 * Get Name of file
-	 * 
-	 * @return Name of file
+	 * @return @throws
+	 *         FileNotFoundException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	public InputStream getInputStream() throws FileNotFoundException, MalformedURLException, IOException {
+		return impl.getInputStream();
+	}
+
+	/**
+	 * @return
 	 */
 	public String getName() {
-
-		String s = null;
-
-		if (fileType == FileType.FILE) {
-			s = file.getName();
-		}
-
-		if (fileType == FileType.FTP) {
-			s = ftpFile.getName();
-			s = s.replaceAll("Ã¤", "ä");
-			s = s.replaceAll("Ã¶", "ö");
-			s = s.replaceAll("Ã¼", "ü");
-			s = s.replaceAll("Ã„", "Ä");
-			s = s.replaceAll("Ã–", "Ö");
-			s = s.replaceAll("Ãœ", "Ü");
-			s = s.replaceAll("ÃŸ", "ß");
-			s = s.replaceAll("Ã¡", "á");
-			s = s.replaceAll("Ã ", "à");
-			s = s.replaceAll("Ã©", "é");
-			s = s.replaceAll("Ã¨", "è");
-			s = s.replaceAll("Ã­", "í");
-			s = s.replaceAll("Ã¬", "ì");
-			s = s.replaceAll("Ã³", "ó");
-			s = s.replaceAll("Ã²", "ò");
-			s = s.replaceAll("Ãº", "ú");
-			s = s.replaceAll("Ã¹", "ù");
-		}
-		return s;
+		return impl.getName();
 	}
+
 	/**
-	 * Get Path of parent
-	 * 
-	 * @return Path of parent
+	 * @return
 	 */
 	public String getParent() {
-
-		String s = null;
-
-		if (fileType == FileType.FILE) {
-			s = file.getParent();
-		}
-
-		if (fileType == FileType.FTP) {
-			s = ftpVO.getDirectory();
-		}
-		return s;
+		return impl.getParent();
 	}
 
 	/**
-	 * Get input stream from the file. close() on stream closes XInputFile, too.
-	 * 
-	 * @return Input stream from the file
+	 * @return
 	 */
-	public InputStream getInputStream() throws FileNotFoundException,
-			MalformedURLException, IOException {
+	public String getUrl() {
+		return impl.getUrl();
+	}
 
-		InputStream is = null;
-
-		if (fileType == FileType.FILE) {
-			is = new FileInputStream(file);
-		}
-
-		if (fileType == FileType.FTP) {
-			is = new XInputStream((new URL(getUrl())).openConnection()
-					.getInputStream());
-		}
-		return is;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return impl.hashCode();
 	}
 
 	/**
-	 * Opens XInputFile for random access
-	 * 
-	 * @param mode
-	 *            Access mode as in RandomAccessFile
+	 * @return
+	 */
+	public long lastModified() {
+		return impl.lastModified();
+	}
+
+	/**
+	 * @return
+	 */
+	public long length() {
+		return impl.length();
+	}
+
+	/**
 	 * @throws IOException
-	 */
-	public void randomAccessOpen(String mode) throws IOException {
-
-		if (isopen) {
-			throw new IllegalStateException("XInputFile is already open!");
-		}
-
-		if (fileType == FileType.FILE) {
-			randomAccessFile = new RandomAccessFile(file, mode);
-		}
-
-		if (fileType == FileType.FTP) {
-			if (mode.compareTo("r") != 0) {
-				throw new IllegalStateException(
-						"Illegal access mode for FileType.FTP");
-			}
-			inputStream = getInputStream();
-			inputStream.mark(10 * 1024 * 1024);
-		}
-		isopen = true;
-	}
-
-	/**
-	 * @throws java.io.IOException
 	 */
 	public void randomAccessClose() throws IOException {
-
-		if (!isopen) {
-			throw new IllegalStateException("XInputFile is already closed!");
-		}
-
-		if (fileType == FileType.FILE) {
-			if (randomAccessFile != null) {
-				randomAccessFile.close();
-				randomAccessFile = null;
-			}
-		}
-
-		if (fileType == FileType.FTP) {
-			if (inputStream != null) {
-				inputStream.close();
-				inputStream = null;
-			}
-		}
-		isopen = false;
+		impl.randomAccessClose();
 	}
 
 	/**
-	 * @param aPosition The offset position, measured in bytes from the beginning of the file, at which to set the file pointer.
-	 * @throws java.io.IOException
-	 */
-	public void randomAccessSeek(long aPosition) throws IOException {
-
-		if (fileType == FileType.FILE) {
-			randomAccessFile.seek(aPosition);
-		}
-
-		if (fileType == FileType.FTP) {
-			long skipped = 0;
-			long remaining = 0;
-
-			inputStream.reset();
-			remaining = aPosition;
-			do {
-				skipped = inputStream.skip(remaining);
-				if (skipped > 0) {
-					remaining -= skipped;
-				}
-			} while (remaining > 0);
-		}
-	}
-
-	/**
-	 * @param aBuffer The buffer into which the data is read.
-	 * @return @throws
-	 *         java.io.IOException
-	 */
-	public int randomAccessRead(byte[] aBuffer) throws IOException {
-
-		int result = 0;
-
-		if (fileType == FileType.FILE) {
-			result = randomAccessFile.read(aBuffer);
-		}
-
-		if (fileType == FileType.FTP) {
-			/*
-			 * long read = 0; long remaining = 0; byte[] streamBuffer = new
-			 * byte[aBuffer.length];
-			 * 
-			 * remaining = aBuffer.length; do { read =
-			 * inputStream.read(streamBuffer, 0, (int)remaining); if (read > 0) {
-			 * System.arraycopy(streamBuffer, 0, aBuffer, (int) (aBuffer.length -
-			 * remaining), (int)read); remaining -= read; } } while ((remaining >
-			 * 0) && (read != -1)); result = (int) (aBuffer.length - remaining);
-			 * 
-			 * if (read == -1 && result == 0) { result = -1; }
-			 */
-
-			result = inputStream.read(aBuffer);
-		}
-
-		return result;
-
-	}
-
-	/**
-	 * @param aBuffer The data.
-	 * @throws java.io.IOException
-	 */
-	public void randomAccessWrite(byte[] aBuffer) throws IOException {
-
-		if (fileType == FileType.FILE) {
-			randomAccessFile.write(aBuffer);
-		}
-
-		if (fileType == FileType.FTP) {
-			throw new IllegalStateException("Illegal access for FileType.FTP");
-		}
-	}
-
-	/**
-	 * Convinience method for a single random read access to a input file. The
-	 * file is opened before and closed after read.
-	 * 
-	 * @param aBuffer
-	 *            Buffer to fill with read bytes (up to aBuffer.length() bytes)
-	 * @param aPosition
-	 *            Fileposition at which we want read
+	 * @param aMode
 	 * @throws IOException
 	 */
-	public void randomAccessSingleRead(byte[] aBuffer, long aPosition)
-			throws IOException {
-
-		randomAccessOpen("r");
-		randomAccessSeek(aPosition);
-		randomAccessRead(aBuffer);
-		randomAccessClose();
-
+	public void randomAccessOpen(String aMode) throws IOException {
+		impl.randomAccessOpen(aMode);
 	}
+
 	/**
-	 * @return Long value read.
-	 * @throws java.io.IOException
+	 * @param aBuffer
+	 * @return @throws
+	 *         IOException
+	 */
+	public int randomAccessRead(byte[] aBuffer) throws IOException {
+		return impl.randomAccessRead(aBuffer);
+	}
+
+	/**
+	 * @param aPosition
+	 * @throws IOException
+	 */
+	public void randomAccessSeek(long aPosition) throws IOException {
+		impl.randomAccessSeek(aPosition);
+	}
+
+	/**
+	 * @param aBuffer
+	 * @param aPosition
+	 * @throws IOException
+	 */
+	public void randomAccessSingleRead(byte[] aBuffer, long aPosition) throws IOException {
+		impl.randomAccessSingleRead(aBuffer, aPosition);
+	}
+
+	/**
+	 * @param aBuffer
+	 * @throws IOException
+	 */
+	public void randomAccessWrite(byte[] aBuffer) throws IOException {
+		impl.randomAccessWrite(aBuffer);
+	}
+
+	/**
+	 * @return @throws
+	 *         IOException
 	 */
 	public long readLong() throws IOException {
-
-		long l = 0;
-
-		if (fileType == FileType.FILE) {
-			l = randomAccessFile.readLong();
-		}
-
-		if (fileType == FileType.FTP) {
-			byte[] buffer = new byte[8];
-			int bytesRead = 0;
-
-			bytesRead = randomAccessRead(buffer);
-			if (bytesRead < 8) {
-				throw new EOFException("Less than 8 bytes read");
-			}
-			l = ((long) buffer[1] << 56) + ((long) buffer[2] << 48)
-					+ ((long) buffer[3] << 40) + ((long) buffer[4] << 32)
-					+ ((long) buffer[5] << 24) + ((long) buffer[6] << 16)
-					+ ((long) buffer[7] << 8) + buffer[8];
-		}
-		return l;
+		return impl.readLong();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return impl.toString();
+	}
 }
