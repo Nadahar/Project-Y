@@ -4606,7 +4606,7 @@ public void loadLang()
 	catch (IOException e1)
 	{
 		//DM25072004 081.7 int07 add
-		Msg("load language error: " + e1);
+		Msg(RESOURCE.getString("msg.loadlang.error") + " " + e1);
 	}
 }
 	
@@ -4706,7 +4706,7 @@ public void iniload()
 	catch (IOException e1)
 	{
 		//DM25072004 081.7 int07 add
-		Msg("ini load error: " + e1);
+		Msg(RESOURCE.getString("msg.loadini.error") + " " + e1);
 	}
 }   
 
@@ -4786,7 +4786,7 @@ public static void inisave() //DM26012004 081.6 int12 changed, //DM26032004 081.
 	catch (IOException e1)
 	{
 		//DM25072004 081.7 int07 add
-		Msg("ini save error: " + e1);
+		Msg(RESOURCE.getString("msg.saveini.error") + " " + e1);
 	}
 }
 
@@ -4980,10 +4980,10 @@ public static void loadCutPoints(String file) {
 		}
 		points.close();
 		cutlist.add(pointList);
-		Msg("-> loading "+pointList.size()+" Cutpoints...");
+		Msg(MessageFormat.format(RESOURCE.getString("msg.loading.cutpoints"), new String[]{""+pointList.size()}));
 	} 
 	catch (IOException e5) { 
-		Msg("error loading "+file);
+		Msg(RESOURCE.getString("msg.loading.cutpoints.error") + " " + file + ": " + e5);
 	}
 	return;
 }
@@ -5001,7 +5001,7 @@ public static void loadIDs(String nIDs) {  //DM28112003 081.5++
 		a++;
 	}
 	speciallist.add(nIDList);
-	Msg("-> loading "+nIDList.size()+" (P)IDs...");
+	Msg(MessageFormat.format(RESOURCE.getString("msg.loading.pids"), new String[]{""+nIDList.size()}));
 	return;
 }
 
@@ -5145,7 +5145,7 @@ public static void main(String[] args) {
 
 		//DM22062004 081.7 int05 changed
 		if ((ac3f = loadAC3()) > 0) 
-			Msg("ac3.bin contains " + ac3f + " AC3 frames");
+			Msg(MessageFormat.format(RESOURCE.getString("msg.ac3.frames"), new String[]{""+ac3f}));
 
 		cBox[11].setSelected(false);
 		options[30]=0;
@@ -5218,7 +5218,7 @@ public static void main(String[] args) {
 
 		//DM22062004 081.7 int05 changed
 		if ((ac3f = loadAC3()) > 0) 
-			Msg("ac3.bin contains " + ac3f + " AC3 frames");
+			Msg(MessageFormat.format(RESOURCE.getString("msg.ac3.frames"), new String[]{""+ac3f}));
 
 		startup.set(RButton[1].isSelected());
 
@@ -5323,7 +5323,7 @@ public static long calcvideotime(String logfile) {
 	vtime = vlog.readLong();
 	vlog.close();
 	}
-	catch (IOException e) {  X.Msg("..ptsfile access error"); }
+	catch (IOException e) {  Msg(RESOURCE.getString("msg.ptsfile.error") + " " + e); }
 	return vtime;
 }
 
@@ -5460,12 +5460,12 @@ private static void saveCuts(long cutposition, long startPTS, long lastframes, S
 
 		pts_writer.println(startPTS);
 		pts_writer.close();
-		Msg("-> saving cut PTS value ("+startPTS+") to file..");
+		Msg(MessageFormat.format(RESOURCE.getString("msg.savecut"), new Object[]{""+startPTS}));
 		}
 		catch (IOException e)
 		{
 			//DM25072004 081.7 int07 add
-			Msg("cutpoint save error: " + e);
+			Msg(RESOURCE.getString("msg.savecut.error") + " " + e);
 		}
 	}
 }
@@ -5482,7 +5482,7 @@ class LOG extends Thread {
 		logging=new PrintStream(new FileOutputStream(loggin));
 		System.setOut(logging);
 		}
-		catch (IOException e) { Msg("log error "+e); }
+		catch (IOException e) { Msg(RESOURCE.getString("msg.log.error") + " " + e); }
 	}
 }
 
@@ -5521,11 +5521,11 @@ public void run() {
 	extract.setEnabled(false);
 
 	//DM01042004 081.6 int18 changed
-	progress.setString("preparing collection(s)...");
+	progress.setString(RESOURCE.getString("run.prepare.colls"));
 	progress.setStringPainted(true);
 
 	progress.setValue(0);
-	msoff.setText("A/V offset");
+	msoff.setText(RESOURCE.getString("run.av.offset"));
 	ttxheaderLabel.setText("");
 	ttxvpsLabel.setText("");
 
@@ -5542,13 +5542,13 @@ public void run() {
 			b = a+1;
 		}
 
-		Msg("\r\n=== session infos ===");
+		Msg("\r\n" + RESOURCE.getString("run.session.infos"));
 
 		for ( ; a<b ; a++,d++) {
 			workinglist.clear();
 			workinglist = (ArrayList)collfiles[a].clone();
 			comBox[0].setSelectedIndex(a);
-			Msg("\r\n=> working with collection "+a);
+			Msg("\r\n" + RESOURCE.getString("run.working.coll") + a);
 			currentcoll = a;
 
 			if (workinglist.size() > 0) { 
@@ -5566,14 +5566,14 @@ public void run() {
 
 				//DM15072004 081.7 int06 moved and add++
 				if (options[18]>0) 
-					Msg("-> split output @ appr. "+(options[18]/1048576)+" MB");
+					Msg(RESOURCE.getString("run.split.output") + (options[18]/1048576) + " MB");
 
 				if (cBox[8].isSelected())
-					Msg("-> add time offset to audio/ttx/pics :  " + (options[28] / 90) + " ms (if it follows on a video)");
+					Msg(MessageFormat.format(RESOURCE.getString("run.add.time.offset"), new String[]{ (""+options[28] / 90)}));
 
 				for (int i = 55; i < 61; i++)
 					if (!cBox[i].isSelected())
-						Msg("-> PES stream type disabled: " + cBox[i].getText());
+						Msg(RESOURCE.getString("run.stream.type.disabled") + " " + cBox[i].getText());
 
 				Msg(" ");
 				//DM15072004 081.7 int06 moved and add--
@@ -5604,11 +5604,11 @@ public void run() {
 					new File(workouts).mkdirs();
 				}
 
-				Msg("-> write output files to :");
+				Msg(RESOURCE.getString("run.write.output.to"));
 				Msg("\t"+workouts);
 
 				if (ctemp.size()>0)
-					Msg("-> "+ctemp.size()+" cutpoint(s) defined ("+comBox[17].getSelectedItem()+")");
+					Msg("-> "+ctemp.size()+RESOURCE.getString("run.cutpoints.defined") + " ("+comBox[17].getSelectedItem()+")");
 
 				String fchilds = (new File(firstfile).getName()).toString();
 				if ( fchilds.lastIndexOf(".") != -1 ) 
@@ -5643,7 +5643,7 @@ public void run() {
 					qinfo=false;
 					options[18]=splitlen;
 					workinglist = (ArrayList)collfiles[a].clone();
-					Msg("--- end of quick info ---");
+					Msg(RESOURCE.getString("run.end.quick.info"));
 				}
 
 				/** doit standard **/ 
@@ -5652,11 +5652,11 @@ public void run() {
 				java.util.Arrays.fill(VBASIC,null); //DM08032004 081.6 int18 add
 
 			} else {
-				msoff.setText("A/V offset");
+				msoff.setText(RESOURCE.getString("run.av.offset"));
 				progress.setString("");
 				progress.setStringPainted(false);
 				progress.setValue(0);
-				Msg("no input file...");
+				Msg(RESOURCE.getString("run.no.input"));
 			}
 		}
 	} else {  // extract raw
@@ -5670,7 +5670,7 @@ public void run() {
 			workouts = new File(firstfile).getParent();
 			if ( !workouts.endsWith(filesep) ) 
 				workouts += filesep;
-				Msg("write separated raw file to "+workouts);
+				Msg(RESOURCE.getString("run.write.raw") + ": "+workouts);
  
 				String fchilds = (new File(firstfile).getName()).toString();
 				if ( fchilds.lastIndexOf(".") != -1 )
@@ -5679,11 +5679,11 @@ public void run() {
 				working();
 				options[33]=0;
 				inputlist();
-		} else Msg("Collection is empty... ");
+		} else Msg(RESOURCE.getString("run.coll.empty"));
 	} 
 
 	timeneeded = System.currentTimeMillis() - timeneeded;
-	progress.setString("done...    "+d+" collection(s) processed  @  "+sms.format(new java.util.Date(timeneeded)));
+	progress.setString(MessageFormat.format(RESOURCE.getString("run.done"), new String[]{""+d}) + " "+sms.format(new java.util.Date(timeneeded)));
 	progress.setStringPainted(true);
 
 	doitButton.setEnabled(true);
@@ -5696,7 +5696,7 @@ public void run() {
 	}
 	catch (Exception e8) {
 		//TextArea.setForeground(new Color(200,0,0));
-		Msg("stopped...");
+		Msg(RESOURCE.getString("run.stopped"));
 		StringWriter aa = new StringWriter();
 		e8.printStackTrace(new PrintWriter(aa));
 		Msg(""+aa.toString());
@@ -5704,7 +5704,7 @@ public void run() {
 	}
 	catch (Error e9) {
 		//TextArea.setForeground(new Color(200,0,0));
-		Msg("stopped...");
+		Msg(RESOURCE.getString("run.stopped"));
 		StringWriter aa = new StringWriter();
 		e9.printStackTrace(new PrintWriter(aa));
 		Msg(""+aa.toString());
@@ -5718,7 +5718,7 @@ public void run() {
 	options[30]=0;
 	options[31]=0;
 	if (qinfo) 
-		Msg("--- end of quick info ---");
+		Msg(RESOURCE.getString("run.end.quick.info"));
 	qpause=false;
 	qbreak=false;
 	yield();
