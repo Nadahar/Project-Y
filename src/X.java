@@ -739,7 +739,7 @@ private void close_AutoloadPanel()
 //DM26032004 081.6 int18 changed
 protected void buildAutoloadPanel()
 {
-	autoload = new JFrame("list of pre-defined input directories");
+	autoload = new JFrame(Resource.getString("autoload.title"));
 	autoload.addWindowListener ( new WindowAdapter()
 	{
 		public void windowClosing(WindowEvent e)
@@ -755,21 +755,21 @@ protected void buildAutoloadPanel()
 	remove_input.setActionCommand("-i");
 	remove_input.setPreferredSize(new Dimension(50,28));
 	remove_input.setMaximumSize(new Dimension(50,28));
-	remove_input.setToolTipText("remove directory from autoload list");
+	remove_input.setToolTipText(Resource.getString("autoload.dir.remove.tip"));
 	bb.add(remove_input);
 
 	JButton add_input = new JButton("+");
 	add_input.setActionCommand("+i");
 	add_input.setPreferredSize(new Dimension(50,28));
 	add_input.setMaximumSize(new Dimension(50,24));
-	add_input.setToolTipText("add directory to autoload list");
+	add_input.setToolTipText(Resource.getString("autoload.dir.add.tip"));
 	bb.add(add_input);
 
 	JButton refresh_list = new JButton("o");
 	refresh_list.setActionCommand("ri");
 	refresh_list.setPreferredSize(new Dimension(50,28));
 	refresh_list.setMaximumSize(new Dimension(50,28));
-	refresh_list.setToolTipText("refresh file list");
+	refresh_list.setToolTipText(Resource.getString("autoload.dir.refresh.tip"));
 	bb.add(refresh_list);
 
 	bb.add(new JLabel(" "));
@@ -777,14 +777,14 @@ protected void buildAutoloadPanel()
 	JButton add_coll_and_files = new JButton("+<");
 	add_coll_and_files.setPreferredSize(new Dimension(50,28));
 	add_coll_and_files.setMaximumSize(new Dimension(50,28));
-	add_coll_and_files.setToolTipText("create new collection for each selected file and add it");
+	add_coll_and_files.setToolTipText(Resource.getString("autoload.add.coll.tip"));
 	bb.add(add_coll_and_files);
 
 	add_files = new JButton("<");
 	add_files.setEnabled(false);
 	add_files.setPreferredSize(new Dimension(50,28));
 	add_files.setMaximumSize(new Dimension(50,28));
-	add_files.setToolTipText("add file(s) to collection");
+	add_files.setToolTipText(Resource.getString("autoload.add.file.tip"));
 	bb.add(add_files);
 
 	bb.add(new JLabel(" "));
@@ -792,7 +792,7 @@ protected void buildAutoloadPanel()
 	JButton close = new JButton("X");
 	close.setPreferredSize(new Dimension(50,28));
 	close.setMaximumSize(new Dimension(50,28));
-	close.setToolTipText("closing window");
+	close.setToolTipText(Resource.getString("autoload.close"));
 	close.addActionListener(new ActionListener()
 	{
 		public void actionPerformed(ActionEvent e)
@@ -808,7 +808,7 @@ protected void buildAutoloadPanel()
 	list1.setName("inl");
 	list1.setVisibleRowCount(8);
 	list1.setSelectionMode(2);
-	list1.setToolTipText("left doubleclick or enter to add file(s) to a collection, right click to rename");
+	list1.setToolTipText(Resource.getString("autoload.rename.tip"));
 	list1.addMouseListener( new MouseAdapter()
 	{
 		public void mouseClicked(MouseEvent e)
@@ -831,13 +831,13 @@ protected void buildAutoloadPanel()
 					if ( !inparent.endsWith(filesep) )  
 						inparent += filesep;
 
-					String inputval = JOptionPane.showInputDialog(frame, inchild , "rename " + inparent + inchild, JOptionPane.QUESTION_MESSAGE );
+					String inputval = JOptionPane.showInputDialog(frame, inchild , Resource.getString("autoload.dialog.rename") + " " + inparent + inchild, JOptionPane.QUESTION_MESSAGE );
 
 					if (inputval != null && !inputval.equals(""))
 					{
 						if (new File(inparent + inputval).exists())
 						{
-							int opt = JOptionPane.showConfirmDialog(frame, "File exists! Overwrite?");
+							int opt = JOptionPane.showConfirmDialog(frame, Resource.getString("autoload.dialog.fileexists"));
 
 							if (opt == JOptionPane.YES_OPTION)
 							{
@@ -1869,34 +1869,34 @@ protected JPanel buildexternPanel() { //DM30122003 081.6 int10 changed
 
 	JPanel video3Panel = new JPanel();
 	video3Panel.setLayout( new ColumnLayout() );
-	video3Panel.setBorder( BorderFactory.createTitledBorder("external Projectfile settings") );
-	video3Panel.setToolTipText("change the entries, if you know what you do");
+	video3Panel.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.extern.title2")) );
+	video3Panel.setToolTipText(Resource.getString("tab.extern.title2.tip"));
 
 	//mpeg2schnitt, JLA06082003+, DM24112003
-	cBox[34] = new JCheckBox("Mpeg2Schnitt idd version V2/A3");
+	cBox[34] = new JCheckBox(Resource.getString("tab.extern.m2s") + " V2/A3");
 	cBox[34].setSelected(false);
 	cBox[34].setPreferredSize(new Dimension(250,20));
 	cBox[34].setMaximumSize(new Dimension(250,20));
-	cBox[34].setToolTipText("...create *.idd index file on demux:");
+	cBox[34].setToolTipText(Resource.getString("tab.extern.m2s.tip"));
 	cBox[34].setActionCommand("idd");
-	video3Panel.add(new JLabel("create *.idd Projectfile on demux:"));
+	video3Panel.add(new JLabel(Resource.getString("tab.extern.m2s.idd")));
 	video3Panel.add(cBox[34]);
 	//JLA06082003-
 
-	video3Panel.add(new JLabel("create *.d2v Projectfile on demux:"));
+	video3Panel.add(new JLabel(Resource.getString("tab.extern.d2v")));
 
-	cBox[29] = new JCheckBox("for each demuxed videofile");
+	cBox[29] = new JCheckBox(Resource.getString("tab.extern.d2v.mode0"));
 	cBox[29].setSelected(false);
 	cBox[29].setPreferredSize(new Dimension(250,20));
 	cBox[29].setMaximumSize(new Dimension(250,20));
-	cBox[29].setToolTipText("if each part should be converted separatly");
+	cBox[29].setToolTipText(Resource.getString("tab.extern.d2v.mode0.tip"));
 	cBox[29].setActionCommand("d2v1");
 
-	cBox[30] = new JCheckBox("auto split video, but keep as one project");
+	cBox[30] = new JCheckBox(Resource.getString("tab.extern.d2v.mode1"));
 	cBox[30].setSelected(false);
 	cBox[30].setPreferredSize(new Dimension(250,20));
 	cBox[30].setMaximumSize(new Dimension(250,20));
-	cBox[30].setToolTipText("auto split demuxed video in specified part size, not audio; better for big files on <=FAT32 systems");
+	cBox[30].setToolTipText(Resource.getString("tab.extern.d2v.mode1.tip"));
 	cBox[30].setActionCommand("d2v2");
 	video3Panel.add(cBox[29]);
 	video3Panel.add(cBox[30]);
@@ -1906,7 +1906,7 @@ protected JPanel buildexternPanel() { //DM30122003 081.6 int10 changed
 	d2vfield[5].setPreferredSize(new Dimension(70,20));
 
 	JPanel d2vPanel = new JPanel();
-	JLabel d2vLabel = new JLabel ("-> split only video at xxx MB: ");
+	JLabel d2vLabel = new JLabel (Resource.getString("tab.extern.d2v.splitsize"));
 	d2vPanel.add(d2vLabel);
 	d2vPanel.add(d2vfield[5]);
 	video3Panel.add(d2vPanel);
@@ -1914,11 +1914,14 @@ protected JPanel buildexternPanel() { //DM30122003 081.6 int10 changed
 	cBox[29].addActionListener(mytabListener);
 	cBox[30].addActionListener(mytabListener);
 
-	String[] d2vtips = { "2 = 32bit SSE MMX ; 3 = 64bit float ; 4 = IEEE-1180 Reference",
-				"0 = PC Scale ; 1 = TV Scale",
-				"Gain (0..255) std=128 , Offset (-256..256) no=0",
-				"Crop: top , bottom , left , right , LB W. , LB H. (ensure, that values are multiples of 8 or 16)",
-				"0 = none ; 1 = forced film ; 2 = swap field order" };
+	String[] d2vtips = { 
+		Resource.getString("tab.extern.d2v.tip1"),
+		Resource.getString("tab.extern.d2v.tip2"),
+		Resource.getString("tab.extern.d2v.tip3"),
+		Resource.getString("tab.extern.d2v.tip4"),
+		Resource.getString("tab.extern.d2v.tip5")
+	};
+
 	String[] d2vopt = d2v.readOptions();
 	for (int a=0;a<5;a++) {
 		d2vfield[a] = new JTextField(d2vopt[a]);
