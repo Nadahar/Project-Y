@@ -158,7 +158,7 @@ static java.text.DateFormat base_time = new java.text.SimpleDateFormat("HH:mm:ss
 PrintStream logging;
 static String loggin="", workouts ="", loggin2="";
 static boolean comchange=false, outchange=false, singleraw=false, newvideo=true, running=false, qinfo=false, qbreak=false, qpause=false;
-static String outalias = "output to same location as 1st file in collection";
+static String outalias = "";
 static String newOutName = "";
 
 static long[] options = new long[58];
@@ -292,8 +292,9 @@ void buildGUI()
 	dialog = new COLLECTION();
 	executePane = new EXECUTE();
 
-	brm.surf.repaint();
+	outalias = Resource.getString("working.output.std");
 
+	brm.surf.repaint();
 }
 
 //DM20032004 081.6 int18 moved
@@ -2887,6 +2888,7 @@ class FileListener implements ActionListener
 
 
 
+
 		}
 		else if (actName.equals("co") && outchange==false)
 		{
@@ -4822,24 +4824,24 @@ public void javaEV()
 {
 	TextArea.setText(java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(new Date()));
 	TextArea.append("  " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.FULL).format(new Date()));
-	TextArea.append("\njava.version\t" + System.getProperty("java.version"));
-	TextArea.append("\njava.vendor\t" + System.getProperty("java.vendor"));
-	TextArea.append("\njava.home\t" + System.getProperty("java.home"));
-	TextArea.append("\njava.vm.version\t" + System.getProperty("java.vm.version"));
-	TextArea.append("\njava.vm.vendor\t" + System.getProperty("java.vm.vendor"));
-	TextArea.append("\njava.vm.name\t" + System.getProperty("java.vm.name"));
-	TextArea.append("\njava.class.vers\t" + System.getProperty("java.class.version"));
-	TextArea.append("\njava.class.path\t" + System.getProperty("java.class.path"));
-	TextArea.append("\nos.name\t" + System.getProperty("os.name"));
-	TextArea.append("\nos.arch\t" + System.getProperty("os.arch"));
-	TextArea.append("\nos.version\t" + System.getProperty("os.version"));
-	TextArea.append("\nuser.name\t" + System.getProperty("user.name"));
-	TextArea.append("\nuser.home\t" + System.getProperty("user.home"));
-	TextArea.append("\nuser.language\t" + System.getProperty("user.language"));
-	TextArea.append("\nini.file\t" + inifile);
+	TextArea.append("\n" + Resource.getString("javaev.java.version") + "\t" + System.getProperty("java.version"));
+	TextArea.append("\n" + Resource.getString("javaev.java.vendor") + "\t" + System.getProperty("java.vendor"));
+	TextArea.append("\n" + Resource.getString("javaev.java.home") + "\t" + System.getProperty("java.home"));
+	TextArea.append("\n" + Resource.getString("javaev.java.vm.version") + "\t" + System.getProperty("java.vm.version"));
+	TextArea.append("\n" + Resource.getString("javaev.java.vm.vendor") + "\t" + System.getProperty("java.vm.vendor"));
+	TextArea.append("\n" + Resource.getString("javaev.java.vm.name") + "\t" + System.getProperty("java.vm.name"));
+	TextArea.append("\n" + Resource.getString("javaev.java.class.vers") + "\t" + System.getProperty("java.class.version"));
+	TextArea.append("\n" + Resource.getString("javaev.java.class.path") + "\t" + System.getProperty("java.class.path"));
+	TextArea.append("\n" + Resource.getString("javaev.java.os.name") + "\t" + System.getProperty("os.name"));
+	TextArea.append("\n" + Resource.getString("javaev.java.os.arch") + "\t" + System.getProperty("os.arch"));
+	TextArea.append("\n" + Resource.getString("javaev.java.os.version") + "\t" + System.getProperty("os.version"));
+	TextArea.append("\n" + Resource.getString("javaev.java.user.name") + "\t" + System.getProperty("user.name"));
+	TextArea.append("\n" + Resource.getString("javaev.java.user.home") + "\t" + System.getProperty("user.home"));
+	TextArea.append("\n" + Resource.getString("javaev.java.user.lang") + "\t" + System.getProperty("user.language"));
+	TextArea.append("\n" + Resource.getString("javaev.java.ini.file") + "\t" + inifile);
 
 	//DM18062004 081.7 int05 add
-	TextArea.append("\ndisk access:\t" + raw_interface.GetLoadStatus());
+	TextArea.append("\n" + Resource.getString("javaev.java.disk.access") + "\t" + raw_interface.GetLoadStatus());
 }
 
 
@@ -5204,8 +5206,8 @@ public static String[] getTerms()
 public static String[] getVersion()
 {
 	return new String[]{ 
-		Resource.getString("version.name"),
-		Resource.getString("version.date"),
+		"ProjectX 0.81.8.02_lang",
+		"26.09.2004",
 		Resource.getString("version.info"),
 		Resource.getString("version.user") + System.getProperty("user.name")
 	};
@@ -7991,7 +7993,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 							TSPid.reset();
 							continue pvaloop;
 						}
-						type+=" (0x"+Long.toHexString(count-188).toUpperCase()+" #"+packet+") ";  // pos + packno
+						type += " (" + (count-188) + " #" + packet + ") ";  // pos + packno
 						Msg("--> PID 0x"+Integer.toHexString(pid).toUpperCase()+" "+type+Resource.getString("rawparse.ignored"));
 
 						//if (abc.size()==0 || type.indexOf("pay")==-1)  // matt16082003 fix 081.1
@@ -8002,7 +8004,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 
 						continue pvaloop;
 					} else {
-						type+=" (0x"+Long.toHexString(count-188).toUpperCase()+" #"+packet+") ";  // pos + packno
+						type+=" (" + (count-188) + " #" + packet + ") ";  // pos + packno
 						Msg(Resource.getString("rawparse.pid.has.pes",Integer.toHexString(pid).toUpperCase(),Integer.toHexString(0xff&pesID).toUpperCase(),""+type));
 						usedPIDs.add("0x"+Integer.toHexString(pid));
 					}
@@ -10050,7 +10052,7 @@ public boolean processAudio(String[] args)
 				x++;
 
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg(Resource.getString("audio.msg.summary.insert") + " " + sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.insert", "" + ins[1], FramesToTime((int)ins[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				/*** reset PTS after inserting 081.5a ***/
 				timeline=ptsval[x];
@@ -11132,7 +11134,7 @@ public boolean processAudio(String[] args)
 			Common.renameTo(audioout1, ac3name); //DM13042004 081.7 int01 changed
 			//audioout1.renameTo(ac3name); 
 
-			Msg(Resource.getString("audio.msg.newfile", "") + " " + ac3name); 
+			Msg(Resource.getString("msg.newfile", "") + " " + ac3name); 
 			InfoAtEnd.add(comparedata+"\t "+ac3name);
 		}
 		if (audioout2.length()<100) 
@@ -11151,7 +11153,7 @@ public boolean processAudio(String[] args)
 			Common.renameTo(audioout1, mp3name); //DM13042004 081.7 int01 changed
 			//audioout1.renameTo(mp3name); 
 
-			Msg(Resource.getString("audio.msg.newfile", "") + " " + mp3name); 
+			Msg(Resource.getString("msg.newfile", "") + " " + mp3name); 
 			InfoAtEnd.add(comparedata+"\t "+mp3name);
 		}
 		if (audioout2.length()<100) 
@@ -11173,7 +11175,7 @@ public boolean processAudio(String[] args)
 				Common.renameTo(audioout1, mp2nameL); //DM13042004 081.7 int01 changed
 				//audioout1.renameTo(mp2nameL); 
 
-				Msg(Resource.getString("audio.msg.newfile", Resource.getString("audio.msg.newfile.left")) + " " + mp2nameL); 
+				Msg(Resource.getString("msg.newfile", Resource.getString("audio.msg.newfile.left")) + " " + mp2nameL); 
 				InfoAtEnd.add(comparedata+"\t "+mp2nameL); 
 			}
 			if (audioout2.length()<100) 
@@ -11182,7 +11184,7 @@ public boolean processAudio(String[] args)
 				Common.renameTo(audioout2, mp2nameR); //DM13042004 081.7 int01 changed
 				//audioout2.renameTo(mp2nameR); 
 
-				Msg(Resource.getString("audio.msg.newfile", Resource.getString("audio.msg.newfile.right")) + " " + mp2nameR); 
+				Msg(Resource.getString("msg.newfile", Resource.getString("audio.msg.newfile.right")) + " " + mp2nameR); 
 				InfoAtEnd.add(comparedata+"\t "+mp2nameR); 
 			}
 
@@ -11197,7 +11199,7 @@ public boolean processAudio(String[] args)
 				Common.renameTo(audioout1, mp2name); //DM13042004 081.7 int01 changed
 				//audioout1.renameTo(mp2name); 
 
-				Msg(Resource.getString("audio.msg.newfile", "") + " " + mp2name); 
+				Msg(Resource.getString("msg.newfile", "") + " " + mp2name); 
 				InfoAtEnd.add(comparedata+"\t "+mp2name); 
 			}
 			if (audioout2.length()<100) 
@@ -11219,7 +11221,7 @@ public boolean processAudio(String[] args)
 			Common.renameTo(audioout1, mp1name); //DM13042004 081.7 int01 changed
 			//audioout1.renameTo(mp1name); 
 
-			Msg(Resource.getString("audio.msg.newfile", "") + " " + mp1name); 
+			Msg(Resource.getString("msg.newfile", "") + " " + mp1name); 
 			InfoAtEnd.add(comparedata+"\t "+mp1name); 
 		}
 		if (audioout2.length()<100) 
@@ -11239,7 +11241,7 @@ public boolean processAudio(String[] args)
 			Common.renameTo(audioout1, dtsname); //DM13042004 081.7 int01 changed
 			//audioout1.renameTo(dtsname); 
 
-			Msg(Resource.getString("audio.msg.newfile", "") + " " + dtsname); 
+			Msg(Resource.getString("msg.newfile", "") + " " + dtsname); 
 			InfoAtEnd.add(comparedata+"\t "+dtsname);
 		}
 		if (audioout2.length()<100) 
@@ -11258,7 +11260,7 @@ public boolean processAudio(String[] args)
 		else { 
 			Common.renameTo(audioout1, wavname); //DM13042004 081.7 int01 changed
 
-			Msg(Resource.getString("audio.msg.newfile", "") + " " + wavname); 
+			Msg(Resource.getString("msg.newfile", "") + " " + wavname); 
 			InfoAtEnd.add(comparedata+"\t "+wavname);
 		}
 		if (audioout2.length()<100) 
@@ -12299,7 +12301,7 @@ public void processTeletext(String[] args)
 			Msg(Resource.getString("teletext.msg.summary", "" + seiten, page));
 
 			if (seiten>0) 
-				Msg(Resource.getString("teletext.msg.newfile") + " " + ttxfile);
+				Msg(Resource.getString("msg.newfile") + " " + ttxfile);
 
 			yield();
 
@@ -12842,7 +12844,7 @@ public void processSubpicture(String[] args)
 		else if (DVBpicture && export_type == 1)
 			options[39] += new File( BMP.write_ColorTable(fparent, subpicture.picture.getUserColorTable(), 256)).length();
 
-		Msg(Resource.getString("subpicture.msg.newfile") + " " + subfile);
+		Msg(Resource.getString("msg.newfile") + " " + subfile);
 		options[39] += subfile1.length();
 
 		//DM15072004 081.7 int06 changed
@@ -13216,7 +13218,7 @@ public void processLPCM(String[] args)
 	{ 
 
 		Audio.fillRiffHeader(pcmfile); //update riffheader
-		Msg(Resource.getString("lpcm.msg.newfile") + " " + pcmfile);
+		Msg(Resource.getString("msg.newfile") + " " + pcmfile);
 		options[39] += pcmfile1.length();
 
 		//DM15072004 081.7 int06 changed
@@ -14496,7 +14498,7 @@ public static void setvideoheader(String videofile, String logfile) {
 	//JLA14082003-
 
 	pv2.close();
-	Msg(Resource.getString("video.msg.newfile") + " " + videofile);
+	Msg(Resource.getString("msg.newfile") + " " + videofile);
 
 	}
 	catch (IOException e)
@@ -14590,7 +14592,7 @@ class RAWFILE
 			new File(name).delete();
 
 		else 
-			Msg(Resource.getString("rawfile.msg.newfile") + " " + name);
+			Msg(Resource.getString("msg.newfile") + " " + name);
 	} 
 }
 
@@ -15591,7 +15593,7 @@ class makeVDR {
 			}
 		}
 		catch (IOException e) { 
-			Msg("writeVDR error1"+e); 
+			Msg(Resource.getString("makeVDR.error.io") + "1 " + e); 
 		}
 	}
 
@@ -15748,7 +15750,7 @@ class makeVDR {
 		}
 		} 
 		catch (IOException e) { 
-			Msg("writeVDR error2"+e); 
+			Msg(Resource.getString("makeVDR.error.io") + "2 " + e); 
 		}
 
 		return options;
@@ -15840,7 +15842,7 @@ class makeVDR {
 
 		catch (IOException e)
 		{ 
-			Msg("writeVDR error3" + e); 
+			Msg(Resource.getString("makeVDR.error.io") + "3 " + e); 
 		}
 
 		return options;
@@ -15914,7 +15916,7 @@ class makeVDR {
 
 				//DM04022004 081.6 int14 fix?
 				if (data.length-overhead < shift+ptslength+datalength)
-					Msg("!> incoming PES packet without payload or wrong header data ("+data.length+"/"+overhead+"/"+shift+"/"+ptslength+"/"+datalength+")");
+					Msg(Resource.getString("makeVDR.error.payload") + " ("+data.length+"/"+overhead+"/"+shift+"/"+ptslength+"/"+datalength+")");
 				else
 				{
 					out.write(data,shift+ptslength,datalength); 
@@ -16006,7 +16008,7 @@ class makeVDR {
 		}
 		}
 		catch (IOException e) { 
-			Msg("writeVDR error4"+e); 
+			Msg(Resource.getString("makeVDR.error.io") + "4 " + e); 
 		}
 		return options;
 	}
@@ -16247,7 +16249,7 @@ class makeVDR {
 		}
 		}
 		catch (IOException e) { 
-			Msg("writeTS error4"+e); 
+			Msg(Resource.getString("makeVDR.error.io") + "5 " + e); 
 		}
 		return options;
 	}
@@ -16345,13 +16347,13 @@ class makeVDR {
 			if (toVdr==1 && cBox[54].isSelected())
 				name = out.renameVdrTo(new File(name).getParent()+filesep,name);
 
-			Msg(Resource.getString("makeVDR.new.file") + " " + name);
-			InfoAtEnd.add("Stream:\t "+name);
+			Msg(Resource.getString("msg.newfile") + " " + name);
+			InfoAtEnd.add(Resource.getString("makeVDR.summary") + "\t" + name);
 		}
 
 		}
 		catch (IOException e) { 
-			Msg(Resource.getString("makeVDR.close.error") + " " + e); 
+			Msg(Resource.getString("makeVDR.error.io") + "6 " + e); 
 		}
 
 		makempg=false;
