@@ -35,7 +35,7 @@ public class TeletextPageMatrix extends JFrame
 {
 	public Picture picture;
 
-	String title = "TeletextPageMatrix";
+	String title = X.RESOURCE.getString("ttpagematrix.title");
 	private int w = 310, h = 410;
 
 	public TeletextPageMatrix()
@@ -91,7 +91,7 @@ public class TeletextPageMatrix extends JFrame
 			big.setFont(new Font("Sans Serif", Font.PLAIN, 12));
 
 			setBackground(color[8]);
-			setToolTipText("decrease demux speed, if visible");
+			setToolTipText(X.RESOURCE.getString("ttpagematrix.tip"));
 			init();
 		}
 
@@ -117,14 +117,14 @@ public class TeletextPageMatrix extends JFrame
 			big.fillRect(0, 0, w, h);
 
 			big.setColor(color[7]);
-			big.drawString("file: " + file, x + 10, y + 14);
+			big.drawString(X.RESOURCE.getString("ttpagematrix.file") + ": " + file, x + 10, y + 14);
 
 			y += 16;
 
-			big.drawString("teletext pagenumber composition: ", x + 10, y + 14);
-			big.drawString("'MXY' : M = magazine number, XY = page number ", x + 20, y + 30);
+			big.drawString(X.RESOURCE.getString("ttpagematrix.composition1") + ": ", x + 10, y + 14);
+			big.drawString(X.RESOURCE.getString("ttpagematrix.composition2"), x + 20, y + 30);
 
-			big.drawString("magazine number colors:", x + 10, y + 46);
+			big.drawString(X.RESOURCE.getString("ttpagematrix.composition3") + ":", x + 10, y + 46);
 
 			for (int a=0; a<8; a++)
 				big.drawString(" = " + (a+1), x + 28 + (a<<5), y + 62);

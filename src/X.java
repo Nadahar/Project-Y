@@ -98,6 +98,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -248,7 +249,7 @@ JMenuBar menuBar; //DM20032004 081.6 int18 add
 JFrame autoload; //DM26032004 081.6 int18 add
 Hashtable Options = new Hashtable();  //DM26032004 081.6 int18 add, intended for new ini or langauge
 
-TeletextPageMatrix tpm = new TeletextPageMatrix();  //DM17042004 081.7 int02 add
+TeletextPageMatrix tpm = null;  //DM17042004 081.7 int02 add
 
 //DM20072004 081.7 int07 add
 long fakedPTS = -1;
@@ -293,6 +294,30 @@ void buildGUI()
 	base_time.setTimeZone(java.util.TimeZone.getTimeZone("GMT+0:00"));
 	//subpicture.picture.run();  // start Pic , DM18052004 081.7 int02 changed
 	java.util.Arrays.fill(dumpfill,(byte)0xFF);
+	
+	// now we can also build the teletext page matrix
+	tpm = new TeletextPageMatrix();
+}
+
+/**
+ * Sets a button's text and mnemonic values using the specified resource
+ * key.
+ * The button text is scanned for &. If found the character after it is used as menmonic. 
+ * 
+ * @param   button    the button (e.g. a menu or menu item) to localize
+ * @param   key       the resource string to find
+ */
+public static final void localize(AbstractButton button, String key) {
+	String text = RESOURCE.getString(key);
+	
+	int pos = text.indexOf('&');
+	if (pos != -1)
+	{
+		char mnemonic = text.charAt(pos+1);
+		button.setMnemonic(mnemonic);
+		text = text.substring(0, pos) + text.substring(pos+1);
+	}
+	button.setText(text);
 }
 
 //DM20032004 081.6 int18 moved
@@ -337,27 +362,21 @@ protected void buildMenus()
 	menuBar = new JMenuBar();
 
 	JMenu file = buildFileMenu();
-	file.setMnemonic('f');
 	menuBar.add(file);
 
 	JMenu preview = buildViewerMenu();
-	preview.setMnemonic('o');
 	menuBar.add(preview);
 /**
 	JMenu settings = buildSettingsMenu();
-	settings.setMnemonic('s');
 	menuBar.add(settings);
 **/
 	JMenu general = buildGeneralMenu();
-	general.setMnemonic('r');
 	menuBar.add(general);
 
 	JMenu language = buildLanguageMenu();
-	language.setMnemonic('l');
 	menuBar.add(language);
 
 	JMenu help = buildHelpMenu();
-	help.setMnemonic('h');
 	menuBar.add(help);
 
 	frame.setJMenuBar(menuBar);	
@@ -366,23 +385,24 @@ protected void buildMenus()
 //DM20032004 081.6 int18 add
 protected JMenu buildFileMenu()
 {
-	JMenu file = new JMenu(RESOURCE.getString("file.menu"));
+	JMenu file = new JMenu();
+	localize(file, "file.menu");
 
-	JMenuItem add = new JMenuItem(RESOURCE.getString("file.add"));
+	JMenuItem add = new JMenuItem();
+	localize(add, "file.add");
 	add.setActionCommand("add");
-	add.setMnemonic('a');
 
-	JMenuItem remove = new JMenuItem(RESOURCE.getString("file.remove"));
+	JMenuItem remove = new JMenuItem();
+	localize(remove, "file.remove");
 	remove.setActionCommand("remove");
-	remove.setMnemonic('r');
 
-	JMenuItem rename = new JMenuItem(RESOURCE.getString("file.rename"));
+	JMenuItem rename = new JMenuItem();
+	localize(rename, "file.rename");
 	rename.setActionCommand("rename");
-	rename.setMnemonic('n');
 
-	JMenuItem exit = new JMenuItem(RESOURCE.getString("file.exit"));
+	JMenuItem exit = new JMenuItem();
+	localize(exit, "file.exit");
 	exit.setActionCommand("exit");
-	exit.setMnemonic('x');
 
 	file.add(add);
 	file.add(remove);
@@ -402,25 +422,36 @@ protected JMenu buildFileMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildLanguageMenu()
 {
-	JMenu language = new JMenu(RESOURCE.getString("language.menu"));
+	JMenu language = new JMenu();
+	localize(language, "language.menu");
+	
+	ButtonGroup group = new ButtonGroup();
 
-	JRadioButtonMenuItem item_sys = new JRadioButtonMenuItem(RESOURCE.getString("language.system"));
+	JRadioButtonMenuItem item_sys = new JRadioButtonMenuItem();
+	localize(item_sys, "language.system");
 	item_sys.addActionListener(menulistener);
 	item_sys.setSelected(locale == null);
 	item_sys.setActionCommand("language.system");
 	language.add(item_sys);
+	group.add(item_sys);
 
-	JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem(RESOURCE.getString("language.english"));
+	language.addSeparator();
+
+	JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem();
+	localize(item_eng, "language.english");
 	item_eng.addActionListener(menulistener);
 	item_eng.setSelected(Locale.ENGLISH.equals(locale));
 	item_eng.setActionCommand("language." + Locale.ENGLISH.toString());
 	language.add(item_eng);
+	group.add(item_eng);
 
-	JRadioButtonMenuItem item_ger = new JRadioButtonMenuItem(RESOURCE.getString("language.german"));
+	JRadioButtonMenuItem item_ger = new JRadioButtonMenuItem();
+	localize(item_ger, "language.german");
 	item_ger.addActionListener(menulistener);
 	item_ger.setSelected(Locale.GERMAN.equals(locale));
 	item_ger.setActionCommand("language." + Locale.GERMAN.toString());
 	language.add(item_ger);
+	group.add(item_ger);
 
 
 	return language;
@@ -429,9 +460,10 @@ protected JMenu buildLanguageMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildSettingsMenu()
 {
-	JMenu setting = new JMenu(RESOURCE.getString("settings.menu"));
-	JMenuItem open = new JMenuItem(RESOURCE.getString("settings.settings"));
-	open.setMnemonic('s');
+	JMenu setting = new JMenu();
+	localize(setting, "settings.menu");
+	JMenuItem open = new JMenuItem();
+	localize(open, "settings.settings");
 
 	setting.add(open);
 
@@ -441,7 +473,8 @@ protected JMenu buildSettingsMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildGeneralMenu()
 {
-	JMenu general = new JMenu(RESOURCE.getString("general.menu"));
+	JMenu general = new JMenu();
+	localize(general, "general.menu");
 
 	ActionListener Al = new ActionListener()
 	{
@@ -485,41 +518,42 @@ protected JMenu buildGeneralMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildViewerMenu()
 {
-	JMenu preview = new JMenu(RESOURCE.getString("options.menu"));
+	JMenu preview = new JMenu();
+	localize(preview, "options.menu");
 
-	JMenuItem video = new JMenuItem(RESOURCE.getString("options.opencutspecials"));
+	JMenuItem video = new JMenuItem();
+	localize(video, "options.opencutspecials");
 	video.setActionCommand("openCut");
-	video.setMnemonic('v');
 
 	preview.add(video);
 	preview.addSeparator();
 
-	JMenuItem hex = new JMenuItem(RESOURCE.getString("options.openhexview"));
+	JMenuItem hex = new JMenuItem();
+	localize(hex, "options.openhexview");
 	hex.setActionCommand("viewAsHex");
-	hex.setMnemonic('h');
 
 	preview.add(hex);
 	preview.addSeparator();
 
-	JMenuItem basic = new JMenuItem(RESOURCE.getString("options.pachtbasics"));
+	JMenuItem basic = new JMenuItem();
+	localize(basic, "options.pachtbasics");
 	basic.setActionCommand("editBasics");
-	basic.setMnemonic('p');
 
 	preview.add(basic);
 	preview.addSeparator();
 
-	JMenuItem subtitle = new JMenuItem(RESOURCE.getString("options.subtitlepreview"));
+	JMenuItem subtitle = new JMenuItem();
+	localize(subtitle, "options.subtitlepreview");
 	subtitle.setActionCommand("subpreview");
-	subtitle.setMnemonic('s');
 
 	preview.add(subtitle);
 
 	//DM17042004 081.7 int02 add+
 	preview.addSeparator();
 
-	JMenuItem pagematrix = new JMenuItem(RESOURCE.getString("options.teletext"));
+	JMenuItem pagematrix = new JMenuItem();
+	localize(pagematrix, "options.teletext");
 	pagematrix.setActionCommand("pagematrix");
-	pagematrix.setMnemonic('t');
 
 	preview.add(pagematrix);
 
@@ -537,15 +571,16 @@ protected JMenu buildViewerMenu()
 //DM20032004 081.6 int18 add
 protected JMenu buildHelpMenu()
 {
-	JMenu help = new JMenu(RESOURCE.getString("help.menu"));
+	JMenu help = new JMenu();
+	localize(help, "help.menu");
 
-	JMenuItem about = new JMenuItem(RESOURCE.getString("help.about"));
+	JMenuItem about = new JMenuItem();
+	localize(about, "help.about");
 	about.setActionCommand("about");
-	about.setMnemonic('a');
 
-	JMenuItem openHtml = new JMenuItem(RESOURCE.getString("help.help"));
+	JMenuItem openHtml = new JMenuItem();
+	localize(openHtml, "help.help");
 	openHtml.setActionCommand("helphtml");
-	openHtml.setMnemonic('h');
 
 	help.add(about);
 	help.addSeparator();
@@ -1006,8 +1041,8 @@ protected JPanel buildMainPanel()
 	JPanel main = new JPanel();
 	main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-	doitButton = new JButton("Go!");
-	doitButton.setMnemonic('g');
+	doitButton = new JButton();
+	localize(doitButton, "button.go");
 	doitButton.addActionListener(my2Listener);
 
 	JPanel control05 = new JPanel();
@@ -1022,24 +1057,24 @@ protected JPanel buildMainPanel()
 	outSize.setToolTipText("written MB of new created files of collection (without temporaries)");
 	control05.add(outSize);
 
-	scanButton = new JButton("i");
-	scanButton.setMnemonic('i');
+	scanButton = new JButton();
+	localize(scanButton, "button.i");
 	scanButton.setMaximumSize(new Dimension(45,22));
 	scanButton.setPreferredSize(new Dimension(45,22));
 	scanButton.setToolTipText("short processing to inform about the IDs found in streamfile (in specified filesize, see out)");
 	scanButton.setEnabled(true);
 	scanButton.addActionListener(my2Listener);
 
-	breakButton = new JButton("C");
-	breakButton.setMnemonic('c');
+	breakButton = new JButton();
+	localize(breakButton, "button.c");
 	breakButton.setMaximumSize(new Dimension(45,22));
 	breakButton.setPreferredSize(new Dimension(45,22));
 	breakButton.setToolTipText("cancel the current process");
 	breakButton.setEnabled(false);
 	breakButton.addActionListener(my2Listener);
 
-	pauseButton = new JButton("P");
-	pauseButton.setMnemonic('p');
+	pauseButton = new JButton();
+	localize(pauseButton, "button.p");
 	pauseButton.setMaximumSize(new Dimension(45,22));
 	pauseButton.setPreferredSize(new Dimension(45,22));
 	pauseButton.setEnabled(false);
@@ -1051,10 +1086,10 @@ protected JPanel buildMainPanel()
 	comBox[9].setPreferredSize(new Dimension(45,22));
 	comBox[9].setMaximumRowCount(5);
 
-	extract = new JButton("e");
+	extract = new JButton();
+	localize(extract, "button.e");
 	extract.setMaximumSize(new Dimension(45,22));
 	extract.setPreferredSize(new Dimension(45,22));
-	extract.setMnemonic('e');
 	extract.setEnabled(false);
 	extract.setToolTipText("PVA raw file extraction, using the specified ID:  (press 'i' to get the found IDs)");
 	extract.addActionListener(my2Listener);
@@ -2638,16 +2673,12 @@ class MenuListener implements ActionListener
 			if (language.equals("system"))
 			{
 				locale = null;
-				RESOURCE = ResourceBundle.getBundle("pjxresources");
 			}
 			else
 			{
 				locale = new Locale(language, "", "");
-				RESOURCE = ResourceBundle.getBundle("pjxresources", locale);
 			}
-			Msg(RESOURCE.getString("msg.new.language")+locale);
-			buildMenus();
-			SwingUtilities.updateComponentTreeUI(frame);
+			JOptionPane.showMessageDialog(frame, RESOURCE.getString("msg.new.language"), RESOURCE.getString("msg.infomessage"), JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 }
