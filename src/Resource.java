@@ -50,8 +50,6 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
-import sun.net.www.protocol.file.FileURLConnection;
-
 /**
  * Project-X resource and localization handling.
  * 

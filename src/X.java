@@ -6497,11 +6497,11 @@ public void pesparse(String file, String vptslog, int ismpg) {
 	}
 	catch (EOFException e1) { 
 		//DM25072004 081.7 int07 add
-		Msg(Resource.getString("pesparse.eof.error")+": " + e1); 
+		Msg(Resource.getString("pesparse.eof.error")+" " + e1); 
 	}
 	catch (IOException e2) { 
 		//DM25072004 081.7 int07 add
-		Msg(Resource.getString("pesparse.io.error")+": " + e2); 
+		Msg(Resource.getString("pesparse.io.error")+" " + e2); 
 	}
 
 	System.gc();
@@ -6883,7 +6883,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 			clv[5]++;
 			if (options[30]==1) 
-				System.out.print("\rpacks: "+pesID+"/"+clv[5]+"/"+(data.length-6)+"/"+((count*100/size))+"% "+(count));
+				System.out.print("\r"+Resource.getString("vdrparse.packs")+": "+pesID+"/"+clv[5]+"/"+(data.length-6)+"/"+((count*100/size))+"% "+(count));
 
 			count += 6+packlength;
 
@@ -6935,13 +6935,13 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 					dump.write(data); 
 					dump.flush(); 
 					dump.close();
-					Msg("-> dump 1st packet to file: "+dumpname);
+					Msg(Resource.getString("vdrparse.dump.1st")+": "+dumpname);
 				}
 
 				String IDtype="";
 				switch (0xF0 & pesID) {
 				case 0xE0: { 
-					IDtype="(MPEG Video)";
+					IDtype=Resource.getString("idtype.mpeg.video");
 					demux = new PIDdemux();
 					demux.setID(pesID);
 					demux.setnewID(newID[0]++);
@@ -6955,16 +6955,16 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 						//DM09072004 081.7 int06 changed
 						if (ToVDR > 0) 
-							IDtype += " mapped to 0x" + Integer.toHexString(newID[0] - 1).toUpperCase();
+							IDtype += Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[0] - 1).toUpperCase();
 
 						pesID0=pesID;
 					} else 
-						IDtype+=" -> ignored";
+						IDtype+=Resource.getString("idtype.ignored");
 					break; 
 				}
 				case 0xC0:
 				case 0xD0: { 
-					IDtype="(MPEG Audio)"; 
+					IDtype=Resource.getString("idtype.mpeg.audio"); 
 					demux = new PIDdemux();
 					demux.setID(pesID);
 					demux.setnewID(newID[1]++);
@@ -6977,14 +6977,14 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 					//DM09072004 081.7 int06 changed
 					if (ToVDR > 0) 
-						IDtype += " mapped to 0x" + Integer.toHexString(newID[1] - 1).toUpperCase();
+						IDtype += Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[1] - 1).toUpperCase();
 
 					break; 
 				}
 				}
 				switch (pesID) {
 				case 0xBD: { //DM30122003 081.6 int10 changed
-					IDtype="(private stream 1)";
+					IDtype=Resource.getString("idtype.private.stream");
 					IDtype+=(ttx?" TTX ":"")+(subID!=0?" (SubID 0x"+Integer.toHexString(subID).toUpperCase()+")":""); 
 					demux = new PIDdemux();
 					demux.setID(pesID);
@@ -7023,19 +7023,19 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 						else if (subID>>>4 == 0xA || subID>>>4 == 2 || subID>>>4 == 3) //DM23022004 081.6 int18 new
 							demux.init(fparent,options,bs/VDRdemuxlist.size(),VDRdemuxlist.size(),1);
 						else 
-							IDtype+=" -> ignored";
+							IDtype+=Resource.getString("idtype.ignored");
 					}
 
 					//DM09072004 081.7 int06 changed
 					if (ToVDR > 0)
 					{
 						if (ismpg==0) 
-							IDtype+=" mapped to 0x"+Integer.toHexString(demux.getnewID()).toUpperCase();
+							IDtype+=Resource.getString("idtype.mapped.to")+Integer.toHexString(demux.getnewID()).toUpperCase();
 						else if (ttx || subID>>>4 == 8) //DM23022004 081.6 int18 changed
-							IDtype+=" mapped to 0x"+Integer.toHexString(demux.getnewID()).toUpperCase();
+							IDtype+=Resource.getString("idtype.mapped.to")+Integer.toHexString(demux.getnewID()).toUpperCase();
 						else
 						{ 
-							IDtype+=" -> ignored"; 
+							IDtype+=Resource.getString("idtype.ignored"); 
 							demux.setType(4); //ändern
 						}
 					}
@@ -7043,14 +7043,14 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 					{
 						if (ismpg > 0 && subID>>>4 != 8)
 						{ 
-							IDtype+=" -> ignored"; 
+							IDtype+=Resource.getString("idtype.ignored"); 
 							demux.setType(4); //ändern
 						}
 					}
 					break; 
 				}
 				}
-				Msg("-> found PES-ID 0x"+Integer.toHexString(pesID).toUpperCase()+" "+IDtype+" @ "+options[20]); //DM02022004 081.6 int14 changed
+				Msg(Resource.getString("vdrparse.found.pesid")+Integer.toHexString(pesID).toUpperCase()+" "+IDtype+" @ "+options[20]); //DM02022004 081.6 int14 changed
 
 			}
 
@@ -7166,7 +7166,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 				//DM12042004 081.7 int01 add
 				if ((ismpg != 1 || ToVDR > 0) && nPes.length - 6 <= 9 + (0xFF & nPes[8]))
 				{
-					Msg("!> PES-ID 0x"+Integer.toHexString(pesID).toUpperCase()+", incoming PES packet without payload or wrong header data @ "+options[20]);
+					Msg(Resource.getString("vdrparse.pes.incoming", Integer.toHexString(pesID).toUpperCase(), ""+options[20]));
 					break export;
 				}
 
@@ -7243,9 +7243,9 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 			size += raw_interface.getStreamSize();
 
 
-			Msg("-> actual written vframes: "+options[7]);
-			Msg("switch to file: "+nextfile);
-			progress.setString(((ToVDR==0)?"demuxing":"converting")+" A/V PES file  "+new File(nextfile).getName());
+			Msg(Resource.getString("vdrparse.actual.written") + " "+options[7]);
+			Msg(Resource.getString("vdrparse.switch")+" "+nextfile);
+			progress.setString(((ToVDR==0)?Resource.getString("vdrparse.demuxing"):Resource.getString("vdrparse.converting"))+Resource.getString("vdrparse.avpes.file")+" "+new File(nextfile).getName());
 			progress.setStringPainted(true);
 
 		} else 
@@ -7311,27 +7311,27 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 				if ( demux.subID()!=0 && (0xF0&demux.subID())!=0x80 ) 
 					break;
 				Msg("");
-				Msg("--> AC-3/DTS Audio "+((demux.subID()!=0) ? ("(SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")") : "")); //DM19122003 081.6 int07 changed
+				Msg(Resource.getString("vdrparse.ac3")+" "+((demux.subID()!=0) ? ("(SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")") : "")); //DM19122003 081.6 int07 changed
 				mpt(values);
 				break;
 			case 1: //DM30122003 081.6 int10 changed
 				Msg("");
-				Msg("--> Teletext (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
+				Msg(Resource.getString("vdrparse.teletext")+Integer.toHexString(demux.subID()).toUpperCase()+")");
 				processTeletext(values);
 				break;
 			case 2:
 				Msg("");
-				Msg("--> MPEG Audio (0x"+Integer.toHexString(demux.getID()).toUpperCase()+")");
+				Msg(Resource.getString("vdrparse.mpeg.audio")+Integer.toHexString(demux.getID()).toUpperCase()+")");
 				mpt(values);
 				break;
 			case 4: //DM23022004 081.6 int18 add
 				Msg("");
-				Msg("--> LPCM Audio (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
+				Msg(Resource.getString("vdrparse.lpcm.audio")+Integer.toHexString(demux.subID()).toUpperCase()+")");
 				processLPCM(values);
 				break;
 			case 5: //DM23022004 081.6 int18 add, //DM12042004 081.7 int01 changed
 				Msg("");
-				Msg("--> Subpicture (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
+				Msg(Resource.getString("vdrparse.subpic")+Integer.toHexString(demux.subID()).toUpperCase()+")");
 				processSubpicture(values);
 				break;
 			}
@@ -7344,11 +7344,11 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 	}  // end try
 	catch (EOFException e1) { 
 		//DM25072004 081.7 int07 add
-		Msg("vdrparse EOF reached in error: " + e1); 
+		Msg(Resource.getString("vdrparse.eof.error")+" " + e1); 
 	}
 	catch (IOException e2) { 
 		//DM25072004 081.7 int07 add
-		Msg("vdrparse File I/O error: " + e2); 
+		Msg(Resource.getString("vdrparse.io.error")+" " + e2); 
 	}
 
 	System.gc();
