@@ -32,7 +32,7 @@
  * Version:  1.0, 940203
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.audio;
 
 //DM10042004 081.7 int01 introduced
 public final class CRC

@@ -24,7 +24,7 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.common;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

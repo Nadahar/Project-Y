@@ -24,7 +24,7 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,6 +34,9 @@ import java.net.MalformedURLException;
 import java.io.*;
 import javax.swing.text.*;
 import javax.swing.event.*;
+
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.X;
 
 //DM20032004 081.6 int18 introduced
 public class Html extends JFrame

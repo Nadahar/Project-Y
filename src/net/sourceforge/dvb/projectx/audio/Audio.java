@@ -27,7 +27,7 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.audio;
 
 import java.io.*; //DM24012004 081.6 int11 add
 
@@ -35,23 +35,23 @@ public class Audio
 {
 		
 	int ID=0;
-	int Layer=0;
+	public int Layer=0;
 	int Protection_bit=0;
-	int Bitrate=0;
-	int Sampling_frequency=0;
+	public int Bitrate=0;
+	public int Sampling_frequency=0;
 	int Padding_bit=0;
 	int Private_bit=0;
-	int Mode=0;
+	public int Mode=0;
 	int Mode_extension=0;
 	int Copyright=0;
 	int Original=0;
 	int Channel=0;
-	int Emphasis=0;
-	int Size=0;
-	int Size_base=0;
+	public int Emphasis=0;
+	public int Size=0;
+	public int Size_base=0;
 	int Bound=0; //DM10042004 081.7 int01 add
 	int Sblimit; //DM10042004 081.7 int01 add
-	double Time_length=0.0;
+	public double Time_length=0.0;
 	
 	int nID=0;
 	int nLayer=0;
@@ -78,7 +78,7 @@ public class Audio
 	int lPadding_bit=0;
 	int lPrivate_bit=0;
 	int lMode=0;
-	int lMode_extension=0;
+	public int lMode_extension=0;
 	int lCopyright=0;
 	int lOriginal=0;
 	int lChannel=0;

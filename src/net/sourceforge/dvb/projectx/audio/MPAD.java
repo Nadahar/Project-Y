@@ -30,10 +30,12 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.audio;
 
 
 import java.io.*;
+
+import net.sourceforge.dvb.projectx.common.X;
 
 public class MPAD {
 
@@ -937,7 +939,7 @@ static final int Resample_frequency[][] = {  //0: 48000 to 32000, 1: 48000 to 44
 	{ 147, 160 }
 };
 
-static byte RIFF[] = {
+public static byte RIFF[] = {
 	0x52, 0x49, 0x46, 0x46, //RIFF
 	0, 0, 0, 0,   //32-bit filesize-8
 	0x57, 0x41, 0x56, 0x45, //WAVE
@@ -949,7 +951,7 @@ static byte RIFF[] = {
 };
 
 //DM07022004 081.6 int16 new
-static byte AIFF[] = {
+public static byte AIFF[] = {
 	0x46, 0x4F, 0x52, 0x4D, //FORM
 	0, 0, 0, 0, //32-bit filesize-8
 	0x41, 0x49, 0x46, 0x46, //AIFF
@@ -986,7 +988,7 @@ static class HEADER {
 	int framesize;
 	int bits_per_sample;
 
-	public void HEADER() {
+	public HEADER() {
 		return;
 
 	}
@@ -996,7 +998,7 @@ static class WORK {
 	double area[] = new double[2048];
 	int offset;
 
-	public void WORK() {
+	public WORK() {
 		return;
 	}
 }

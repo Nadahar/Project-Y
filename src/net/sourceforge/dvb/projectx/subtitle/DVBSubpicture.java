@@ -31,13 +31,16 @@
  * 
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.subtitle;
 
 //DM24042004 081.7 int02 introduced
 
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
+
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.X;
 
 public class DVBSubpicture
 {

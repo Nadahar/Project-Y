@@ -25,7 +25,7 @@
  */
 
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.io;
 
 
 //DM24062004 081.7 int05 now required, but w/o additional it will never be called

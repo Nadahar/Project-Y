@@ -24,7 +24,7 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.gui;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -40,10 +40,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.X;
+
 
 //DM17022004 081.6 int17 introduced, int18 changed
 public class StartUp extends JFrame 
 {
+	/** Background Color */
+	private static final Color BACKGROUND_COLOR = new Color(224,224,224,224);
+
 	boolean agreement = false;
 	JRadioButton disagree;
 	JRadioButton agree;
@@ -84,6 +90,7 @@ public class StartUp extends JFrame
 		setTitle(title);
 
 		JPanel container = new JPanel();
+		container.setBackground(BACKGROUND_COLOR);
 		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 		container.setBorder( BorderFactory.createEmptyBorder(10,10,10,10));
 
@@ -110,6 +117,7 @@ public class StartUp extends JFrame
 		agree.addActionListener(listener);
 
 		JPanel container2 = new JPanel();
+		container2.setBackground(BACKGROUND_COLOR);
 		container2.setBorder( BorderFactory.createRaisedBevelBorder());
 		container2.add(container);
 

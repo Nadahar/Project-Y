@@ -25,7 +25,7 @@
  */
 
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.video;
 
 
 //DM24062004 081.7 int05 outsourced from X
@@ -33,7 +33,9 @@ package net.sourceforge.dvb.projectx;
 import java.io.*;
 import java.util.*;
 
-class Preview
+import net.sourceforge.dvb.projectx.io.RawInterface;
+
+public class Preview
 {
 	private byte preview_data[];
 	private int loadSizeForward, active_collection, processed_PID;
@@ -119,7 +121,7 @@ class Preview
 
 		preview_data = search(preview_data, startposition, filetype);
 
-		long newposition = mpv_decoder.picture.decodeArray(preview_data, direction, all_gops, fast_decode);
+		long newposition = MPVD.picture.decodeArray(preview_data, direction, all_gops, fast_decode);
 
 		for (int a = positionList.size() - 1; a > -1; a--)
 		{

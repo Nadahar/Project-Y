@@ -24,12 +24,15 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.gui;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+
+import net.sourceforge.dvb.projectx.common.Resource;
+
 import java.io.*;
 
 //DM26032004 081.6 int18 changed

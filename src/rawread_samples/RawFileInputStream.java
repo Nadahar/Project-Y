@@ -12,13 +12,13 @@
  *
 */
 
-package net.sourceforge.dvb.projectx;
+package rawread_samples;
 
 //DM24062004 081.7 int05 now required, but w/o additional it will never be called
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 class RawFileInputStream extends InputStream {
 	String file;

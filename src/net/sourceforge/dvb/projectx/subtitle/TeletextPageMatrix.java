@@ -24,7 +24,7 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.subtitle;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -39,6 +39,9 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.gui.UISwitchListener;
 
 //DM17042004 081.7 int02 introduced
 public class TeletextPageMatrix extends JFrame

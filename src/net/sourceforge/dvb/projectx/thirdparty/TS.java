@@ -24,9 +24,18 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.thirdparty;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
+import net.sourceforge.dvb.projectx.audio.CRC;
+import net.sourceforge.dvb.projectx.common.Common;
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.X;
+import net.sourceforge.dvb.projectx.subtitle.Teletext;
 
 public class TS
 {

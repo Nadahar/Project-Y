@@ -24,7 +24,7 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.subtitle;
 
 //DM06082004 081.7 int07 introduced
 public final class CharSet

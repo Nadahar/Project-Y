@@ -31,7 +31,9 @@
  * rewritten Oct 2003 by dvb.matt
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.audio;
+
+import net.sourceforge.dvb.projectx.common.X;
 
 public class MPAC
 {

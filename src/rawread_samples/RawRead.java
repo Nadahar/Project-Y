@@ -12,13 +12,11 @@
  *
 */
 
-package net.sourceforge.dvb.projectx;
+package rawread_samples;
 
 //DM24062004 081.7 int05 now required, but w/o additional access it must return 'false'
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
 class RawRead {
 

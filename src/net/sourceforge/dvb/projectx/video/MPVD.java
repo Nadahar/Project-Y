@@ -56,14 +56,29 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.video;
 
-import java.io.*;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.awt.image.BufferedImage;
+import net.sourceforge.dvb.projectx.common.*;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.MemoryImageSource;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PushbackInputStream;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class MPVD extends JFrame {
 

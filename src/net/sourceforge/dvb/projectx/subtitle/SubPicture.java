@@ -29,7 +29,7 @@
  * http://www.via.ecp.fr/~sam/doc/dvd/
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.subtitle;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -47,6 +47,10 @@ import java.util.StringTokenizer;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.X;
+
 
 
 public class SubPicture extends JFrame
@@ -236,7 +240,7 @@ public class Picture extends JPanel implements Runnable
 	//DM25072004 081.7 int07 add
 	private int isforced_status = 0;
 
-	DVBSubpicture dvb = new DVBSubpicture(); //DM24042004 081.7 int02 new
+	public DVBSubpicture dvb = new DVBSubpicture(); //DM24042004 081.7 int02 new
 
 	public Picture()
 	{ 

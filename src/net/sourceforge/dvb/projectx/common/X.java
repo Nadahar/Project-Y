@@ -41,7 +41,7 @@
  */
 
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.common;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -90,13 +90,13 @@ import java.io.PrintWriter;
 import java.io.PushbackInputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -128,6 +128,36 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.sourceforge.dvb.projectx.audio.Audio;
+import net.sourceforge.dvb.projectx.audio.AudioFrameConstants;
+import net.sourceforge.dvb.projectx.audio.CRC;
+import net.sourceforge.dvb.projectx.audio.MPAC;
+import net.sourceforge.dvb.projectx.audio.MPAD;
+import net.sourceforge.dvb.projectx.audio.RIFFHeader;
+import net.sourceforge.dvb.projectx.gui.AboutBox;
+import net.sourceforge.dvb.projectx.gui.BRMonitor;
+import net.sourceforge.dvb.projectx.gui.HexViewer;
+import net.sourceforge.dvb.projectx.gui.Html;
+import net.sourceforge.dvb.projectx.gui.LogArea;
+import net.sourceforge.dvb.projectx.gui.StartUp;
+import net.sourceforge.dvb.projectx.gui.UISwitchListener;
+import net.sourceforge.dvb.projectx.io.IDDBufferedOutputStream;
+import net.sourceforge.dvb.projectx.io.RawInterface;
+import net.sourceforge.dvb.projectx.io.Scan;
+import net.sourceforge.dvb.projectx.io.StandardBuffer;
+import net.sourceforge.dvb.projectx.subtitle.BMP;
+import net.sourceforge.dvb.projectx.subtitle.Bitmap;
+import net.sourceforge.dvb.projectx.subtitle.SubPicture;
+import net.sourceforge.dvb.projectx.subtitle.Teletext;
+import net.sourceforge.dvb.projectx.subtitle.TeletextPageMatrix;
+import net.sourceforge.dvb.projectx.thirdparty.Chapters;
+import net.sourceforge.dvb.projectx.thirdparty.D2V;
+import net.sourceforge.dvb.projectx.thirdparty.Ifo;
+import net.sourceforge.dvb.projectx.thirdparty.TS;
+import net.sourceforge.dvb.projectx.video.MPVD;
+import net.sourceforge.dvb.projectx.video.PatchPanel;
+import net.sourceforge.dvb.projectx.video.Preview;
+import net.sourceforge.dvb.projectx.video.PreviewObject;
 import edu.stanford.ejalbert.BrowserLauncher;
 
 
@@ -138,14 +168,14 @@ public class X extends JPanel
 static String version_name = "ProjectX 0.81.8.02b16_lang";
 static String version_date = "24.10.2004";
 
-static boolean CLI_mode = false;
+public static boolean CLI_mode = false;
 
 //DM18062004 081.7 int05 add
 RawInterface raw_interface = new RawInterface();
 static int loadSizeForward = 2560000;
 
 static BRMonitor brm;
-static SubPicture subpicture = new SubPicture(); //DM06032004 081.6 int18 changed
+public static SubPicture subpicture = new SubPicture(); //DM06032004 081.6 int18 changed
 
 MPAC MPAConverter = new MPAC();
 MPAD MPADecoder = new MPAD();
@@ -166,7 +196,7 @@ static boolean comchange=false, outchange=false, singleraw=false, newvideo=true,
 static String outalias = "";
 static String newOutName = "";
 
-static long[] options = new long[58];
+public static long[] options = new long[58];
 static byte[] headerrescue= new byte[1];
 Object[] DAR = {"1.000 (1:1)","0.6735 (4:3)","0.7031 (16:9)","0.7615 (2.21:1)","0.8055","0.8437","0.9375","0.9815","1.0255","1.0695","1.1250","1.1575","1.2015" };
 Object[] H_RESOLUTION = { "304","320","352","384","480","528","544","576","640","704","720" };
@@ -190,20 +220,23 @@ static String[] workfiles = {""}, VBASIC = new String[4];
 static String messagelog="";
 
 static JButton doitButton, breakButton, scanButton, pauseButton, extract, exeButton, picButton;
-static JRadioButton[] RButton = new JRadioButton[25];
-static JComboBox[] comBox = new JComboBox[38];
+public static JRadioButton[] RButton = new JRadioButton[25];
+public static JComboBox[] comBox = new JComboBox[38];
 
+// radio buttons for look and feels in general menu
+private JRadioButtonMenuItem lf_item[] = null; 
+	
 //DM14072004 081.7 int06 changed
 //DM20072004 081.7 int07 changed
 //DM01102004 081.8.02 changed
 static JCheckBox[] cBox = new JCheckBox[72];
 
-static JList list1, list3, list4;
+public static JList list1, list3, list4;
 static X_JFileChooser chooser; //DM12122003 081.6 int05
 
 static JLabel msoff, audiostatusLabel, splitLabel, cutnum, ttxheaderLabel, ttxvpsLabel, outSize;
 static JProgressBar progress;
-static JTextField outfield;
+public static JTextField outfield;
 static JTextField[] d2vfield = new JTextField[10], //DM18052004 081.7 int02 changed
 	exefield = new JTextField[9];
 
@@ -234,7 +267,7 @@ static AudioFrameConstants afc = new AudioFrameConstants();
 
 static DropTarget dropTarget_1, dropTarget_2, dropTarget_3, dropTarget_4; //DM26032004 081.6 int18 changed
 
-static LogArea TextArea, FileInfoTextArea;
+public static LogArea TextArea, FileInfoTextArea;
 static JViewport viewport, viewport_2; //DM26032004 081.6 int18 add
 static JTabbedPane logtab; //DM26032004 081.6 int18 add
 static JButton add_files;  //DM26032004 081.6 int18 add
@@ -435,43 +468,76 @@ protected JMenu buildGeneralMenu()
 	JMenu general = new JMenu();
 	Resource.localize(general, "general.menu");
 
-	ActionListener Al = new ActionListener()
+	UIManager.LookAndFeelInfo[] lf_info =  UIManager.getInstalledLookAndFeels();
+
+	lf_item = new JRadioButtonMenuItem[lf_info.length];
+	ButtonGroup lfgroup = new ButtonGroup();
+	ActionListener al = new ActionListener()
 	{
 		public void actionPerformed(ActionEvent e)
 		{
 			String lnfName = e.getActionCommand();
-
-			try 
-			{
-				UIManager.setLookAndFeel(lnfName);
-				SwingUtilities.updateComponentTreeUI(frame);
-				comBox[16].setSelectedItem(lnfName);
-
-				if(chooser != null) 
-					SwingUtilities.updateComponentTreeUI(chooser);
-			} 
-			catch (Exception exc)
-			{
-				comBox[16].removeItemAt(comBox[16].getSelectedIndex());
-				System.err.println("Could not load LookAndFeel: " + lnfName);
-			}
+			setLookAndFeel(lnfName);
 		}
 	};
 
-	UIManager.LookAndFeelInfo[] lf_info =  UIManager.getInstalledLookAndFeels();
-
-	JRadioButtonMenuItem lf_item[] = new JRadioButtonMenuItem[lf_info.length];
-	ButtonGroup lfgroup = new ButtonGroup();
-
-	for (int a=0; a < lf_info.length; a++) 
+	for (int a=0; a < lf_item.length; a++) 
 	{
 		lf_item[a] = new JRadioButtonMenuItem(lf_info[a].getClassName());
 		general.add(lf_item[a]);
 		lfgroup.add(lf_item[a]);
-		lf_item[a].addActionListener(Al);
+		lf_item[a].addActionListener(al);
 	}
 
 	return general;
+}
+
+
+
+/**
+ * sets the new look and feel.
+ * 
+ * @param lnfName
+ */
+private void setLookAndFeel(String lnfName)
+{
+
+	if (lnfName!=null && !lnfName.equals("")) 
+	{
+		JRadioButtonMenuItem selectedRadio = null;
+		try 
+		{
+			// update comBox
+			comBox[16].setSelectedItem(lnfName);
+	
+			// update radio menu items
+			for (int a=0; a < lf_item.length; a++) 
+			{
+				if (lf_item[a].getActionCommand().equals(lnfName))
+				{
+					lf_item[a].setSelected(true);
+					selectedRadio = lf_item[a];
+				}
+			}
+
+			// now update the components
+			UIManager.setLookAndFeel(lnfName);
+			SwingUtilities.updateComponentTreeUI(frame);
+	
+			if(chooser != null) 
+			{
+				SwingUtilities.updateComponentTreeUI(chooser);
+			} 
+		} 
+		catch (Exception exc)
+		{
+			comBox[16].removeItemAt(comBox[16].getSelectedIndex());
+			selectedRadio.getParent().remove(selectedRadio);
+			
+			System.err.println("Could not load LookAndFeel: " + lnfName);
+		}
+	}
+
 }
 
 //DM20032004 081.6 int18 add
@@ -2444,19 +2510,7 @@ protected JPanel buildoptionPanel() {
 		public void actionPerformed(ActionEvent e) {
 			if (!comchange) {
 				String lnfName = comBox[16].getSelectedItem().toString();
-				if (lnfName!=null && !lnfName.equals("")) {
-					try 
-					{
-					UIManager.setLookAndFeel(lnfName);
-					SwingUtilities.updateComponentTreeUI(frame);
-					if(chooser != null) 
-						SwingUtilities.updateComponentTreeUI(chooser);
-					} 
-					catch (Exception exc) {
-						comBox[16].removeItemAt(comBox[16].getSelectedIndex());
-						System.err.println("Could not load LookAndFeel: " + lnfName);
-					}
-				}
+				setLookAndFeel(lnfName);
 			}
 		}
  	});
@@ -4795,7 +4849,13 @@ public void iniload()
 			framelocation[2]=Integer.parseInt(path.substring(2,path.length()));
 		else if (path.startsWith("wh")) 
 			framelocation[3]=Integer.parseInt(path.substring(2,path.length()));
+		else if (path.startsWith("lf"))
+		{
+			String lf = path.substring(3);
+			setLookAndFeel(lf);
 		}
+		}
+		
 
 		inis.close();
 		inputlist();
@@ -4878,6 +4938,12 @@ public static void inisave() //DM26012004 081.6 int12 changed, //DM26032004 081.
 	inis.println("wy"+frame.getY());
 	inis.println("ww"+frame.getWidth());
 	inis.println("wh"+frame.getHeight());
+	
+	if (comBox[16].getSelectedItem() != null)
+	{
+		inis.println("// look and feel");
+		inis.println("lf="+comBox[16].getSelectedItem());
+	}
 
 	inis.close();
 	} 
@@ -5332,6 +5398,7 @@ public static void main(String[] args)
 //DM20032004 081.6 int18 add
 public static void setVisible0( boolean visible)
 {
+	SwingUtilities.updateComponentTreeUI(frame); // update selecte L&F
 	frame.setVisible(visible);
 }
 

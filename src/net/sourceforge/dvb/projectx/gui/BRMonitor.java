@@ -54,17 +54,20 @@
  * redistribute the Software for such purposes.
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.gui;
 
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
+
+import javax.swing.JPanel;
 
 
 public class BRMonitor extends JPanel {
@@ -273,7 +276,7 @@ public class Surface extends JPanel implements Runnable {
 
 
 			try {
-				thread.sleep(sleepAmount);
+				Thread.sleep(sleepAmount);
 			}
 			catch (InterruptedException e) { 
 				break;

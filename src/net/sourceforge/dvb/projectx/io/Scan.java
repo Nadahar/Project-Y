@@ -24,10 +24,15 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.io;
 
 import java.io.*;
 import java.util.*;
+
+import net.sourceforge.dvb.projectx.audio.Audio;
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.X;
+import net.sourceforge.dvb.projectx.video.Video;
 
 public class Scan
 {

@@ -24,12 +24,12 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.video;
 
 
 //DM24062004 081.7 int05 introduced
 
-class PreviewObject
+public class PreviewObject
 {
 	private long start, end;
 	private int file_type;

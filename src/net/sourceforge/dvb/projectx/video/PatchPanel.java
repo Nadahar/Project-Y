@@ -24,7 +24,7 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.video;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -41,6 +41,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.X;
+import net.sourceforge.dvb.projectx.gui.UISwitchListener;
 
 /**
  * Class Patch Panel.

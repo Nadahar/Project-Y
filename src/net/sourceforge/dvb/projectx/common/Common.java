@@ -24,7 +24,7 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.common;
 
 
 import java.awt.Color;
@@ -37,6 +37,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import net.sourceforge.dvb.projectx.audio.Audio;
 
 //DM13042004 081.7 int01 introduced
 public final class Common

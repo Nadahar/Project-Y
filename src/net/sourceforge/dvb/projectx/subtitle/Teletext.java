@@ -24,9 +24,11 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.subtitle;
 
-import java.util.*;
+import java.util.Hashtable;
+
+import net.sourceforge.dvb.projectx.common.X;
 
 public final class Teletext
 {

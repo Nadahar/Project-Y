@@ -25,7 +25,7 @@
  */
 
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.io;
 
 
 //DM24062004 081.7 int05 introduced
@@ -33,7 +33,9 @@ package net.sourceforge.dvb.projectx;
 import java.io.*;
 import java.util.*;
 
-class RawInterface
+import net.sourceforge.dvb.projectx.common.Resource;
+
+public class RawInterface
 {
 	RawRead Rawread;
 	long stream_size;

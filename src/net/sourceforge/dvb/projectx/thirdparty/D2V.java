@@ -24,11 +24,14 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.thirdparty;
 
 
 import java.io.*;
 import java.util.*;
+
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.X;
 
 public class D2V
 {

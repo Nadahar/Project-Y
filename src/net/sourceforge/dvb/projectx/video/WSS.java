@@ -24,10 +24,12 @@
  *
  */
 
-package net.sourceforge.dvb.projectx;
+package net.sourceforge.dvb.projectx.video;
+
+import net.sourceforge.dvb.projectx.common.Resource;
+
 
 //DM30072004 introduced with 081.7 int07
-
 public final class WSS
 {
 	private static int pixels[] = new int[267];
