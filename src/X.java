@@ -131,8 +131,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b9_lang";
-static String version_date = "13.10.2004";
+static String version_name = "ProjectX 0.81.8.02b10_lang";
+static String version_date = "14.10.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -191,7 +191,7 @@ static JComboBox[] comBox = new JComboBox[38];
 //DM14072004 081.7 int06 changed
 //DM20072004 081.7 int07 changed
 //DM01102004 081.8.02 changed
-static JCheckBox[] cBox = new JCheckBox[70];
+static JCheckBox[] cBox = new JCheckBox[71];
 
 static JList list1, list3, list4;
 static X_JFileChooser chooser; //DM12122003 081.6 int05
@@ -1308,25 +1308,6 @@ protected JPanel buildidPanel()
 	idPanel3.setLayout ( new ColumnLayout() );
 	idPanel3.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.specials.title1")) );
 
-	//DM14052004 081.7 int02 moved++
-	JLabel gpts = new JLabel(Resource.getString("tab.specials.ptsshift") + " ");
-	gpts.setToolTipText(Resource.getString("tab.specials.ptsshift.tip"));
-	comBox[27] = new JComboBox();
-	comBox[27].addItem("auto");
-	for (int d=0;d<14;d++) 
-		comBox[27].addItem(""+d);
-	comBox[27].setPreferredSize(new Dimension(60,20));
-	comBox[27].setMaximumSize(new Dimension(60,20));
-	comBox[27].setSelectedIndex(1);
-	comBox[27].setEditable(true); //DM26022004 081.6 int18 add
-
-	JPanel spec5 = new JPanel();
-	spec5.setLayout(new BoxLayout(spec5, BoxLayout.X_AXIS));
-	spec5.add(gpts);  
-	spec5.add(comBox[27]);  
-	idPanel3.add(spec5);
-	//DM14052004 081.7 int02 moved--
-
 	//DM14052004 081.7 int02 moved
 	cBox[48] = new JCheckBox(Resource.getString("tab.specials.pva.overlap"));
 	cBox[48].setPreferredSize(new Dimension(270,20));
@@ -1341,9 +1322,6 @@ protected JPanel buildidPanel()
 	cBox[28].setMaximumSize(new Dimension(270,20));
 	cBox[28].setSelected(true);
 	idPanel3.add(cBox[28]);
-
-	//DM14052004 081.7 int02 add
-	idPanel3.add(new JLabel(Resource.getString("tab.specials.ts")));
 
 	cBox[38] = new JCheckBox(Resource.getString("tab.specials.ts.scramble"));
 	cBox[38].setToolTipText(Resource.getString("tab.specials.ts.scramble.tip"));
@@ -1368,6 +1346,12 @@ protected JPanel buildidPanel()
 	cBox[53].setMaximumSize(new Dimension(270,20));
 	cBox[53].setSelected(true);
 	idPanel3.add(cBox[53]);
+
+	cBox[70] = new JCheckBox(Resource.getString("tab.specials.ts.humax"));
+	cBox[70].setToolTipText(Resource.getString("tab.specials.ts.humax.tip"));
+	cBox[70].setPreferredSize(new Dimension(270,20));
+	cBox[70].setMaximumSize(new Dimension(270,20));
+	idPanel3.add(cBox[70]);
 
 	cBox[41] = new JCheckBox(Resource.getString("tab.specials.ts.pmt"));
 	cBox[41].setToolTipText(Resource.getString("tab.specials.ts.pmt.tip"));
@@ -1406,6 +1390,27 @@ protected JPanel buildidPanel()
 	JPanel idPanel2 = new JPanel();
 	idPanel2.setLayout ( new ColumnLayout() );
 	idPanel2.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.specials.title2")) );
+
+	//DM14052004 081.7 int02 moved++
+	JLabel gpts = new JLabel(Resource.getString("tab.specials.ptsshift") + " ");
+	gpts.setToolTipText(Resource.getString("tab.specials.ptsshift.tip"));
+	comBox[27] = new JComboBox();
+	comBox[27].addItem("auto");
+
+	for (int d=0; d < 14; d++) 
+		comBox[27].addItem("" + d);
+
+	comBox[27].setPreferredSize(new Dimension(60,20));
+	comBox[27].setMaximumSize(new Dimension(60,20));
+	comBox[27].setSelectedIndex(1);
+	comBox[27].setEditable(true); //DM26022004 081.6 int18 add
+
+	JPanel spec5 = new JPanel();
+	spec5.setLayout(new BoxLayout(spec5, BoxLayout.X_AXIS));
+	spec5.add(gpts);  
+	spec5.add(comBox[27]);  
+	idPanel2.add(spec5);
+	//DM14052004 081.7 int02 moved--
 
 	//DM14052004 081.7 int02 moved
 	//DM15072004 081.7 int06 changed
@@ -1843,7 +1848,9 @@ protected JPanel buildvideo1Panel() {
 
 
 /**** 2nd panel ****/
-protected JPanel buildexternPanel() { //DM30122003 081.6 int10 changed
+//DM30122003 081.6 int10 changed
+protected JPanel buildexternPanel()
+{
 	JPanel video2 = new JPanel();
 	video2.setLayout( new GridLayout(1, 2) );
 
@@ -1903,9 +1910,17 @@ protected JPanel buildexternPanel() { //DM30122003 081.6 int10 changed
 
 	cBox[32] = new JCheckBox(Resource.getString("tab.extern.renamevideo"));
 	cBox[32].setToolTipText(Resource.getString("tab.extern.renamevideo.tip"));
-	cBox[32].setPreferredSize(new Dimension(270,20));
-	cBox[32].setMaximumSize(new Dimension(270,20));
+	cBox[32].setPreferredSize(new Dimension(250,20));
+	cBox[32].setMaximumSize(new Dimension(250,20));
 	video2Panel.add(cBox[32]);
+
+	//DM30122003 081.6 int10
+	cBox[66] = new JCheckBox(Resource.getString("tab.options.pesappend"));
+	cBox[66].setPreferredSize(new Dimension(250,20));
+	cBox[66].setMaximumSize(new Dimension(250,20));
+	cBox[66].setToolTipText(Resource.getString("tab.options.pesappend_tip"));
+	cBox[66].setSelected(false);
+	video2Panel.add(cBox[66]);
 
 
 	video2.add(video2Panel);
@@ -2449,13 +2464,6 @@ protected JPanel buildoptionPanel() {
 	d2vfield[8].setToolTipText(Resource.getString("tab.options.startpath_tip"));
 	op0.add(new JLabel(Resource.getString("tab.options.startpath")));
 	op0.add(d2vfield[8]);
-
-	//DM30122003 081.6 int10
-	cBox[66] = new JCheckBox(Resource.getString("tab.options.pesappend"));
-	cBox[66].setPreferredSize(new Dimension(250,25));
-	cBox[66].setToolTipText(Resource.getString("tab.options.pesappend_tip"));
-	cBox[66].setSelected(false);
-	op0.add(cBox[66]);
 
 	option.add(op0);
 
@@ -7716,29 +7724,36 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 	boolean miss=false, dontread=false; //ghost 23012004 081.6 int11 add
 
 	morepva:
-	while (true) {
+	while (true)
+	{
 
 		pvaloop:
-		while ( count < size )  {     // till fileend (64bit size)
+		while ( count < size )
+		{
 
 			while (qpause) 
 				pause();
 
-			if (qbreak || (qinfo && count>qexit)) { 
+			if (qbreak || (qinfo && count > qexit))
+			{ 
 				qbreak=false; 
 				break morepva; 
 			}
 
 			/*** cut end reached ***/
-			if ((int)options[37]+20 < origframes) {
-				ende=true;
+			if ((int)options[37] + 20 < origframes)
+			{
+				ende = true;
 				break morepva; 
 			}
 
-			if (comBox[17].getSelectedIndex()==0 && ctemp.size()>0) {
-				if (cutcount==ctemp.size() && (cutcount&1)==0)
-					if (count > Long.parseLong(ctemp.get(cutcount-1).toString())+2048000){
-						ende=true;
+			// cut overload
+			if (comBox[17].getSelectedIndex()==0 && ctemp.size() > 0)
+			{
+				if (cutcount == ctemp.size() && (cutcount & 1) == 0)
+					if (count > Long.parseLong(ctemp.get(cutcount-1).toString()) + 2048000)
+					{
+						ende = true;
 						break morepva;
 					}
 			}
@@ -7754,7 +7769,6 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 					push189[188] = 0x47;
 
 				else if ( rd < 189 && cBox[53].isSelected())
-				//if ( rd < 189 && cBox[53].isSelected())
 				{
 					Msg(Resource.getString("rawparse.incomplete")+" "+count);
 					count += rd;
@@ -7762,45 +7776,53 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 				}
 			}
 
+
+			//humax .vid workaround, skip special data chunk
+			if (cBox[70].isSelected() && push189[0] == 0x7F && push189[1] == 0x41 && push189[2] == 4 && push189[3] == (byte)0xFD)
+			{
+				in.skip(995);
+				count += 1184;
+				continue pvaloop;
+			}
+
+
+ 			if (cBox[70].isSelected() && push189[0] == 0x47 && push189[188] == 0x7F)
+			{}  // do nothing, take the packet
+
+
  			/*** check 0x47 sync  ***/
 			//DM15072004 081.7 int06 changed
- 			if ( push189[0] != 0x47 || (cBox[33].isSelected() && push189[188] != 0x47) )
+ 			//if ( push189[0] != 0x47 || (cBox[33].isSelected() && push189[188] != 0x47) )
+ 			else if ( push189[0] != 0x47 || (cBox[33].isSelected() && push189[188] != 0x47) )
 			{
-				//DM11092004 081.8.02 add, humax .vid workaround
-				if (!cBox[33].isSelected() && !cBox[53].isSelected() && push189[0] == 0x7F && push189[1] == 0x41 && push189[2] == 4 && push189[3] == (byte)0xFD)
-				{
-					in.skip(995);
-					count += 1184;
-					continue pvaloop;
-				}
-
-				//in.unread(push189,1,188);
 				//ghost 23012004 081.6 int11 changed
 				if (dontread && cBox[53].isSelected())
 				{
 					Msg(Resource.getString("rawparse.comp.failed"));
-					in.unread(push189,190-rd,rd-1);
-					dontread=false;
+					in.unread(push189, 190 - rd, rd - 1);
+					dontread = false;
 				}
 				else
-					in.unread(push189,1,188);
+					in.unread(push189, 1, 188);
 
 				if (!cBox[3].isSelected() && !miss) //DM03112003 081.5++ info
-					Msg(Resource.getString("rawparse.missing.sync")+" "+count);
+					Msg(Resource.getString("rawparse.missing.sync") + " " + count);
 
-				miss=true;
+				miss = true;
 				count++;
 
 				continue pvaloop;
 			}
+
 			else if (dontread && cBox[53].isSelected())
 				Msg(Resource.getString("rawparse.comp.ok"));
 
 			if (!cBox[3].isSelected() && miss) //DM03112003 081.5++ info
-				Msg(Resource.getString("rawparse.found.sync")+" "+count);
+				Msg(Resource.getString("rawparse.found.sync") + " " + count);
+
 			miss=false;
 
-			in.unread(push189,188,1);
+			in.unread(push189, 188, 1);
 
 			/**** mark for split ***/
 			options[20]=count;

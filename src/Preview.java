@@ -192,10 +192,28 @@ class Preview
 				a += 7 + ((0xFF & data[a+6])<<8 | (0xFF & data[a+7]));
 			}
 
-			//ts:
-			if (filetype==11 && a < data.length-188 && (0xFF&data[a])==0x47 && (0xFF&data[a+188])==0x47)
+
+			//humax .vid workaround, skip special data chunk
+			if (filetype == 11 && data[a] == 0x7F && data[a + 1] == 0x41 && data[a + 2] == 4 && data[a + 3] == (byte)0xFD)
 			{
-				if (save && mark<=a)
+				if (save && mark <= a)
+					array.write(data, mark, a - mark);
+
+				save = false;
+				a += 1183;
+				mark = a + 1;
+
+				continue;
+			}
+
+			//ts:
+			//if (filetype == 11 && a < data.length-188 && data[a] == 0x47 && data[a+188] == 0x47)
+			if (filetype == 11 && a < data.length-188 && data[a] == 0x47)
+			{
+				if (data[a + 188] != 0x47 && data[a + 188] != 0x7F)
+					continue;
+
+				if (save && mark <= a)
 					array.write(data,mark,a-mark);
 
 				mark = a;
