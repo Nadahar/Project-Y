@@ -3,12 +3,12 @@
 
 
  Project X 0.81.9  
- 26.10.2004
+ 29.10.2004
 
 
  modified sources:  all ;)
 
-   - change: source handling + GUI options modified, some standard settings changed
+   - change: source handling + GUI options modified, some standard settings are changed
      Note: some ini parameters have been replaced and may not work with old settings anymore!
 
    - change: resource data handling modified
@@ -37,6 +37,9 @@
    - change: last selected folder in the systems file dialogue will be saved
    - change: multiple file selection in the file dialogue box (not supported by some JREs)
    - change: TS parse: better PID content detection (less mis-detection)
+   - change: now, the sourcecode adaptions for Topfield HD access are included. 
+     if you wonna try the AddOn from chrisg, just load and install the required .dll's only
+
 
 
  history of 081.8:

@@ -53,23 +53,24 @@
        big troubles with some versions of JRE's on different OS's.
 
 
- Extract all files from the received archive to a separate directory.
+   Extract all files from the received archive to a separate directory.
 
- sample of a compilation (may differ on your system) :
+   sample of a compilation (may differ on your system) :
 
- (A) open "build.bat" with an editor an check/correct the entry/path of JAVA_HOME 
-     of your installed JDK 
+   (A) open "build.bat" with an editor an check/correct the entry/path of JAVA_HOME 
+       of your installed JDK 
 
- (B) execute the "build.bat" on its place.
-     that will compile all sources, 
-     copy the resource files from the resource folder,
-     and build the .jar file
+   (B) execute the "build.bat" on its place.
+       that will compile all sources, 
+       build the .jar file and
+       copies the resource files from the resource folder into the new .jar,
 
- (C) additional received resource files can be added into the .jar file, later,
-     or put them into the same folder where the compiled .jar is executed.
+   (C) additional received resource files (e.g. other language files) can be added 
+       to the .jar file, later, 
+       or you put them into the same folder where the compiled .jar is executed.
 
 
- the compiling process doesn't take more than about 30 seconds.
+   the compiling process doesn't take more than about 30 seconds.
 
 
  ProjectX - CVS at sourceforge.net/projects/project-x/
@@ -88,6 +89,7 @@
 	ghost - dreambox file segment completion
 	roehrist - CVS, X-input
 	pstorch - i18n support
+	chrisg - Topfield disk access (AddOn)
 	jazzydane - danish translation
 	Eric Albert - BrowserLauncher
 	...and all other supporters...
