@@ -94,6 +94,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
@@ -133,8 +134,11 @@ import javax.swing.event.ChangeListener;
 public class X extends JPanel
 {
 
+/** the users locale */
+private static Locale locale = null;
+
 /** Project-X resource bundle */
-public static final ResourceBundle RESOURCE = ResourceBundle.getBundle("pjxresources");
+public static ResourceBundle RESOURCE = ResourceBundle.getBundle("pjxresources");
 	
 //DM18062004 081.7 int05 add
 RawInterface raw_interface = new RawInterface();
@@ -253,19 +257,21 @@ long fakedPTS = -1;
 public X()	//DM20032004 081.6 int18 changed
 {
 
-	// don't re-use ATM!
-	RButton[0] = new JRadioButton();
-	RButton[1] = new JRadioButton();
-
-
-	chooser = new X_JFileChooser(); //DM12122003 081.6 int05
-
 	if ( !inidir.endsWith(filesep) ) 
 		inidir += filesep;
 	inifile = inidir + "X.ini";
 
 	//DM13062004 081.7 int04 add
 	ColourTablesFile = inidir + "colours.tbl";
+}
+
+void buildGUI()
+{
+	// don't re-use ATM!
+	RButton[0] = new JRadioButton();
+	RButton[1] = new JRadioButton();
+
+	chooser = new X_JFileChooser(); //DM12122003 081.6 int05
 
 	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -287,7 +293,6 @@ public X()	//DM20032004 081.6 int18 changed
 	base_time.setTimeZone(java.util.TimeZone.getTimeZone("GMT+0:00"));
 	//subpicture.picture.run();  // start Pic , DM18052004 081.7 int02 changed
 	java.util.Arrays.fill(dumpfill,(byte)0xFF);
-
 }
 
 //DM20032004 081.6 int18 moved
@@ -399,10 +404,24 @@ protected JMenu buildLanguageMenu()
 {
 	JMenu language = new JMenu(RESOURCE.getString("language.menu"));
 
-	JMenuItem item_eng = new JMenuItem(RESOURCE.getString("language.english"));
-	item_eng.setEnabled(false);
+	JRadioButtonMenuItem item_sys = new JRadioButtonMenuItem(RESOURCE.getString("language.system"));
+	item_sys.addActionListener(menulistener);
+	item_sys.setSelected(locale == null);
+	item_sys.setActionCommand("language.system");
+	language.add(item_sys);
 
+	JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem(RESOURCE.getString("language.english"));
+	item_eng.addActionListener(menulistener);
+	item_eng.setSelected(Locale.ENGLISH.equals(locale));
+	item_eng.setActionCommand("language." + Locale.ENGLISH.toString());
 	language.add(item_eng);
+
+	JRadioButtonMenuItem item_ger = new JRadioButtonMenuItem(RESOURCE.getString("language.german"));
+	item_ger.addActionListener(menulistener);
+	item_ger.setSelected(Locale.GERMAN.equals(locale));
+	item_ger.setActionCommand("language." + Locale.GERMAN.toString());
+	language.add(item_ger);
+
 
 	return language;
 }
@@ -2613,6 +2632,23 @@ class MenuListener implements ActionListener
 			inisave();
 			System.exit(0); 
 		}
+		else if (actName.startsWith("language."))
+		{
+			String language = actName.substring(9);
+			if (language.equals("system"))
+			{
+				locale = null;
+				RESOURCE = ResourceBundle.getBundle("pjxresources");
+			}
+			else
+			{
+				locale = new Locale(language, "", "");
+				RESOURCE = ResourceBundle.getBundle("pjxresources", locale);
+			}
+			Msg(RESOURCE.getString("msg.new.language")+locale);
+			buildMenus();
+			SwingUtilities.updateComponentTreeUI(frame);
+		}
 	}
 }
 
@@ -4495,7 +4531,48 @@ public void ScanInfo(String file)
 	FileInfoTextArea.setText(values);
 }
 
+/**
+ * Load Language from ini file.  
+ */
+public void loadLang()
+{
+	try 
+	{
 
+		if (new File(inifile).exists())
+		{
+	
+			BufferedReader inis = new BufferedReader(new FileReader(inifile));
+			String path="", ck=""; 
+			boolean val = false;
+		
+			iniread:
+			while (true)
+			{
+				path = inis.readLine();
+		
+				if (path==null) 
+					break iniread;
+		
+				if (path.startsWith("lang="))
+				{
+					String lang = path.substring(5);
+					System.out.println("lang="+lang);
+					locale=new Locale(lang);
+					System.out.println("locale="+locale);
+					RESOURCE = ResourceBundle.getBundle("pjxresources", locale);
+					System.out.println("RESOURCE="+RESOURCE.getLocale());
+				}
+			}
+		}
+	}
+	catch (IOException e1)
+	{
+		//DM25072004 081.7 int07 add
+		Msg("load language error: " + e1);
+	}
+}
+	
 /****************
  * load inifile * 
  ****************/
@@ -4505,14 +4582,6 @@ public void iniload()
 {
 	try 
 	{
-
-		//DM13062004 081.7 int04 add
-		Object table_indices[] = Common.checkUserColourTable(ColourTablesFile);
-		if (table_indices != null)
-		{
-			for (int i = 0; i < table_indices.length; i++)
-				comBox[11].addItem(table_indices[i]);
-		}
 
 	if (new File(inifile).exists())
 	{
@@ -4613,6 +4682,12 @@ public static void inisave() //DM26012004 081.6 int12 changed, //DM26032004 081.
 	try 
 	{
 	PrintWriter inis = new PrintWriter(new FileWriter(inifile));
+
+	if (locale != null)
+	{
+		inis.println("// language");
+		inis.println("lang="+locale);
+	}
 
 	inis.println("// editable fields");
 	for (int a=0; a<d2vfield.length; a++)
@@ -4797,6 +4872,7 @@ public void javaEV()
 	TextArea.append("\nos.version\t" + System.getProperty("os.version"));
 	TextArea.append("\nuser.name\t" + System.getProperty("user.name"));
 	TextArea.append("\nuser.home\t" + System.getProperty("user.home"));
+	TextArea.append("\nuser.language\t" + System.getProperty("user.language"));
 	TextArea.append("\nini.file\t" + inifile);
 
 	//DM18062004 081.7 int05 add
@@ -4894,7 +4970,38 @@ public static void loadIDs(String nIDs) {  //DM28112003 081.5++
 
 
 public static void main(String[] args) {
+	X panel = new X();
+
+	boolean iniSet=false;
+
+	// first check and load ini file
+	int aaa1=0;
+	if (args.length > 0) {
+
+		aaa1=0;
+		if ( args[0].equalsIgnoreCase("-c") ) {
+			if ( args.length==1) {
+				System.out.println("stopped, no config file ...");
+				System.exit(0);
+			}
+			inifile = args[1];
+			if ( !(new File(inifile).exists()) ) {
+				System.out.println("stopped, config file "+inifile+" not found ...");
+				System.exit(0);
+			} 
+			System.out.println("use config file "+inifile+" ...");
+			aaa1=2;
+			iniSet = true;
+		}
+	}
 	
+	if (!iniSet)
+	{
+		System.out.println("use last config or standard ...");
+	}
+
+	panel.loadLang();
+
 	String[] version = getVersion();
 	System.out.println(version[0]+"/"+version[1]+" "+version[2]+" "+version[3]);
 	System.out.println();
@@ -4922,8 +5029,9 @@ public static void main(String[] args) {
 	if (args.length == 0)
 		startup.show();
 
-	X panel = new X();
-
+	panel.buildGUI();
+	panel.iniload();
+	
 	comchange=true;
 	UIManager.LookAndFeelInfo[] lfi =  UIManager.getInstalledLookAndFeels();
 
@@ -4937,28 +5045,14 @@ public static void main(String[] args) {
 
 	//DM28112003 081.5++
 	boolean loadGUI=false;
-	boolean iniLoaded=false;
 	boolean IDsLoaded=false;
 	boolean CutsLoaded=false;
 	int ac3f=0;
 
 	if (args.length > 0) {
 
-		int aaa1=0;
 		if ( args[0].equalsIgnoreCase("-c") ) {
-			if ( args.length==1) {
-				System.out.println("stopped, no config file ...");
-				System.exit(0);
-			}
-			inifile = args[1];
-			if ( !(new File(inifile).exists()) ) {
-				System.out.println("stopped, config file "+inifile+" not found ...");
-				System.exit(0);
-			} 
-			System.out.println("use config file "+inifile+" ...");
-			aaa1=2;
-			panel.iniload();
-			iniLoaded=true;
+			// already done
 		} else if ( args[0].equalsIgnoreCase("-dvx1") ) {
 			aaa1=1;
 			cBox[30].setSelected(true);
@@ -4975,10 +5069,6 @@ public static void main(String[] args) {
 			cBox[30].setSelected(true);
 			cBox[12].setSelected(true);
 			cBox[4].setSelected(true);
-		} else {
-			System.out.println("use last config or standard ...");
-			panel.iniload();
-			iniLoaded=true;
 		}
 
 		if (RButton[0].isSelected() || !RButton[1].isSelected()) {
@@ -5080,8 +5170,6 @@ public static void main(String[] args) {
 		});
 
 		frame.getContentPane().add(panel);
-		if (!iniLoaded)
-			panel.iniload();
 
 		frame.setLocation(framelocation[0],framelocation[1]);
 		frame.setSize(new Dimension(framelocation[2],framelocation[3]));
