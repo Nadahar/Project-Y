@@ -1051,11 +1051,11 @@ protected JPanel buildMainPanel()
 	control05.add(doitButton);
 
 	brm = new BRMonitor();
-	brm.setToolTipText("actual Bitrate of GOP from 0...10Mbps (depends on the kind of computing) / GOP structure / videotime");
+	brm.setToolTipText(RESOURCE.getString("mainpanel.brm_tip"));
 	control05.add(brm);
 
-	outSize = new JLabel("out MB");
-	outSize.setToolTipText("written MB of new created files of collection (without temporaries)");
+	outSize = new JLabel(RESOURCE.getString("mainpanel.outsize"));
+	outSize.setToolTipText(RESOURCE.getString("mainpanel.outsize_tip"));
 	control05.add(outSize);
 
 	scanButton = new JButton();
@@ -1063,7 +1063,7 @@ protected JPanel buildMainPanel()
 	localize(scanButton, "button.i");
 	scanButton.setMaximumSize(new Dimension(45,22));
 	scanButton.setPreferredSize(new Dimension(45,22));
-	scanButton.setToolTipText("short processing to inform about the IDs found in streamfile (in specified filesize, see out)");
+	scanButton.setToolTipText(RESOURCE.getString("button.i_tip"));
 	scanButton.setEnabled(true);
 	scanButton.addActionListener(my2Listener);
 
@@ -1072,7 +1072,7 @@ protected JPanel buildMainPanel()
 	localize(breakButton, "button.c");
 	breakButton.setMaximumSize(new Dimension(45,22));
 	breakButton.setPreferredSize(new Dimension(45,22));
-	breakButton.setToolTipText("cancel the current process");
+	breakButton.setToolTipText(RESOURCE.getString("button.c_tip"));
 	breakButton.setEnabled(false);
 	breakButton.addActionListener(my2Listener);
 
@@ -1082,7 +1082,7 @@ protected JPanel buildMainPanel()
 	pauseButton.setMaximumSize(new Dimension(45,22));
 	pauseButton.setPreferredSize(new Dimension(45,22));
 	pauseButton.setEnabled(false);
-	pauseButton.setToolTipText("stop(pause) or continue the current process");
+	pauseButton.setToolTipText(RESOURCE.getString("button.p_tip"));
 	pauseButton.addActionListener(my2Listener);
 
 	comBox[9] = new JComboBox();
@@ -1096,7 +1096,7 @@ protected JPanel buildMainPanel()
 	extract.setMaximumSize(new Dimension(45,22));
 	extract.setPreferredSize(new Dimension(45,22));
 	extract.setEnabled(false);
-	extract.setToolTipText("PVA raw file extraction, using the specified ID:  (press 'i' to get the found IDs)");
+	extract.setToolTipText(RESOURCE.getString("button.e_tip"));
 	extract.addActionListener(my2Listener);
 
 	JPanel control07 = new JPanel();
@@ -1114,8 +1114,8 @@ protected JPanel buildMainPanel()
 	control06.add(control07);
 
 	JPanel control08 = new JPanel();
-	control08.setBorder(BorderFactory.createTitledBorder( BorderFactory.createRaisedBevelBorder(), "work"));
-	control08.setToolTipText("if not DEMUX, it converts a streamformat to an other (stream content copy, no error correction!!)");
+	control08.setBorder(BorderFactory.createTitledBorder( BorderFactory.createRaisedBevelBorder(), RESOURCE.getString("mainpanel.work")));
+	control08.setToolTipText(RESOURCE.getString("mainpanel.work_tip"));
 	control08.setLayout(new ColumnLayout());
 
 	control08.add(control06);
@@ -1123,12 +1123,12 @@ protected JPanel buildMainPanel()
 
 	//DM14062004 081.7 int04 changed
 	Object[] convertTo = { 
-		"demux",
-		"to VDR",
-		"to M2P",
-		"to PVA",
-		"to TS",
-		"PIDfilter"
+		RESOURCE.getString("mainpanel.box.demux"),
+		RESOURCE.getString("mainpanel.box.toVDR"),
+		RESOURCE.getString("mainpanel.box.toM2P"),
+		RESOURCE.getString("mainpanel.box.toPVA"),
+		RESOURCE.getString("mainpanel.box.toTS"),
+		RESOURCE.getString("mainpanel.box.filter")
 	};
 	comBox[19] = new JComboBox(convertTo);
 	comBox[19].setPreferredSize(new Dimension(100,22));
@@ -1136,34 +1136,40 @@ protected JPanel buildMainPanel()
 	comBox[19].setSelectedIndex(0);
 	control08.add(comBox[19]);
 
-	cBox[18] = new JCheckBox("all coll's");
+	cBox[18] = new JCheckBox(RESOURCE.getString("mainpanel.allcolls"));
 	cBox[18].setPreferredSize(new Dimension(100,20));
 	cBox[18].setMaximumSize(new Dimension(100,20));
-	cBox[18].setToolTipText("enable to work with all collections in one run");
+	cBox[18].setToolTipText(RESOURCE.getString("mainpanel.allcolls_tip"));
 	control08.add(cBox[18]);
 
-	cBox[25] = new JCheckBox("post process.");
+	cBox[25] = new JCheckBox(RESOURCE.getString("mainpanel.postproc"));
 	cBox[25].setPreferredSize(new Dimension(110,20));
 	cBox[25].setMaximumSize(new Dimension(110,20));
-	cBox[25].setToolTipText("enable post processing (->see external panel, if field is not empty )");
+	cBox[25].setToolTipText(RESOURCE.getString("mainpanel.postproc_tip"));
 	control08.add(cBox[25]);
 
-	cBox[14] = new JCheckBox("MPG=>sPES");
+	cBox[14] = new JCheckBox(RESOURCE.getString("mainpanel.simplepes"));
 	cBox[14].setPreferredSize(new Dimension(100,20));
 	cBox[14].setMaximumSize(new Dimension(100,20));
-	cBox[14].setToolTipText("simple PES parsing, enable for MPEG-PS including data w/o a regular sub ID of private_stream_1");
+	cBox[14].setToolTipText(RESOURCE.getString("mainpanel.simplepes_tip"));
 	control08.add(cBox[14]);
 
-	msoff = new JLabel("A/V offset");
-	msoff.setToolTipText("<html>shows the A/V timeoffset at the beginning of each GOP in ms:  a/b/c <p>(cuts causes different offsets)<p>a) A/V PTS offset in source <p>b) A/V frame begin offset for actual GOP in demuxed file <p>c) new real A/V offset for actual GOP in demuxed file</html>");
+	msoff = new JLabel(RESOURCE.getString("mainpanel.avoffset"));
+	msoff.setToolTipText("<html>" + RESOURCE.getString("mainpanel.avoffset_tip1") + "<p>" +
+			RESOURCE.getString("mainpanel.avoffset_tip2") + "<p>" +
+			RESOURCE.getString("mainpanel.avoffset_tip3") + "<p>" +
+			RESOURCE.getString("mainpanel.avoffset_tip4") + "<p>" +
+			RESOURCE.getString("mainpanel.avoffset_tip5") + "</html>");
 	msoff.setPreferredSize(new Dimension(100,20));
 	msoff.setMaximumSize(new Dimension(100,20));
 	control08.add(msoff);
 
-	audiostatusLabel = new JLabel("not started");
+
+
+	audiostatusLabel = new JLabel(RESOURCE.getString("mainpanel.export"));
 	audiostatusLabel.setPreferredSize(new Dimension(100,20));
 	audiostatusLabel.setMaximumSize(new Dimension(100,20));
-	audiostatusLabel.setToolTipText("status of audioexport or written subpictures/pages");
+	audiostatusLabel.setToolTipText(RESOURCE.getString("mainpanel.export_tip"));
 	control08.add(audiostatusLabel);
 
 	JPanel control01 = new JPanel();
@@ -1197,17 +1203,17 @@ protected JPanel buildLogPanel()
 	JPanel option = buildoptionPanel();
 
 	logtab = new JTabbedPane();
-	logtab.addTab( "logwindow", logwindow );
+	logtab.addTab( RESOURCE.getString("tabname.logwindow"), logwindow );
 	logtab.setSelectedIndex(0);
-	logtab.addTab( "info", fileinfo ); //DM14052004 081.7 int02 changed
-	logtab.addTab( "msg", msg ); //DM14052004 081.7 int02 add
-	logtab.addTab( "out", split );
-	logtab.addTab( "special", ids );
-	logtab.addTab( "video", video1 );
-	logtab.addTab( "audio", audio );
-	logtab.addTab( "subtitle", subtitle ); //DM18052004 0817. int02 changed
-	logtab.addTab( "extern", extern );
-	logtab.addTab( "options", option );
+	logtab.addTab( RESOURCE.getString("tabname.info"), fileinfo ); //DM14052004 081.7 int02 changed
+	logtab.addTab( RESOURCE.getString("tabname.msg"), msg ); //DM14052004 081.7 int02 add
+	logtab.addTab( RESOURCE.getString("tabname.out"), split );
+	logtab.addTab( RESOURCE.getString("tabname.special"), ids );
+	logtab.addTab( RESOURCE.getString("tabname.video"), video1 );
+	logtab.addTab( RESOURCE.getString("tabname.audio"), audio );
+	logtab.addTab( RESOURCE.getString("tabname.subtitle"), subtitle ); //DM18052004 0817. int02 changed
+	logtab.addTab( RESOURCE.getString("tabname.extern"), extern );
+	logtab.addTab( RESOURCE.getString("tabname.options"), option );
 
 	panel.add(logtab, BorderLayout.CENTER);
 
@@ -1223,16 +1229,16 @@ protected JPanel buildlogwindowPanel()
 	JPanel main5 = new JPanel();
 	main5.setLayout(new BorderLayout());
 
-	cBox[19] = new JCheckBox("TTX: ");
-	cBox[19].setToolTipText("shows ttx header line and VPS status (decrease speed, if enabled)");
+	cBox[19] = new JCheckBox(RESOURCE.getString("tab.logwindow.ttx") + ": ");
+	cBox[19].setToolTipText(RESOURCE.getString("tab.logwindow.ttx_tip"));
 	main5.add(cBox[19], BorderLayout.WEST);
 
 	ttxheaderLabel = new JLabel("");
-	ttxheaderLabel.setToolTipText("header line of actual transmitted page (row 0)");
+	ttxheaderLabel.setToolTipText(RESOURCE.getString("tab.logwindow.ttxheader_tip"));
 	main5.add(ttxheaderLabel, BorderLayout.CENTER);
 
 	ttxvpsLabel = new JLabel("");
-	ttxvpsLabel.setToolTipText("short VPS status (VBI-line 16), a few stations have meaningful VPS data via DVB-teletext");
+	ttxvpsLabel.setToolTipText(RESOURCE.getString("tab.logwindow.vps_tip"));
 	main5.add(ttxvpsLabel, BorderLayout.EAST);
 
 	JPanel main6 = new JPanel();
@@ -1315,17 +1321,17 @@ protected JPanel buildMessagePanel()
 
 	JPanel msgPanel_1 = new JPanel();
 	msgPanel_1.setLayout ( new ColumnLayout() );
-	msgPanel_1.setBorder( BorderFactory.createTitledBorder("message handling") );
+	msgPanel_1.setBorder( BorderFactory.createTitledBorder(RESOURCE.getString("tab.msg.title")) );
 
-	cBox[40] = new JCheckBox("don't message 'packets out of sequence'");
-	cBox[40].setToolTipText("enable, if this message bombs the logwindow (and decrease the speed)");
+	cBox[40] = new JCheckBox(RESOURCE.getString("tab.msg.msg1"));
+	cBox[40].setToolTipText(RESOURCE.getString("tab.msg.msg1_tip"));
 	cBox[40].setPreferredSize(new Dimension(300,20));
 	cBox[40].setMaximumSize(new Dimension(300,20));
 	cBox[40].setSelected(false);
 	msgPanel_1.add(cBox[40]);
 
-	cBox[3] = new JCheckBox("don't message 'missing startcode'");
-	cBox[3].setToolTipText("enable, if this message bombs the logwindow (and decrease the speed)");
+	cBox[3] = new JCheckBox(RESOURCE.getString("tab.msg.msg2"));
+	cBox[3].setToolTipText(RESOURCE.getString("tab.msg.msg2_tip"));
 	cBox[3].setPreferredSize(new Dimension(250,20));
 	cBox[3].setMaximumSize(new Dimension(250,20));
 	cBox[3].setSelected(false);
@@ -2383,14 +2389,14 @@ protected JPanel buildoptionPanel() {
 
 	JPanel op0 = new JPanel();
 	op0.setLayout( new ColumnLayout() );
-	op0.setBorder( BorderFactory.createTitledBorder("various") );
+	op0.setBorder( BorderFactory.createTitledBorder(RESOURCE.getString("tab.options.various")) );
 
 	comBox[16] = new JComboBox();
 	comBox[16].setPreferredSize(new Dimension(250,25));
-	op0.add(new JLabel("installed look & feels:"));
+	op0.add(new JLabel(RESOURCE.getString("tab.options.lookfeel")));
 	op0.add(comBox[16]);
-	op0.add(new JLabel("choose your preferred look & feel"));
-	op0.add(new JLabel("sometimes a l&f crashes internally"));
+	op0.add(new JLabel(RESOURCE.getString("tab.options.lookfeel_info1")));
+	op0.add(new JLabel(RESOURCE.getString("tab.options.lookfeel_info2")));
 
 	comBox[16].addActionListener( new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -2414,19 +2420,19 @@ protected JPanel buildoptionPanel() {
  	});
 
 
-	cBox[11] = new JCheckBox("big log file");
-	cBox[11].setToolTipText("reduce speed, only for test purposes");
+	cBox[11] = new JCheckBox(RESOURCE.getString("tab.options.biglog"));
+	cBox[11].setToolTipText(RESOURCE.getString("tab.options.biglog_tip"));
 	cBox[11].setActionCommand("biglog");
 	op0.add(cBox[11]);
 
-	cBox[21] = new JCheckBox("normal log file");
-	cBox[21].setToolTipText("writes the logwindow content to file");
+	cBox[21] = new JCheckBox(RESOURCE.getString("tab.options.normallog"));
+	cBox[21].setToolTipText(RESOURCE.getString("tab.options.normallog_tip"));
 	cBox[21].setActionCommand("normallog");
 	op0.add(cBox[21]);
 
 	//DM24012004 081.6 int11 moved
-	cBox[43] = new JCheckBox("dump dropped GOPs to separate files");
-	cBox[43].setToolTipText("only meant for later error analysis");
+	cBox[43] = new JCheckBox(RESOURCE.getString("tab.options.dumpgop"));
+	cBox[43].setToolTipText(RESOURCE.getString("tab.options.dumpgop_tip"));
 	cBox[43].setPreferredSize(new Dimension(250,20));
 	cBox[43].setMaximumSize(new Dimension(250,20));
 	cBox[43].setSelected(false);
@@ -2435,14 +2441,14 @@ protected JPanel buildoptionPanel() {
 	//DM12122003 081.6 int05
 	d2vfield[8] = new JTextField("");
 	d2vfield[8].setPreferredSize(new Dimension(250,25));
-	d2vfield[8].setToolTipText("leave empty, or type in a start path, a leading '?' ever resets to this path before");
-	op0.add(new JLabel("starting path for file selection:"));
+	d2vfield[8].setToolTipText(RESOURCE.getString("tab.options.startpath_tip"));
+	op0.add(new JLabel(RESOURCE.getString("tab.options.startpath")));
 	op0.add(d2vfield[8]);
 
 	//DM30122003 081.6 int10
-	RButton[8] = new JRadioButton("append new file extensions (PES)");
+	RButton[8] = new JRadioButton(RESOURCE.getString("tab.options.pesappend"));
 	RButton[8].setPreferredSize(new Dimension(250,25));
-	RButton[8].setToolTipText("will keep the source file name (incl. extension) of all secondary PES streams");
+	RButton[8].setToolTipText(RESOURCE.getString("tab.options.pesappend_tip"));
 	RButton[8].setSelected(false);
 	op0.add(RButton[8]);
 
@@ -2450,7 +2456,7 @@ protected JPanel buildoptionPanel() {
 
 	JPanel op2 = new JPanel();
 	op2.setLayout( new ColumnLayout() );
-	op2.setBorder( BorderFactory.createTitledBorder("Buffer") );
+	op2.setBorder( BorderFactory.createTitledBorder(RESOURCE.getString("tab.options.buffer")) );
 
 	Object[] bufsize = { "10240000","8192000","7168000","6144000","5120000","4096000","3072000","2048000","1024000" };
 	comBox[10]=new JComboBox(bufsize);
@@ -2459,8 +2465,8 @@ protected JPanel buildoptionPanel() {
 	comBox[10].setPreferredSize(new Dimension(100,25));
 	comBox[10].setMaximumSize(new Dimension(100,25));
 
-	JLabel iob = new JLabel("main I/O-Buffersize in bytes");
-	iob.setToolTipText("lower values may prevent internal memory overflows -> OutOfMemory error");
+	JLabel iob = new JLabel(RESOURCE.getString("tab.options.mainbuffer"));
+	iob.setToolTipText(RESOURCE.getString("tab.options.mainbuffer_tip"));
 	op2.add(iob);
 	op2.add(comBox[10]);
 
@@ -2471,8 +2477,8 @@ protected JPanel buildoptionPanel() {
 	comBox[36].setEditable(true);
 	comBox[36].setPreferredSize(new Dimension(100,25));
 	comBox[36].setMaximumSize(new Dimension(100,25));
-	JLabel viob = new JLabel("I-Buffersize in bytes (only PES packetsize=0 !)");
-	viob.setToolTipText("try higher values if you work with high bitrate videostreams");
+	JLabel viob = new JLabel(RESOURCE.getString("tab.options.pes0buffer"));
+	viob.setToolTipText(RESOURCE.getString("tab.options.pes0buffer_tip"));
 	op2.add(viob);
 	op2.add(comBox[36]);
 
@@ -2484,15 +2490,15 @@ protected JPanel buildoptionPanel() {
 	comBox[37].setEditable(true);
 	comBox[37].setPreferredSize(new Dimension(100,25));
 	comBox[37].setMaximumSize(new Dimension(100,25));
-	JLabel scanL = new JLabel("pre-Scan Buffersize in bytes");
-	scanL.setToolTipText("higher values if known filetypes are not detected");
+	JLabel scanL = new JLabel(RESOURCE.getString("tab.options.prebuffer"));
+	scanL.setToolTipText(RESOURCE.getString("tab.options.prebuffer_tip"));
 	op2.add(scanL);
 	op2.add(comBox[37]);
 
 
 	//DM04052004 081.7 int02 add
-	JButton garbagecollector = new JButton("garbage collector");
-	garbagecollector.setToolTipText("calls the garbage collector");
+	JButton garbagecollector = new JButton(RESOURCE.getString("tab.options.gc"));
+	garbagecollector.setToolTipText(RESOURCE.getString("tab.options.gc_tip"));
 	op2.add(new JLabel(" "));
 	op2.add(garbagecollector);
 	garbagecollector.addActionListener( new ActionListener()
@@ -4540,29 +4546,29 @@ public void ScanInfo(String file)
 	String values = "";
 	FileInfoTextArea.setBackground(Color.white);
 
-	values += "Location:\t" + info.getParent() + "\n";
-	values += "Name:\t" + info.getName() + "\n";
+	values += RESOURCE.getString("scaninfo.location") + "\t" + info.getParent() + "\n";
+	values += RESOURCE.getString("scaninfo.name") + "\t" + info.getName() + "\n";
 
 	int source = raw_interface.isAccessibleDisk(file) ? 2 : (info.exists() ? 1 : 0);
 	long size = source == 2 ? raw_interface.getFileSize(file) : info.length();
 
 	if (source > 0)
 	{
-		values += "Size:\t" + (size / 1048576) + " MB (" + size + " bytes)" + "\n";
-		String type = "Type:\t" + scan.Type(file) + "\n"; // must be first when scanning
-		values += "Date:\t" + scan.Date(file) + "\n";
+		values += RESOURCE.getString("scaninfo.size") + "\t" + (size / 1048576) + " MB (" + size + " " + RESOURCE.getString("scaninfo.bytes") + ")" + "\n";
+		String type = RESOURCE.getString("scaninfo.type") + "\t" + scan.Type(file) + "\n"; // must be first when scanning
+		values += RESOURCE.getString("scaninfo.date") + "\t" + scan.Date(file) + "\n";
 		values += "\n";
 		values += type;
-		values += "Video:\t" + scan.getVideo() + "\n";
-		values += "Audio:\t" + scan.getAudio() + "\n";
-		values += "Teletext:\t" + scan.getText()+ "\n"; //DM28042004 081.7 int02 changed
-		values += "Subpict.:\t" + scan.getPics()+ "\n"; //DM28042004 081.7 int02 add
-		values += "est. Playtime:\t" + scan.getPlaytime()+ "\n";
+		values += RESOURCE.getString("scaninfo.video") + "\t" + scan.getVideo() + "\n";
+		values += RESOURCE.getString("scaninfo.audio") + "\t" + scan.getAudio() + "\n";
+		values += RESOURCE.getString("scaninfo.teletext") + "\t" + scan.getText()+ "\n"; //DM28042004 081.7 int02 changed
+		values += RESOURCE.getString("scaninfo.subpicture") + "\t" + scan.getPics()+ "\n"; //DM28042004 081.7 int02 add
+		values += RESOURCE.getString("scaninfo.playtime") + "\t" + scan.getPlaytime()+ "\n";
 		FileInfoTextArea.setBackground(scan.isSupported() ? new Color(225,255,225) : new Color(255,225,225));
 	}
 
 	else
-		values += "\nFile doesn't exists!\n";
+		values += "\n" + RESOURCE.getString("scaninfo.notfound") + "\n";
 
 	FileInfoTextArea.setText(values);
 }
