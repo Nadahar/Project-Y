@@ -75,14 +75,10 @@ public class AboutBox extends JDialog
 
 		container.add(new JLabel(Resource.getString("about.credits.label")));
 
-		//String credits[] = Resource.getStringByLines("credits");
-		//for (int a=0; a<credits.length; a++) 
-			//container.add(new JLabel(credits[a]));
-
 		String credits = "\n"+Resource.getString("credits")+"\n";
 		JTextArea list = new JTextArea(credits, 5, 10);
-		list.setEditable(false);
-		list.setFocusable(false);
+		list.setEnabled(false);
+		list.setDisabledTextColor(Color.black);
 		JScrollPane scroll = new JScrollPane(list);
 		scroll.setBackground(Color.white);
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
