@@ -90,9 +90,16 @@ class RawInterface
 
 	public boolean getScanData(String sourcefile, byte data[]) throws IOException
 	{
+		return getScanData(sourcefile, data, 0);
+	}
+
+	public boolean getScanData(String sourcefile, byte data[], long position) throws IOException
+	{
 		if (isAccessibleDisk(sourcefile))
 		{
 			RawFileInputStream rawin = new RawFileInputStream(Rawread, sourcefile);
+
+			rawin.skip(position);
 			rawin.read(data, 0, data.length);
 			rawin.close();
 

@@ -116,7 +116,10 @@ public class PatchPanel extends JDialog {
 
 		container.add(grid);
 		getContentPane().add(container);
-		pack();
+
+		if (!X.CLI_mode)
+			pack();
+
 		centerDialog();
 		UIManager.addPropertyChangeListener(new UISwitchListener(container));
 	}

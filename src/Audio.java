@@ -28,16 +28,9 @@
  */
 
 import java.io.*; //DM24012004 081.6 int11 add
-import java.net.URL;
-import java.util.ArrayList;
 
-public class Audio {
-
-	/** name of the ac3 file */
-	private static final String AC3_FILE_NAME = "ac3.bin";
-	
-	/** list of AC3 frames */
-	private static ArrayList AC3list = new ArrayList();
+public class Audio
+{
 		
 	int ID=0;
 	int Layer=0;
@@ -883,66 +876,5 @@ public class Audio {
 			return 0; 
 	} 
 	//DM3003004 081.6 int18 add-
-	
-	/**
-	 * Loads the ac3.bin file.
-	 */
-	public static void loadAC3() 
-	{
-		Audio audio = new Audio();
-		AC3list.clear();
-		
-		try {
-			URL url = Resource.getResourceURL(AC3_FILE_NAME);
-			if (url != null)
-			{
-				BufferedInputStream bis = new BufferedInputStream(url.openStream());
-				ByteArrayOutputStream bao = new ByteArrayOutputStream();
-				byte[] buff = new byte[1024];
-				int bytesRead = -1;
-				while ((bytesRead = bis.read(buff, 0, buff.length)) != -1)
-				{
-					bao.write(buff, 0, bytesRead);
-				}
-				
-				byte[] check = bao.toByteArray();
-			
-				X.Msg(""); //DM22062004 081.7 int05 add
-			
-				int a=0, frame_counter=0;
-				while (a < check.length) 
-				{
-					audio.AC3_parseHeader(check,a);
-					X.Msg("("+frame_counter+") "+audio.AC3_saveAnddisplayHeader());
-					byte[] ac3data = new byte[audio.Size];
-					System.arraycopy(check,a,ac3data,0,audio.Size);
-					AC3list.add(ac3data);
-					a += audio.Size;
-					frame_counter++;
-				}
-				check = null;
-			}
-		} 
-		catch (IOException e5) 
-		{ 
-			X.Msg(Resource.getString("ac3.msg.loading.error")); 
-			AC3list.clear();
-		}
-	
-		if (AC3list.size() > 0)
-		{
-			X.Msg(Resource.getString("ac3.msg.frames", ""+AC3list.size()));
-		}
-	}
-	
-	
-	/**
-	 * Returns the AC3list.
-	 * 
-	 * @return ArrayList
-	 */
-	public static ArrayList getAC3list() {
-		return AC3list;
-	}
-	
+
 }

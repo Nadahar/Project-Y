@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -39,6 +41,12 @@ import java.util.Hashtable;
 //DM13042004 081.7 int01 introduced
 public final class Common
 {
+	/** name of the ac3 file */
+	private static final String AC3_FILENAME = "ac3.bin";
+	
+	/** list of AC3 frames */
+	private static ArrayList AC3list = new ArrayList();
+
 	//DM18052004 081.7 int02 add
 	private static java.text.DateFormat time_format_1 = new java.text.SimpleDateFormat("HH:mm:ss.SSS");
 	private static java.text.DateFormat time_format_2 = new java.text.SimpleDateFormat("HH:mm:ss:SSS");
@@ -176,4 +184,66 @@ public final class Common
 		return user_table;
 	}
 
+	
+	/**
+	 * Loads the ac3.bin file.
+	 */
+	public static void loadAC3() 
+	{
+		Audio audio = new Audio();
+		AC3list.clear();
+		
+		try {
+			URL url = Resource.getResourceURL(AC3_FILENAME);
+			if (url != null)
+			{
+				BufferedInputStream bis = new BufferedInputStream(url.openStream());
+				ByteArrayOutputStream bao = new ByteArrayOutputStream();
+				byte[] buff = new byte[1024];
+				int bytesRead = -1;
+				while ((bytesRead = bis.read(buff, 0, buff.length)) != -1)
+				{
+					bao.write(buff, 0, bytesRead);
+				}
+				
+				byte[] check = bao.toByteArray();
+			
+				X.Msg(""); //DM22062004 081.7 int05 add
+			
+				int a=0, frame_counter=0;
+				while (a < check.length) 
+				{
+					audio.AC3_parseHeader(check,a);
+					X.Msg("("+frame_counter+") "+audio.AC3_saveAnddisplayHeader());
+					byte[] ac3data = new byte[audio.Size];
+					System.arraycopy(check,a,ac3data,0,audio.Size);
+					AC3list.add(ac3data);
+					a += audio.Size;
+					frame_counter++;
+				}
+				check = null;
+			}
+		} 
+		catch (IOException e5) 
+		{ 
+			X.Msg(Resource.getString("ac3.msg.loading.error")); 
+			AC3list.clear();
+		}
+	
+		if (AC3list.size() > 0)
+		{
+			X.Msg(Resource.getString("ac3.msg.frames", ""+AC3list.size()));
+		}
+	}
+	
+	
+	/**
+	 * Returns the AC3list.
+	 * 
+	 * @return ArrayList
+	 */
+	public static ArrayList getAC3list() {
+		return AC3list;
+	}
+	
 }

@@ -115,7 +115,9 @@ public class AboutBox extends JDialog
 
 		getContentPane().add(container2);
 		
-		pack();
+		if (!X.CLI_mode)
+			pack();
+
 		setLocation(200,200);
 		setResizable(false); //DM17042004 081.7 int02 add
 

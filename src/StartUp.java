@@ -112,7 +112,10 @@ public class StartUp extends JFrame
 		container2.add(container);
 
 		getContentPane().add(container2);
-		pack();
+
+		if (!X.CLI_mode)
+			pack();
+
 		setLocation(200,200);
 		setResizable(false); //DM17042004 081.7 int02 add
 

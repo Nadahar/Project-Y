@@ -32,40 +32,40 @@ public class StandardBuffer
 	private int id;
 	private int type;
 
-	private StandardBuffer()
+	public StandardBuffer()
 	{
 		buf = new ByteArrayOutputStream();
 		id = 0;
 	}
 
-	private StandardBuffer(int val1)
+	public StandardBuffer(int val1)
 	{
 		buf = new ByteArrayOutputStream();
 		id = val1;
 	}
 
-	private int getType()
+	public int getType()
 	{
 		return type;
 	}
 
-	private void write(byte data[]) throws IOException
+	public void write(byte data[]) throws IOException
 	{
 		buf.write(data);
 	}
 
-	private void write(byte data[], int offset, int length) throws IOException
+	public void write(byte data[], int offset, int length) throws IOException
 	{
 		buf.write(data, offset, length);
 	}
 
-	private byte[] getData() throws IOException
+	public byte[] getData() throws IOException
 	{
 		buf.flush();
 		return buf.toByteArray();
 	}
 
-	private void reset()
+	public void reset()
 	{
 		buf.reset();
 	}

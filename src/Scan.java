@@ -888,7 +888,7 @@ public class Scan
 		try 
 		{
 			//DM18062004 081.7 int05 changed
-			if (!raw_interface.getScanData(infile, check))
+			if (!raw_interface.getScanData(infile, check, position))
 			{
 				RandomAccessFile incheck = new RandomAccessFile( infile, "r" );
 				size = incheck.length();
