@@ -17,7 +17,7 @@ src\net\sourceforge\dvb\projectx\gui\Html.java
 src\net\sourceforge\dvb\projectx\io\IDDBufferedOutputStream.java
 src\net\sourceforge\dvb\projectx\io\RawFileInputStream.java
 src\net\sourceforge\dvb\projectx\io\RawInterface.java
-src\net\sourceforge\dvb\projectx\io\RawRead.java
+src\net\sourceforge\dvb\projectx\io\RawReadIF.java
 src\net\sourceforge\dvb\projectx\io\StandardBuffer.java
 src\net\sourceforge\dvb\projectx\io\Scan.java
 src\net\sourceforge\dvb\projectx\subtitle\DVBSubpicture.java
@@ -38,3 +38,4 @@ src\net\sourceforge\dvb\projectx\video\Preview.java
 src\net\sourceforge\dvb\projectx\video\PreviewObject.java
 src\net\sourceforge\dvb\projectx\video\PatchPanel.java
 src\edu\stanford\ejalbert\BrowserLauncher.java
+src\RawRead.java
