@@ -45,7 +45,7 @@ public class XInputDirectory {
 
 	/**
 	 * Create a XInputDirectory of type FileType.FILE_DIR.
-	 * @param aFile Directory data to use
+	 * @param aFileIdentifier Directory name
 	 * @throws IllegalArgumentException If aFile is not a directory
 	 */
 	public XInputDirectory(String aFileIdentifier) {
@@ -264,7 +264,7 @@ public class XInputDirectory {
 	}
 
 	/**
-	 * @return
+	 * @return Type of XInputDirectory
 	 */
 	public FileType getFileType() {
 		return fileType;

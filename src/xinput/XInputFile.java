@@ -34,8 +34,11 @@ public class XInputFile {
 
 	/**
 	 * Create a XInputFile of type FileType.FILE.
-	 * @param aFile File data to use
-	 * @throws IllegalArgumentException If aFile is not a file
+	 * 
+	 * @param aFile
+	 *            File data to use
+	 * @throws IllegalArgumentException
+	 *             If aFile is not a file
 	 */
 	public XInputFile(File aFile) {
 		if (!aFile.isFile()) {
@@ -47,8 +50,11 @@ public class XInputFile {
 
 	/**
 	 * Create a XInputFile of type FileType.FTP.
-	 * @param aFtpVO Directory data to use
-	 * @param aFtpFile File data to use
+	 * 
+	 * @param aFtpVO
+	 *            Directory data to use
+	 * @param aFtpFile
+	 *            File data to use
 	 */
 	public XInputFile(FtpVO aFtpVO, FTPFile aFtpFile) {
 		ftpVO = aFtpVO;
@@ -58,6 +64,7 @@ public class XInputFile {
 
 	/**
 	 * Get String representation of the object.
+	 * 
 	 * @return String representation of the object
 	 */
 	public String toString() {
@@ -87,23 +94,16 @@ public class XInputFile {
 			name = name.replaceAll("Ã²", "ò");
 			name = name.replaceAll("Ãº", "ú");
 			name = name.replaceAll("Ã¹", "ù");
-
-			s =
-				"ftp://"
-					+ ftpVO.getUser()
-					+ ":"
-					+ ftpVO.getPassword()
-					+ "@"
-					+ ftpVO.getServer()
-					+ ftpVO.getDirectory()
-					+ "/"
-					+ name;
+			
+			s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@"
+					+ ftpVO.getServer() + ftpVO.getDirectory() + "/" + name;
 		}
 		return s;
 	}
 
 	/**
 	 * Get url representation of the object.
+	 * 
 	 * @return String with url
 	 */
 	public String getUrl() {
@@ -115,23 +115,16 @@ public class XInputFile {
 		}
 
 		if (fileType == FileType.FTP) {
-			s =
-				"ftp://"
-					+ ftpVO.getUser()
-					+ ":"
-					+ ftpVO.getPassword()
-					+ "@"
-					+ ftpVO.getServer()
-					+ ftpVO.getDirectory()
-					+ "/"
-					+ ftpFile.getName()
-					+ ";type=b";
+			s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@"
+					+ ftpVO.getServer() + ftpVO.getDirectory() + "/"
+					+ ftpFile.getName() + ";type=b";
 		}
 		return s;
 	}
 
 	/**
 	 * Length of file in bytes.
+	 * 
 	 * @return Length of file in bytes
 	 */
 	public long length() {
@@ -150,6 +143,7 @@ public class XInputFile {
 
 	/**
 	 * Time in milliseconds from the epoch.
+	 * 
 	 * @return Time in milliseconds from the epoch
 	 */
 	public long lastModified() {
@@ -168,6 +162,7 @@ public class XInputFile {
 
 	/**
 	 * Checks if file exists
+	 * 
 	 * @return Result of check
 	 */
 	public boolean exists() {
@@ -179,13 +174,21 @@ public class XInputFile {
 		}
 
 		if (fileType == FileType.FTP) {
-			b = true;
+			try {
+				b = true;
+				inputStream = getInputStream();
+				inputStream.close();
+				inputStream = null;
+			} catch (Exception e) {
+				b = false;
+			}
 		}
 		return b;
 	}
 
 	/**
 	 * Get Name of file
+	 * 
 	 * @return Name of file
 	 */
 	public String getName() {
@@ -201,13 +204,26 @@ public class XInputFile {
 			s = s.replaceAll("Ã¤", "ä");
 			s = s.replaceAll("Ã¶", "ö");
 			s = s.replaceAll("Ã¼", "ü");
+			s = s.replaceAll("Ã„", "Ä");
+			s = s.replaceAll("Ã–", "Ö");
 			s = s.replaceAll("Ãœ", "Ü");
+			s = s.replaceAll("ÃŸ", "ß");
+			s = s.replaceAll("Ã¡", "á");
+			s = s.replaceAll("Ã ", "à");
+			s = s.replaceAll("Ã©", "é");
+			s = s.replaceAll("Ã¨", "è");
+			s = s.replaceAll("Ã­", "í");
+			s = s.replaceAll("Ã¬", "ì");
+			s = s.replaceAll("Ã³", "ó");
+			s = s.replaceAll("Ã²", "ò");
+			s = s.replaceAll("Ãº", "ú");
+			s = s.replaceAll("Ã¹", "ù");
 		}
 		return s;
 	}
-
 	/**
 	 * Get Path of parent
+	 * 
 	 * @return Path of parent
 	 */
 	public String getParent() {
@@ -226,9 +242,11 @@ public class XInputFile {
 
 	/**
 	 * Get input stream from the file. close() on stream closes XInputFile, too.
+	 * 
 	 * @return Input stream from the file
 	 */
-	public InputStream getInputStream() throws FileNotFoundException, MalformedURLException, IOException {
+	public InputStream getInputStream() throws FileNotFoundException,
+			MalformedURLException, IOException {
 
 		InputStream is = null;
 
@@ -237,14 +255,17 @@ public class XInputFile {
 		}
 
 		if (fileType == FileType.FTP) {
-			is = new XInputStream((new URL(getUrl())).openConnection().getInputStream());
+			is = new XInputStream((new URL(getUrl())).openConnection()
+					.getInputStream());
 		}
 		return is;
 	}
 
 	/**
 	 * Opens XInputFile for random access
-	 * @param mode Access mode as in RandomAccessFile
+	 * 
+	 * @param mode
+	 *            Access mode as in RandomAccessFile
 	 * @throws IOException
 	 */
 	public void randomAccessOpen(String mode) throws IOException {
@@ -259,7 +280,8 @@ public class XInputFile {
 
 		if (fileType == FileType.FTP) {
 			if (mode.compareTo("r") != 0) {
-				throw new IllegalStateException("Illegal access mode for FileType.FTP");
+				throw new IllegalStateException(
+						"Illegal access mode for FileType.FTP");
 			}
 			inputStream = getInputStream();
 			inputStream.mark(10 * 1024 * 1024);
@@ -293,7 +315,7 @@ public class XInputFile {
 	}
 
 	/**
-	 * @param pos
+	 * @param aPosition The offset position, measured in bytes from the beginning of the file, at which to set the file pointer.
 	 * @throws java.io.IOException
 	 */
 	public void randomAccessSeek(long aPosition) throws IOException {
@@ -318,9 +340,9 @@ public class XInputFile {
 	}
 
 	/**
-	 * @param b
-	 * @return
-	 * @throws java.io.IOException
+	 * @param aBuffer The buffer into which the data is read.
+	 * @return @throws
+	 *         java.io.IOException
 	 */
 	public int randomAccessRead(byte[] aBuffer) throws IOException {
 
@@ -331,23 +353,20 @@ public class XInputFile {
 		}
 
 		if (fileType == FileType.FTP) {
-			long read = 0;
-			long remaining = 0;
-			byte[] streamBuffer = new byte[aBuffer.length];
+			/*
+			 * long read = 0; long remaining = 0; byte[] streamBuffer = new
+			 * byte[aBuffer.length];
+			 * 
+			 * remaining = aBuffer.length; do { read =
+			 * inputStream.read(streamBuffer, 0, (int)remaining); if (read > 0) {
+			 * System.arraycopy(streamBuffer, 0, aBuffer, (int) (aBuffer.length -
+			 * remaining), (int)read); remaining -= read; } } while ((remaining >
+			 * 0) && (read != -1)); result = (int) (aBuffer.length - remaining);
+			 * 
+			 * if (read == -1 && result == 0) { result = -1; }
+			 */
 
-			remaining = aBuffer.length;
-			do {
-				read = inputStream.read(streamBuffer, 0, (int)remaining);
-				if (read > 0) {
-					System.arraycopy(streamBuffer, 0, aBuffer, (int) (aBuffer.length - remaining), (int)read);
-					remaining -= read;
-				}
-			} while ((remaining > 0) && (read != -1));
-			result = (int) (aBuffer.length - remaining);
-
-			if (read == -1 && result == 0) {
-				result = -1;
-			}
+			result = inputStream.read(aBuffer);
 		}
 
 		return result;
@@ -355,7 +374,7 @@ public class XInputFile {
 	}
 
 	/**
-	 * @param b
+	 * @param aBuffer The data.
 	 * @throws java.io.IOException
 	 */
 	public void randomAccessWrite(byte[] aBuffer) throws IOException {
@@ -370,13 +389,17 @@ public class XInputFile {
 	}
 
 	/**
-	 * Convinience method for a single random read access to a input file.
-	 * The file is opened before and closed after read.
-	 * @param aBuffer Buffer to fill with read bytes (up to aBuffer.length() bytes)
-	 * @param aPosition Fileposition at which we want read
+	 * Convinience method for a single random read access to a input file. The
+	 * file is opened before and closed after read.
+	 * 
+	 * @param aBuffer
+	 *            Buffer to fill with read bytes (up to aBuffer.length() bytes)
+	 * @param aPosition
+	 *            Fileposition at which we want read
 	 * @throws IOException
 	 */
-	public void randomAccessSingleRead(byte[] aBuffer, long aPosition) throws IOException {
+	public void randomAccessSingleRead(byte[] aBuffer, long aPosition)
+			throws IOException {
 
 		randomAccessOpen("r");
 		randomAccessSeek(aPosition);
@@ -385,7 +408,7 @@ public class XInputFile {
 
 	}
 	/**
-	 * @return
+	 * @return Long value read.
 	 * @throws java.io.IOException
 	 */
 	public long readLong() throws IOException {
@@ -404,15 +427,10 @@ public class XInputFile {
 			if (bytesRead < 8) {
 				throw new EOFException("Less than 8 bytes read");
 			}
-			l =
-				((long)buffer[1] << 56)
-					+ ((long)buffer[2] << 48)
-					+ ((long)buffer[3] << 40)
-					+ ((long)buffer[4] << 32)
-					+ ((long)buffer[5] << 24)
-					+ ((long)buffer[6] << 16)
-					+ ((long)buffer[7] << 8)
-					+ buffer[8];
+			l = ((long) buffer[1] << 56) + ((long) buffer[2] << 48)
+					+ ((long) buffer[3] << 40) + ((long) buffer[4] << 32)
+					+ ((long) buffer[5] << 24) + ((long) buffer[6] << 16)
+					+ ((long) buffer[7] << 8) + buffer[8];
 		}
 		return l;
 	}
