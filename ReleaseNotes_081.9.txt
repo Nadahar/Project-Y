@@ -1,5 +1,5 @@
  Note: 
-	- the archive contains all files
+	- the archive contains all necessary files
 
 
  Project X 0.81.9  
@@ -31,6 +31,8 @@
 	- change: post commands are now called as commandline, not arguments (what's actually the same)
 	- change: reading cutpoint files allows comments following any timeindex/number, at least one whitespace char must separate them
 	- change: cutpoints now also apply to stream2stream conversions. depending on the source packetization, the cuts are 'clean' (no pixel garbage)
+	Note: even if cuts are possible now, there is no error/timecode correction as before
+
 	- change: 59Hz framerate calculation (only simple adaption)
 	- change: last selected folder in the systems file dialogue will be saved
 	- change: multiple file selection in the file dialogue box (not supported by some JREs)
