@@ -58,7 +58,7 @@ public class HexViewer extends JFrame
 				close(); 
 			}
 		});
-		setTitle(X.RESOURCE.getString("hexviewer.title"));
+		setTitle(Resource.getString("hexviewer.title"));
 
 		chooser = new JFileChooser();
 		scroll = new JScrollPane();
@@ -78,7 +78,7 @@ public class HexViewer extends JFrame
 		});
 
 		Field = new JTextField("0");
-		Field.setToolTipText(X.RESOURCE.getString("hexviewer.jumpto_tip"));
+		Field.setToolTipText(Resource.getString("hexviewer.jumpto_tip"));
 		Field.setPreferredSize(new Dimension(100,25));
 		Field.setMaximumSize(new Dimension(100,25));
 		Field.setEditable(true);
@@ -88,7 +88,7 @@ public class HexViewer extends JFrame
 		hexn.setMaximumSize(new Dimension(120,25));
 
 		Field1 = new JTextField("0");
-		Field1.setToolTipText(X.RESOURCE.getString("hexviewer.jumpto_tip"));
+		Field1.setToolTipText(Resource.getString("hexviewer.jumpto_tip"));
 		Field1.setPreferredSize(new Dimension(100,25));
 		Field1.setMaximumSize(new Dimension(100,25));
 		Field1.setEditable(true);
@@ -98,14 +98,14 @@ public class HexViewer extends JFrame
 
 		JPanel menu = new JPanel();
 		menu.setLayout( new BoxLayout(menu,BoxLayout.X_AXIS ));
-		menu.setToolTipText(X.RESOURCE.getString("hexviewer.jumpto_tip"));
-		menu.add(new JLabel(X.RESOURCE.getString("hexviewer.jumptodec")));
+		menu.setToolTipText(Resource.getString("hexviewer.jumpto_tip"));
+		menu.add(new JLabel(Resource.getString("hexviewer.jumptodec")));
 		menu.add(Field);
 		menu.add(hexn);
-		menu.add(new JLabel(X.RESOURCE.getString("hexviewer.jumptohex")));
+		menu.add(new JLabel(Resource.getString("hexviewer.jumptohex")));
 		menu.add(Field1);
 
-		flen = new JLabel(X.RESOURCE.getString("hexviewer.filesize"));
+		flen = new JLabel(Resource.getString("hexviewer.filesize"));
 		menu.add(flen);
 
 		Field.addActionListener(new ActionListener()
@@ -148,7 +148,7 @@ public class HexViewer extends JFrame
 
 		JPanel menu2 = new JPanel();
 		menu2.setLayout( new BoxLayout(menu2,BoxLayout.X_AXIS ));
-		menu2.setToolTipText(X.RESOURCE.getString("hexviewer.extract_tip"));
+		menu2.setToolTipText(Resource.getString("hexviewer.extract_tip"));
 
 		from = new JTextField("0");
 		from.setPreferredSize(new Dimension(100,25));
@@ -160,8 +160,8 @@ public class HexViewer extends JFrame
 		fsize.setMaximumSize(new Dimension(100,25));
 		fsize.setEditable(true);
 
-		JButton extract = new JButton(X.RESOURCE.getString("hexviewer.extractfrom"));
-		extract.setToolTipText(X.RESOURCE.getString("hexviewer.extractfrom_tip"));
+		JButton extract = new JButton(Resource.getString("hexviewer.extractfrom"));
+		extract.setToolTipText(Resource.getString("hexviewer.extractfrom_tip"));
 
 		extract.addActionListener(new ActionListener()
 		{
@@ -183,10 +183,10 @@ public class HexViewer extends JFrame
 
 		menu2.add(extract);
 		menu2.add(from);
-		menu2.add(new JLabel(X.RESOURCE.getString("hexviewer.to") + ": (hex.)"));
+		menu2.add(new JLabel(Resource.getString("hexviewer.to") + ": (hex.)"));
 		menu2.add(fsize);
 
-		JButton close = new JButton(X.RESOURCE.getString("hexviewer.close"));
+		JButton close = new JButton(Resource.getString("hexviewer.close"));
 		close.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -198,7 +198,7 @@ public class HexViewer extends JFrame
 		getRootPane().setDefaultButton(close);
 		menu2.add(close);
 
-		textonly = new JCheckBox(X.RESOURCE.getString("hexviewer.textmode"));
+		textonly = new JCheckBox(Resource.getString("hexviewer.textmode"));
 		textonly.setSelected(false);
 		menu2.add(textonly);
 
@@ -242,7 +242,7 @@ public class HexViewer extends JFrame
 		else 
 			return;
 
-		setTitle(X.RESOURCE.getString("hexviewer.save") + ": " + newfile); //DM30122003 081.6 int10 add
+		setTitle(Resource.getString("hexviewer.save") + ": " + newfile); //DM30122003 081.6 int10 add
 
 		try 
 		{
@@ -274,10 +274,10 @@ public class HexViewer extends JFrame
 		}
 		catch (IOException e)
 		{ 
-			HexArea.setText(X.RESOURCE.getString("hexviewer.error") + ": " + file); 
+			HexArea.setText(Resource.getString("hexviewer.error") + ": " + file); 
 		}
 
-		setTitle(X.RESOURCE.getString("hexviewer.file") + ": " + file); //DM30122003 081.6 int10 add
+		setTitle(Resource.getString("hexviewer.file") + ": " + file); //DM30122003 081.6 int10 add
 	}
 	//DM06092003-
 
@@ -319,7 +319,7 @@ public class HexViewer extends JFrame
 		} 
 		catch (IOException e)
 		{ 
-			HexArea.setText(X.RESOURCE.getString("hexviewer.error") + ": " + file); 
+			HexArea.setText(Resource.getString("hexviewer.error") + ": " + file); 
 		}
 	}
 
@@ -371,8 +371,8 @@ public class HexViewer extends JFrame
 
 		file = file1;
 
-		setTitle(X.RESOURCE.getString("hexviewer.file") + ": " + file);
-		flen.setText(X.RESOURCE.getString("hexviewer.filesize") + ": " + filelen + " b.");
+		setTitle(Resource.getString("hexviewer.file") + ": " + file);
+		flen.setText(Resource.getString("hexviewer.filesize") + ": " + filelen + " b.");
 
 		this.show();
 	}

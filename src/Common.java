@@ -26,11 +26,13 @@
 
 //package X
 
-import java.io.*;
-import java.awt.*;
-import javax.swing.*;
-import java.util.*;
-import java.util.zip.*;
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 //DM13042004 081.7 int01 introduced
 public final class Common
@@ -49,7 +51,7 @@ public final class Common
 			if ( oldfile.renameTo(newfile) )
 				return;
 
-		X.Msg(X.RESOURCE.getString("common.rename_error1") + " " + oldfile.toString() + " " + X.RESOURCE.getString("common.rename_error2") + " " + newfile.toString());
+		X.Msg(Resource.getString("common.rename_error1") + " " + oldfile.toString() + " " + Resource.getString("common.rename_error2") + " " + newfile.toString());
 		X.TextArea.setBackground(new Color(255,225,225));
 	}
 

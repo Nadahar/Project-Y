@@ -24,18 +24,26 @@
  *
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 //DM17042004 081.7 int02 introduced
 public class TeletextPageMatrix extends JFrame
 {
 	public Picture picture;
 
-	String title = X.RESOURCE.getString("ttpagematrix.title");
+	String title = Resource.getString("ttpagematrix.title");
 	private int w = 310, h = 410;
 
 	public TeletextPageMatrix()
@@ -91,7 +99,7 @@ public class TeletextPageMatrix extends JFrame
 			big.setFont(new Font("Sans Serif", Font.PLAIN, 12));
 
 			setBackground(color[8]);
-			setToolTipText(X.RESOURCE.getString("ttpagematrix.tip"));
+			setToolTipText(Resource.getString("ttpagematrix.tip"));
 			init();
 		}
 
@@ -117,14 +125,14 @@ public class TeletextPageMatrix extends JFrame
 			big.fillRect(0, 0, w, h);
 
 			big.setColor(color[7]);
-			big.drawString(X.RESOURCE.getString("ttpagematrix.file") + ": " + file, x + 10, y + 14);
+			big.drawString(Resource.getString("ttpagematrix.file") + ": " + file, x + 10, y + 14);
 
 			y += 16;
 
-			big.drawString(X.RESOURCE.getString("ttpagematrix.composition1") + ": ", x + 10, y + 14);
-			big.drawString(X.RESOURCE.getString("ttpagematrix.composition2"), x + 20, y + 30);
+			big.drawString(Resource.getString("ttpagematrix.composition1") + ": ", x + 10, y + 14);
+			big.drawString(Resource.getString("ttpagematrix.composition2"), x + 20, y + 30);
 
-			big.drawString(X.RESOURCE.getString("ttpagematrix.composition3") + ":", x + 10, y + 46);
+			big.drawString(Resource.getString("ttpagematrix.composition3") + ":", x + 10, y + 46);
 
 			for (int a=0; a<8; a++)
 				big.drawString(" = " + (a+1), x + 28 + (a<<5), y + 62);

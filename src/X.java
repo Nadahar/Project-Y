@@ -88,18 +88,14 @@ import java.io.PrintWriter;
 import java.io.PushbackInputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -135,12 +131,6 @@ import javax.swing.event.ChangeListener;
 public class X extends JPanel
 {
 
-/** the users locale */
-private static Locale locale = null;
-
-/** Project-X resource bundle */
-public static ResourceBundle RESOURCE = ResourceBundle.getBundle("pjxresources");
-	
 //DM18062004 081.7 int05 add
 RawInterface raw_interface = new RawInterface();
 static int loadSizeForward = 2560000;
@@ -302,48 +292,27 @@ void buildGUI()
 	executePane = new EXECUTE();
 }
 
-/**
- * Sets a button's text and mnemonic values using the specified resource
- * key.
- * The button text is scanned for &. If found the character after it is used as menmonic. 
- * 
- * @param   button    the button (e.g. a menu or menu item) to localize
- * @param   key       the resource string to find
- */
-public static final void localize(AbstractButton button, String key) {
-	String text = RESOURCE.getString(key);
-	
-	int pos = text.indexOf('&');
-	if (pos != -1)
-	{
-		char mnemonic = text.charAt(pos+1);
-		button.setMnemonic(mnemonic);
-		text = text.substring(0, pos) + text.substring(pos+1);
-	}
-	button.setText(text);
-}
-
 //DM20032004 081.6 int18 moved
 protected void buildPopupMenu()
 {
-	popup = new JPopupMenu(RESOURCE.getString("popup.what"));
+	popup = new JPopupMenu(Resource.getString("popup.what"));
 
-	JMenuItem menuitem_1 = popup.add(RESOURCE.getString("popup.cutspecials"));
+	JMenuItem menuitem_1 = popup.add(Resource.getString("popup.cutspecials"));
 	menuitem_1.setActionCommand("openCut");
 	popup.addSeparator();
 
-	JMenuItem menuitem_2 = popup.add(RESOURCE.getString("popup.add"));
-	JMenuItem menuitem_3 = popup.add(RESOURCE.getString("popup.remove"));
+	JMenuItem menuitem_2 = popup.add(Resource.getString("popup.add"));
+	JMenuItem menuitem_3 = popup.add(Resource.getString("popup.remove"));
 	popup.addSeparator();
 
-	JMenuItem menuitem_4 = popup.add(RESOURCE.getString("popup.rename"));
+	JMenuItem menuitem_4 = popup.add(Resource.getString("popup.rename"));
 	popup.addSeparator();
 
-	JMenuItem menuitem_5 = popup.add(RESOURCE.getString("popup.openhex"));
+	JMenuItem menuitem_5 = popup.add(Resource.getString("popup.openhex"));
 	menuitem_5.setActionCommand("viewAsHex");
-	JMenuItem menuitem_6 = popup.add(RESOURCE.getString("popup.patchbasics"));
+	JMenuItem menuitem_6 = popup.add(Resource.getString("popup.patchbasics"));
 	menuitem_6.setActionCommand("editBasics");
-	JMenuItem menuitem_7 = popup.add(RESOURCE.getString("popup.sendtocl3"));
+	JMenuItem menuitem_7 = popup.add(Resource.getString("popup.sendtocl3"));
 	menuitem_7.setActionCommand("sendTo3");
 
 	popup.pack();
@@ -376,7 +345,7 @@ protected void buildMenus()
 	JMenu general = buildGeneralMenu();
 	menuBar.add(general);
 
-	JMenu language = buildLanguageMenu();
+	JMenu language = Resource.buildLanguageMenu();
 	menuBar.add(language);
 
 	JMenu help = buildHelpMenu();
@@ -389,22 +358,22 @@ protected void buildMenus()
 protected JMenu buildFileMenu()
 {
 	JMenu file = new JMenu();
-	localize(file, "file.menu");
+	Resource.localize(file, "file.menu");
 
 	JMenuItem add = new JMenuItem();
-	localize(add, "file.add");
+	Resource.localize(add, "file.add");
 	add.setActionCommand("add");
 
 	JMenuItem remove = new JMenuItem();
-	localize(remove, "file.remove");
+	Resource.localize(remove, "file.remove");
 	remove.setActionCommand("remove");
 
 	JMenuItem rename = new JMenuItem();
-	localize(rename, "file.rename");
+	Resource.localize(rename, "file.rename");
 	rename.setActionCommand("rename");
 
 	JMenuItem exit = new JMenuItem();
-	localize(exit, "file.exit");
+	Resource.localize(exit, "file.exit");
 	exit.setActionCommand("exit");
 
 	file.add(add);
@@ -423,50 +392,12 @@ protected JMenu buildFileMenu()
 }
 
 //DM20032004 081.6 int18 add
-protected JMenu buildLanguageMenu()
-{
-	JMenu language = new JMenu();
-	localize(language, "language.menu");
-	
-	ButtonGroup group = new ButtonGroup();
-
-	JRadioButtonMenuItem item_sys = new JRadioButtonMenuItem();
-	localize(item_sys, "language.system");
-	item_sys.addActionListener(menulistener);
-	item_sys.setSelected(locale == null);
-	item_sys.setActionCommand("language.system");
-	language.add(item_sys);
-	group.add(item_sys);
-
-	language.addSeparator();
-
-	JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem();
-	localize(item_eng, "language.english");
-	item_eng.addActionListener(menulistener);
-	item_eng.setSelected(Locale.ENGLISH.equals(locale));
-	item_eng.setActionCommand("language." + Locale.ENGLISH.toString());
-	language.add(item_eng);
-	group.add(item_eng);
-
-	JRadioButtonMenuItem item_ger = new JRadioButtonMenuItem();
-	localize(item_ger, "language.german");
-	item_ger.addActionListener(menulistener);
-	item_ger.setSelected(Locale.GERMAN.equals(locale));
-	item_ger.setActionCommand("language." + Locale.GERMAN.toString());
-	language.add(item_ger);
-	group.add(item_ger);
-
-
-	return language;
-}
-
-//DM20032004 081.6 int18 add
 protected JMenu buildSettingsMenu()
 {
 	JMenu setting = new JMenu();
-	localize(setting, "settings.menu");
+	Resource.localize(setting, "settings.menu");
 	JMenuItem open = new JMenuItem();
-	localize(open, "settings.settings");
+	Resource.localize(open, "settings.settings");
 
 	setting.add(open);
 
@@ -477,7 +408,7 @@ protected JMenu buildSettingsMenu()
 protected JMenu buildGeneralMenu()
 {
 	JMenu general = new JMenu();
-	localize(general, "general.menu");
+	Resource.localize(general, "general.menu");
 
 	ActionListener Al = new ActionListener()
 	{
@@ -522,31 +453,31 @@ protected JMenu buildGeneralMenu()
 protected JMenu buildViewerMenu()
 {
 	JMenu preview = new JMenu();
-	localize(preview, "options.menu");
+	Resource.localize(preview, "options.menu");
 
 	JMenuItem video = new JMenuItem();
-	localize(video, "options.opencutspecials");
+	Resource.localize(video, "options.opencutspecials");
 	video.setActionCommand("openCut");
 
 	preview.add(video);
 	preview.addSeparator();
 
 	JMenuItem hex = new JMenuItem();
-	localize(hex, "options.openhexview");
+	Resource.localize(hex, "options.openhexview");
 	hex.setActionCommand("viewAsHex");
 
 	preview.add(hex);
 	preview.addSeparator();
 
 	JMenuItem basic = new JMenuItem();
-	localize(basic, "options.pachtbasics");
+	Resource.localize(basic, "options.pachtbasics");
 	basic.setActionCommand("editBasics");
 
 	preview.add(basic);
 	preview.addSeparator();
 
 	JMenuItem subtitle = new JMenuItem();
-	localize(subtitle, "options.subtitlepreview");
+	Resource.localize(subtitle, "options.subtitlepreview");
 	subtitle.setActionCommand("subpreview");
 
 	preview.add(subtitle);
@@ -555,7 +486,7 @@ protected JMenu buildViewerMenu()
 	preview.addSeparator();
 
 	JMenuItem pagematrix = new JMenuItem();
-	localize(pagematrix, "options.teletext");
+	Resource.localize(pagematrix, "options.teletext");
 	pagematrix.setActionCommand("pagematrix");
 
 	preview.add(pagematrix);
@@ -575,14 +506,14 @@ protected JMenu buildViewerMenu()
 protected JMenu buildHelpMenu()
 {
 	JMenu help = new JMenu();
-	localize(help, "help.menu");
+	Resource.localize(help, "help.menu");
 
 	JMenuItem about = new JMenuItem();
-	localize(about, "help.about");
+	Resource.localize(about, "help.about");
 	about.setActionCommand("about");
 
 	JMenuItem openHtml = new JMenuItem();
-	localize(openHtml, "help.help");
+	Resource.localize(openHtml, "help.help");
 	openHtml.setActionCommand("helphtml");
 
 	help.add(about);
@@ -598,7 +529,7 @@ protected JMenu buildHelpMenu()
 //DM20032004 081.6 int18 add
 protected void showAboutBox()
 {
-	JOptionPane.showMessageDialog(this, getTerms(), RESOURCE.getString("about.title"), JOptionPane.INFORMATION_MESSAGE);
+	JOptionPane.showMessageDialog(this, getTerms(), Resource.getString("about.title"), JOptionPane.INFORMATION_MESSAGE);
 }
 
 // file panel
@@ -1046,7 +977,7 @@ protected JPanel buildMainPanel()
 
 	doitButton = new JButton();
 	doitButton.setActionCommand("go");
-	localize(doitButton, "button.go");
+	Resource.localize(doitButton, "button.go");
 	doitButton.addActionListener(my2Listener);
 
 	JPanel control05 = new JPanel();
@@ -1054,39 +985,39 @@ protected JPanel buildMainPanel()
 	control05.add(doitButton);
 
 	brm = new BRMonitor();
-	brm.setToolTipText(RESOURCE.getString("mainpanel.brm_tip"));
+	brm.setToolTipText(Resource.getString("mainpanel.brm_tip"));
 	control05.add(brm);
 
-	outSize = new JLabel(RESOURCE.getString("mainpanel.outsize"));
-	outSize.setToolTipText(RESOURCE.getString("mainpanel.outsize_tip"));
+	outSize = new JLabel(Resource.getString("mainpanel.outsize"));
+	outSize.setToolTipText(Resource.getString("mainpanel.outsize_tip"));
 
 	control05.add(outSize);
 
 	scanButton = new JButton();
 	scanButton.setActionCommand("infoscan");
-	localize(scanButton, "button.i");
+	Resource.localize(scanButton, "button.i");
 	scanButton.setMaximumSize(new Dimension(45,22));
 	scanButton.setPreferredSize(new Dimension(45,22));
-	scanButton.setToolTipText(RESOURCE.getString("button.i_tip"));
+	scanButton.setToolTipText(Resource.getString("button.i_tip"));
 	scanButton.setEnabled(true);
 	scanButton.addActionListener(my2Listener);
 
 	breakButton = new JButton();
 	breakButton.setActionCommand("cancel");
-	localize(breakButton, "button.c");
+	Resource.localize(breakButton, "button.c");
 	breakButton.setMaximumSize(new Dimension(45,22));
 	breakButton.setPreferredSize(new Dimension(45,22));
-	breakButton.setToolTipText(RESOURCE.getString("button.c_tip"));
+	breakButton.setToolTipText(Resource.getString("button.c_tip"));
 	breakButton.setEnabled(false);
 	breakButton.addActionListener(my2Listener);
 
 	pauseButton = new JButton();
 	pauseButton.setActionCommand("pause");
-	localize(pauseButton, "button.p");
+	Resource.localize(pauseButton, "button.p");
 	pauseButton.setMaximumSize(new Dimension(45,22));
 	pauseButton.setPreferredSize(new Dimension(45,22));
 	pauseButton.setEnabled(false);
-	pauseButton.setToolTipText(RESOURCE.getString("button.p_tip"));
+	pauseButton.setToolTipText(Resource.getString("button.p_tip"));
 	pauseButton.addActionListener(my2Listener);
 
 	comBox[9] = new JComboBox();
@@ -1096,11 +1027,11 @@ protected JPanel buildMainPanel()
 
 	extract = new JButton();
 	extract.setActionCommand("extract");
-	localize(extract, "button.e");
+	Resource.localize(extract, "button.e");
 	extract.setMaximumSize(new Dimension(45,22));
 	extract.setPreferredSize(new Dimension(45,22));
 	extract.setEnabled(false);
-	extract.setToolTipText(RESOURCE.getString("button.e_tip"));
+	extract.setToolTipText(Resource.getString("button.e_tip"));
 	extract.addActionListener(my2Listener);
 
 	JPanel control07 = new JPanel();
@@ -1118,8 +1049,8 @@ protected JPanel buildMainPanel()
 	control06.add(control07);
 
 	JPanel control08 = new JPanel();
-	control08.setBorder(BorderFactory.createTitledBorder( BorderFactory.createRaisedBevelBorder(), RESOURCE.getString("mainpanel.work")));
-	control08.setToolTipText(RESOURCE.getString("mainpanel.work_tip"));
+	control08.setBorder(BorderFactory.createTitledBorder( BorderFactory.createRaisedBevelBorder(), Resource.getString("mainpanel.work")));
+	control08.setToolTipText(Resource.getString("mainpanel.work_tip"));
 	control08.setLayout(new ColumnLayout());
 
 	control08.add(control06);
@@ -1127,12 +1058,12 @@ protected JPanel buildMainPanel()
 
 	//DM14062004 081.7 int04 changed
 	Object[] convertTo = { 
-		RESOURCE.getString("mainpanel.box.demux"),
-		RESOURCE.getString("mainpanel.box.toVDR"),
-		RESOURCE.getString("mainpanel.box.toM2P"),
-		RESOURCE.getString("mainpanel.box.toPVA"),
-		RESOURCE.getString("mainpanel.box.toTS"),
-		RESOURCE.getString("mainpanel.box.filter")
+		Resource.getString("mainpanel.box.demux"),
+		Resource.getString("mainpanel.box.toVDR"),
+		Resource.getString("mainpanel.box.toM2P"),
+		Resource.getString("mainpanel.box.toPVA"),
+		Resource.getString("mainpanel.box.toTS"),
+		Resource.getString("mainpanel.box.filter")
 	};
 	comBox[19] = new JComboBox(convertTo);
 	comBox[19].setPreferredSize(new Dimension(100,22));
@@ -1140,40 +1071,40 @@ protected JPanel buildMainPanel()
 	comBox[19].setSelectedIndex(0);
 	control08.add(comBox[19]);
 
-	cBox[18] = new JCheckBox(RESOURCE.getString("mainpanel.allcolls"));
+	cBox[18] = new JCheckBox(Resource.getString("mainpanel.allcolls"));
 	cBox[18].setPreferredSize(new Dimension(100,20));
 	cBox[18].setMaximumSize(new Dimension(100,20));
-	cBox[18].setToolTipText(RESOURCE.getString("mainpanel.allcolls_tip"));
+	cBox[18].setToolTipText(Resource.getString("mainpanel.allcolls_tip"));
 	control08.add(cBox[18]);
 
-	cBox[25] = new JCheckBox(RESOURCE.getString("mainpanel.postproc"));
+	cBox[25] = new JCheckBox(Resource.getString("mainpanel.postproc"));
 	cBox[25].setPreferredSize(new Dimension(110,20));
 	cBox[25].setMaximumSize(new Dimension(110,20));
-	cBox[25].setToolTipText(RESOURCE.getString("mainpanel.postproc_tip"));
+	cBox[25].setToolTipText(Resource.getString("mainpanel.postproc_tip"));
 	control08.add(cBox[25]);
 
-	cBox[14] = new JCheckBox(RESOURCE.getString("mainpanel.simplepes"));
+	cBox[14] = new JCheckBox(Resource.getString("mainpanel.simplepes"));
 	cBox[14].setPreferredSize(new Dimension(100,20));
 	cBox[14].setMaximumSize(new Dimension(100,20));
-	cBox[14].setToolTipText(RESOURCE.getString("mainpanel.simplepes_tip"));
+	cBox[14].setToolTipText(Resource.getString("mainpanel.simplepes_tip"));
 	control08.add(cBox[14]);
 
-	msoff = new JLabel(RESOURCE.getString("mainpanel.avoffset"));
-	msoff.setToolTipText("<html>" + RESOURCE.getString("mainpanel.avoffset_tip1") + "<p>" +
-			RESOURCE.getString("mainpanel.avoffset_tip2") + "<p>" +
-			RESOURCE.getString("mainpanel.avoffset_tip3") + "<p>" +
-			RESOURCE.getString("mainpanel.avoffset_tip4") + "<p>" +
-			RESOURCE.getString("mainpanel.avoffset_tip5") + "</html>");
+	msoff = new JLabel(Resource.getString("mainpanel.avoffset"));
+	msoff.setToolTipText("<html>" + Resource.getString("mainpanel.avoffset_tip1") + "<p>" +
+			Resource.getString("mainpanel.avoffset_tip2") + "<p>" +
+			Resource.getString("mainpanel.avoffset_tip3") + "<p>" +
+			Resource.getString("mainpanel.avoffset_tip4") + "<p>" +
+			Resource.getString("mainpanel.avoffset_tip5") + "</html>");
 	msoff.setPreferredSize(new Dimension(100,20));
 	msoff.setMaximumSize(new Dimension(100,20));
 	control08.add(msoff);
 
 
 
-	audiostatusLabel = new JLabel(RESOURCE.getString("mainpanel.export"));
+	audiostatusLabel = new JLabel(Resource.getString("mainpanel.export"));
 	audiostatusLabel.setPreferredSize(new Dimension(100,20));
 	audiostatusLabel.setMaximumSize(new Dimension(100,20));
-	audiostatusLabel.setToolTipText(RESOURCE.getString("mainpanel.export_tip"));
+	audiostatusLabel.setToolTipText(Resource.getString("mainpanel.export_tip"));
 	control08.add(audiostatusLabel);
 
 	JPanel control01 = new JPanel();
@@ -1207,17 +1138,17 @@ protected JPanel buildLogPanel()
 	JPanel option = buildoptionPanel();
 
 	logtab = new JTabbedPane();
-	logtab.addTab( RESOURCE.getString("tabname.logwindow"), logwindow );
+	logtab.addTab( Resource.getString("tabname.logwindow"), logwindow );
 	logtab.setSelectedIndex(0);
-	logtab.addTab( RESOURCE.getString("tabname.info"), fileinfo ); //DM14052004 081.7 int02 changed
-	logtab.addTab( RESOURCE.getString("tabname.msg"), msg ); //DM14052004 081.7 int02 add
-	logtab.addTab( RESOURCE.getString("tabname.out"), split );
-	logtab.addTab( RESOURCE.getString("tabname.special"), ids );
-	logtab.addTab( RESOURCE.getString("tabname.video"), video1 );
-	logtab.addTab( RESOURCE.getString("tabname.audio"), audio );
-	logtab.addTab( RESOURCE.getString("tabname.subtitle"), subtitle ); //DM18052004 0817. int02 changed
-	logtab.addTab( RESOURCE.getString("tabname.extern"), extern );
-	logtab.addTab( RESOURCE.getString("tabname.options"), option );
+	logtab.addTab( Resource.getString("tabname.info"), fileinfo ); //DM14052004 081.7 int02 changed
+	logtab.addTab( Resource.getString("tabname.msg"), msg ); //DM14052004 081.7 int02 add
+	logtab.addTab( Resource.getString("tabname.out"), split );
+	logtab.addTab( Resource.getString("tabname.special"), ids );
+	logtab.addTab( Resource.getString("tabname.video"), video1 );
+	logtab.addTab( Resource.getString("tabname.audio"), audio );
+	logtab.addTab( Resource.getString("tabname.subtitle"), subtitle ); //DM18052004 0817. int02 changed
+	logtab.addTab( Resource.getString("tabname.extern"), extern );
+	logtab.addTab( Resource.getString("tabname.options"), option );
 
 	panel.add(logtab, BorderLayout.CENTER);
 
@@ -1233,16 +1164,16 @@ protected JPanel buildlogwindowPanel()
 	JPanel main5 = new JPanel();
 	main5.setLayout(new BorderLayout());
 
-	cBox[19] = new JCheckBox(RESOURCE.getString("tab.logwindow.ttx") + ": ");
-	cBox[19].setToolTipText(RESOURCE.getString("tab.logwindow.ttx_tip"));
+	cBox[19] = new JCheckBox(Resource.getString("tab.logwindow.ttx") + ": ");
+	cBox[19].setToolTipText(Resource.getString("tab.logwindow.ttx_tip"));
 	main5.add(cBox[19], BorderLayout.WEST);
 
 	ttxheaderLabel = new JLabel("");
-	ttxheaderLabel.setToolTipText(RESOURCE.getString("tab.logwindow.ttxheader_tip"));
+	ttxheaderLabel.setToolTipText(Resource.getString("tab.logwindow.ttxheader_tip"));
 	main5.add(ttxheaderLabel, BorderLayout.CENTER);
 
 	ttxvpsLabel = new JLabel("");
-	ttxvpsLabel.setToolTipText(RESOURCE.getString("tab.logwindow.vps_tip"));
+	ttxvpsLabel.setToolTipText(Resource.getString("tab.logwindow.vps_tip"));
 	main5.add(ttxvpsLabel, BorderLayout.EAST);
 
 	JPanel main6 = new JPanel();
@@ -1325,17 +1256,17 @@ protected JPanel buildMessagePanel()
 
 	JPanel msgPanel_1 = new JPanel();
 	msgPanel_1.setLayout ( new ColumnLayout() );
-	msgPanel_1.setBorder( BorderFactory.createTitledBorder(RESOURCE.getString("tab.msg.title")) );
+	msgPanel_1.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.msg.title")) );
 
-	cBox[40] = new JCheckBox(RESOURCE.getString("tab.msg.msg1"));
-	cBox[40].setToolTipText(RESOURCE.getString("tab.msg.msg1_tip"));
+	cBox[40] = new JCheckBox(Resource.getString("tab.msg.msg1"));
+	cBox[40].setToolTipText(Resource.getString("tab.msg.msg1_tip"));
 	cBox[40].setPreferredSize(new Dimension(300,20));
 	cBox[40].setMaximumSize(new Dimension(300,20));
 	cBox[40].setSelected(false);
 	msgPanel_1.add(cBox[40]);
 
-	cBox[3] = new JCheckBox(RESOURCE.getString("tab.msg.msg2"));
-	cBox[3].setToolTipText(RESOURCE.getString("tab.msg.msg2_tip"));
+	cBox[3] = new JCheckBox(Resource.getString("tab.msg.msg2"));
+	cBox[3].setToolTipText(Resource.getString("tab.msg.msg2_tip"));
 	cBox[3].setPreferredSize(new Dimension(250,20));
 	cBox[3].setMaximumSize(new Dimension(250,20));
 	cBox[3].setSelected(false);
@@ -2393,14 +2324,14 @@ protected JPanel buildoptionPanel() {
 
 	JPanel op0 = new JPanel();
 	op0.setLayout( new ColumnLayout() );
-	op0.setBorder( BorderFactory.createTitledBorder(RESOURCE.getString("tab.options.various")) );
+	op0.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.options.various")) );
 
 	comBox[16] = new JComboBox();
 	comBox[16].setPreferredSize(new Dimension(250,25));
-	op0.add(new JLabel(RESOURCE.getString("tab.options.lookfeel")));
+	op0.add(new JLabel(Resource.getString("tab.options.lookfeel")));
 	op0.add(comBox[16]);
-	op0.add(new JLabel(RESOURCE.getString("tab.options.lookfeel_info1")));
-	op0.add(new JLabel(RESOURCE.getString("tab.options.lookfeel_info2")));
+	op0.add(new JLabel(Resource.getString("tab.options.lookfeel_info1")));
+	op0.add(new JLabel(Resource.getString("tab.options.lookfeel_info2")));
 
 	comBox[16].addActionListener( new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -2424,19 +2355,19 @@ protected JPanel buildoptionPanel() {
  	});
 
 
-	cBox[11] = new JCheckBox(RESOURCE.getString("tab.options.biglog"));
-	cBox[11].setToolTipText(RESOURCE.getString("tab.options.biglog_tip"));
+	cBox[11] = new JCheckBox(Resource.getString("tab.options.biglog"));
+	cBox[11].setToolTipText(Resource.getString("tab.options.biglog_tip"));
 	cBox[11].setActionCommand("biglog");
 	op0.add(cBox[11]);
 
-	cBox[21] = new JCheckBox(RESOURCE.getString("tab.options.normallog"));
-	cBox[21].setToolTipText(RESOURCE.getString("tab.options.normallog_tip"));
+	cBox[21] = new JCheckBox(Resource.getString("tab.options.normallog"));
+	cBox[21].setToolTipText(Resource.getString("tab.options.normallog_tip"));
 	cBox[21].setActionCommand("normallog");
 	op0.add(cBox[21]);
 
 	//DM24012004 081.6 int11 moved
-	cBox[43] = new JCheckBox(RESOURCE.getString("tab.options.dumpgop"));
-	cBox[43].setToolTipText(RESOURCE.getString("tab.options.dumpgop_tip"));
+	cBox[43] = new JCheckBox(Resource.getString("tab.options.dumpgop"));
+	cBox[43].setToolTipText(Resource.getString("tab.options.dumpgop_tip"));
 	cBox[43].setPreferredSize(new Dimension(250,20));
 	cBox[43].setMaximumSize(new Dimension(250,20));
 	cBox[43].setSelected(false);
@@ -2445,14 +2376,14 @@ protected JPanel buildoptionPanel() {
 	//DM12122003 081.6 int05
 	d2vfield[8] = new JTextField("");
 	d2vfield[8].setPreferredSize(new Dimension(250,25));
-	d2vfield[8].setToolTipText(RESOURCE.getString("tab.options.startpath_tip"));
-	op0.add(new JLabel(RESOURCE.getString("tab.options.startpath")));
+	d2vfield[8].setToolTipText(Resource.getString("tab.options.startpath_tip"));
+	op0.add(new JLabel(Resource.getString("tab.options.startpath")));
 	op0.add(d2vfield[8]);
 
 	//DM30122003 081.6 int10
-	RButton[8] = new JRadioButton(RESOURCE.getString("tab.options.pesappend"));
+	RButton[8] = new JRadioButton(Resource.getString("tab.options.pesappend"));
 	RButton[8].setPreferredSize(new Dimension(250,25));
-	RButton[8].setToolTipText(RESOURCE.getString("tab.options.pesappend_tip"));
+	RButton[8].setToolTipText(Resource.getString("tab.options.pesappend_tip"));
 	RButton[8].setSelected(false);
 	op0.add(RButton[8]);
 
@@ -2460,7 +2391,7 @@ protected JPanel buildoptionPanel() {
 
 	JPanel op2 = new JPanel();
 	op2.setLayout( new ColumnLayout() );
-	op2.setBorder( BorderFactory.createTitledBorder(RESOURCE.getString("tab.options.buffer")) );
+	op2.setBorder( BorderFactory.createTitledBorder(Resource.getString("tab.options.buffer")) );
 
 	Object[] bufsize = { "10240000","8192000","7168000","6144000","5120000","4096000","3072000","2048000","1024000" };
 	comBox[10]=new JComboBox(bufsize);
@@ -2469,8 +2400,8 @@ protected JPanel buildoptionPanel() {
 	comBox[10].setPreferredSize(new Dimension(100,25));
 	comBox[10].setMaximumSize(new Dimension(100,25));
 
-	JLabel iob = new JLabel(RESOURCE.getString("tab.options.mainbuffer"));
-	iob.setToolTipText(RESOURCE.getString("tab.options.mainbuffer_tip"));
+	JLabel iob = new JLabel(Resource.getString("tab.options.mainbuffer"));
+	iob.setToolTipText(Resource.getString("tab.options.mainbuffer_tip"));
 	op2.add(iob);
 	op2.add(comBox[10]);
 
@@ -2481,8 +2412,8 @@ protected JPanel buildoptionPanel() {
 	comBox[36].setEditable(true);
 	comBox[36].setPreferredSize(new Dimension(100,25));
 	comBox[36].setMaximumSize(new Dimension(100,25));
-	JLabel viob = new JLabel(RESOURCE.getString("tab.options.pes0buffer"));
-	viob.setToolTipText(RESOURCE.getString("tab.options.pes0buffer_tip"));
+	JLabel viob = new JLabel(Resource.getString("tab.options.pes0buffer"));
+	viob.setToolTipText(Resource.getString("tab.options.pes0buffer_tip"));
 	op2.add(viob);
 	op2.add(comBox[36]);
 
@@ -2494,15 +2425,15 @@ protected JPanel buildoptionPanel() {
 	comBox[37].setEditable(true);
 	comBox[37].setPreferredSize(new Dimension(100,25));
 	comBox[37].setMaximumSize(new Dimension(100,25));
-	JLabel scanL = new JLabel(RESOURCE.getString("tab.options.prebuffer"));
-	scanL.setToolTipText(RESOURCE.getString("tab.options.prebuffer_tip"));
+	JLabel scanL = new JLabel(Resource.getString("tab.options.prebuffer"));
+	scanL.setToolTipText(Resource.getString("tab.options.prebuffer_tip"));
 	op2.add(scanL);
 	op2.add(comBox[37]);
 
 
 	//DM04052004 081.7 int02 add
-	JButton garbagecollector = new JButton(RESOURCE.getString("tab.options.gc"));
-	garbagecollector.setToolTipText(RESOURCE.getString("tab.options.gc_tip"));
+	JButton garbagecollector = new JButton(Resource.getString("tab.options.gc"));
+	garbagecollector.setToolTipText(Resource.getString("tab.options.gc_tip"));
 	op2.add(new JLabel(" "));
 	op2.add(garbagecollector);
 	garbagecollector.addActionListener( new ActionListener()
@@ -2546,7 +2477,7 @@ class MenuListener implements ActionListener
 						Runtime.getRuntime().exec(exe);
 					}
 					catch (Exception ex) {
-						Msg(RESOURCE.getString("execute.error") + " " + ex); 
+						Msg(Resource.getString("execute.error") + " " + ex); 
 					}
 				} 
 			}
@@ -2681,19 +2612,6 @@ class MenuListener implements ActionListener
 		{
 			inisave();
 			System.exit(0); 
-		}
-		else if (actName.startsWith("language."))
-		{
-			String language = actName.substring(9);
-			if (language.equals("system"))
-			{
-				locale = null;
-			}
-			else
-			{
-				locale = new Locale(language, "", "");
-			}
-			JOptionPane.showMessageDialog(frame, RESOURCE.getString("msg.new.language"), RESOURCE.getString("msg.infomessage"), JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 }
@@ -2986,7 +2904,7 @@ class EXECUTE extends JFrame
 			}
 		});
 
-		setTitle(RESOURCE.getString("execute.title"));
+		setTitle(Resource.getString("execute.title"));
 
 		ActionListener exli = new ActionListener()
 		{
@@ -3010,7 +2928,7 @@ class EXECUTE extends JFrame
 				}
 				catch (Exception ex)
 				{ 
-					Msg(RESOURCE.getString("execute.error") + " " + ex); 
+					Msg(Resource.getString("execute.error") + " " + ex); 
 				}
 			}
 		};
@@ -3018,20 +2936,20 @@ class EXECUTE extends JFrame
 		JPanel container = new JPanel();
 		container.setLayout( new ColumnLayout() );
 
-		exefield[0] = new JTextField(RESOURCE.getString("execute.cmdl"));
+		exefield[0] = new JTextField(Resource.getString("execute.cmdl"));
 		exefield[0].setPreferredSize(new Dimension(300,25));
-		exefield[1] = new JTextField(RESOURCE.getString("execute.cmdl"));
+		exefield[1] = new JTextField(Resource.getString("execute.cmdl"));
 		exefield[1].setPreferredSize(new Dimension(300,25));
-		exefield[2] = new JTextField(RESOURCE.getString("execute.cmdl"));
+		exefield[2] = new JTextField(Resource.getString("execute.cmdl"));
 		exefield[2].setPreferredSize(new Dimension(300,25));
 
-		JButton exe1 = new JButton(RESOURCE.getString("execute.exec"));
+		JButton exe1 = new JButton(Resource.getString("execute.exec"));
 		exe1.setActionCommand("exec1");
-		JButton exe2 = new JButton(RESOURCE.getString("execute.exec"));
+		JButton exe2 = new JButton(Resource.getString("execute.exec"));
 		exe2.setActionCommand("exec2");
-		JButton exe3 = new JButton(RESOURCE.getString("execute.exec"));
+		JButton exe3 = new JButton(Resource.getString("execute.exec"));
 		exe3.setActionCommand("exec3");
-		JButton close = new JButton(RESOURCE.getString("execute.close"));
+		JButton close = new JButton(Resource.getString("execute.close"));
 		close.setActionCommand("close");
 
 		exe1.setPreferredSize(new Dimension(100,20));
@@ -3061,15 +2979,15 @@ class EXECUTE extends JFrame
 		container.add(ex1);
 		container.add(ex2);
 		container.add(ex3);
-		container.add(new JLabel(RESOURCE.getString("execute.postcommand")));
+		container.add(new JLabel(Resource.getString("execute.postcommand")));
 
-		String ett = RESOURCE.getString("execute.postcommand_tip");
+		String ett = Resource.getString("execute.postcommand_tip");
 		String[] ln = { 
-			RESOURCE.getString("mainpanel.box.demux"),
-			RESOURCE.getString("mainpanel.box.toVDR"),
-			RESOURCE.getString("mainpanel.box.toM2P"),
-			RESOURCE.getString("mainpanel.box.toPVA"),
-			RESOURCE.getString("mainpanel.box.toTS")
+			Resource.getString("mainpanel.box.demux"),
+			Resource.getString("mainpanel.box.toVDR"),
+			Resource.getString("mainpanel.box.toM2P"),
+			Resource.getString("mainpanel.box.toPVA"),
+			Resource.getString("mainpanel.box.toTS")
 		};
 
 		JPanel[] ex4 = new JPanel[5];
@@ -3279,7 +3197,7 @@ class COLLECTION extends JFrame
 				}
 				catch (NumberFormatException ne)
 				{
-					Msg(RESOURCE.getString("cutlistener.wrongnumber"));
+					Msg(Resource.getString("cutlistener.wrongnumber"));
 				}
 
 				includeField.setText("");
@@ -3443,7 +3361,7 @@ class COLLECTION extends JFrame
 	{
  
 		addWindowListener (new WindowAdapter(){ public void windowClosing(WindowEvent e) { close(); } });
-		setTitle(RESOURCE.getString("collection.title"));
+		setTitle(Resource.getString("collection.title"));
 
 		JPanel container = new JPanel();
 		container.setLayout( new BorderLayout() );
@@ -3453,9 +3371,9 @@ class COLLECTION extends JFrame
 		grid.setLayout(new BorderLayout());
 
 		JPanel previewPanel = new JPanel();
-		previewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), RESOURCE.getString("collection.cutpanel"))); //DM27042004 081.7 int02 changed
+		previewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), Resource.getString("collection.cutpanel"))); //DM27042004 081.7 int02 changed
 		previewPanel.setLayout ( new BorderLayout() );
-		previewPanel.setToolTipText(RESOURCE.getString("collection.cutpanel_tip1")); //DM18052004 081.7 int02 add
+		previewPanel.setToolTipText(Resource.getString("collection.cutpanel_tip1")); //DM18052004 081.7 int02 add
 		previewPanel.add(MPVD.picture);
 
 		search = new JSlider(0, (10240000/16), 0);
@@ -3485,8 +3403,8 @@ class COLLECTION extends JFrame
 		jump2Panel.add((firstfile = new JLabel(file)));
 		jump2Panel.add((scannedPID = new JLabel(" ")));
 
-		firstfile.setToolTipText(RESOURCE.getString("collection.cutpanel_tip2"));
-		scannedPID.setToolTipText(RESOURCE.getString("collection.cutpanel_tip3"));
+		firstfile.setToolTipText(Resource.getString("collection.cutpanel_tip2"));
+		scannedPID.setToolTipText(Resource.getString("collection.cutpanel_tip3"));
 
 		JPanel jump3Panel = new JPanel();
 		jump3Panel.setLayout(new ColumnLayout());
@@ -3497,11 +3415,11 @@ class COLLECTION extends JFrame
 		framecutfield = new JTextField("");
 		framecutfield.setPreferredSize(new Dimension(150,22));
 		framecutfield.setMaximumSize(new Dimension(150,22));
-		framecutfield.setToolTipText(RESOURCE.getString("collection.cutpanel_tip4")); //DM18022004 081.6 int17 changed
+		framecutfield.setToolTipText(Resource.getString("collection.cutpanel_tip4")); //DM18022004 081.6 int17 changed
 		framecutfield.setActionCommand("cutnumber");
 		CL1.add(framecutfield);
 
-		cutadd = new JButton(RESOURCE.getString("collection.addpoint"));
+		cutadd = new JButton(Resource.getString("collection.addpoint"));
 		cutadd.setActionCommand("addpoint");
 		cutadd.setPreferredSize(new Dimension(100,25));
 		cutadd.setMaximumSize(new Dimension(100,25));
@@ -3519,7 +3437,7 @@ class COLLECTION extends JFrame
 		comBox[14].setActionCommand("cutbox");
 		CL5.add(comBox[14]);
 
-		cutdel = new JButton(RESOURCE.getString("collection.delpoint"));
+		cutdel = new JButton(Resource.getString("collection.delpoint"));
 		cutdel.setActionCommand("delpoint");
 		cutdel.setPreferredSize(new Dimension(100,22));
 		cutdel.setMaximumSize(new Dimension(100,22));
@@ -3530,8 +3448,8 @@ class COLLECTION extends JFrame
 
 		JPanel CL0 = new JPanel();
 		CL0.setLayout(new BoxLayout(CL0, BoxLayout.X_AXIS));
-		CL0.add(new JLabel(RESOURCE.getString("collection.numberofpoints")));
-		CL0.setToolTipText(RESOURCE.getString("collection.numberofpoints_tip"));
+		CL0.add(new JLabel(Resource.getString("collection.numberofpoints")));
+		CL0.setToolTipText(Resource.getString("collection.numberofpoints_tip"));
 		CL0.add((pointscount = new JLabel("")));
 
 		jump3Panel.add(CL0);
@@ -3567,7 +3485,7 @@ class COLLECTION extends JFrame
 						preview(val);
 
 					else if (comBox[17].getSelectedIndex() > 0) //DM30032004 081.6 int18 add
-						scannedPID.setText(RESOURCE.getString("collection.preview"));
+						scannedPID.setText(Resource.getString("collection.preview"));
 
 					getType();
 				}
@@ -3632,34 +3550,34 @@ class COLLECTION extends JFrame
 
 
 		JPanel cutPanel = new JPanel();
-		cutPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createRaisedBevelBorder(), RESOURCE.getString("collection.various"))); //DM27042004 081.7 int02 changed
+		cutPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createRaisedBevelBorder(), Resource.getString("collection.various"))); //DM27042004 081.7 int02 changed
 		cutPanel.setLayout ( new ColumnLayout() );
 
 		//DM08022004 081.6 int16 new
-		RButton[10] = new JRadioButton(RESOURCE.getString("collection.fastpreview"));
-		RButton[10].setToolTipText(RESOURCE.getString("collection.fastpreview_tip"));
+		RButton[10] = new JRadioButton(Resource.getString("collection.fastpreview"));
+		RButton[10].setToolTipText(Resource.getString("collection.fastpreview_tip"));
 		RButton[10].setPreferredSize(new Dimension(230,20));
 		RButton[10].setMaximumSize(new Dimension(230,20));
 		cutPanel.add(RButton[10]);
 
-		RButton[6] = new JRadioButton(RESOURCE.getString("collection.goppreview"));
-		RButton[6].setToolTipText(RESOURCE.getString("collection.goppreview_tip"));
+		RButton[6] = new JRadioButton(Resource.getString("collection.goppreview"));
+		RButton[6].setToolTipText(Resource.getString("collection.goppreview_tip"));
 		RButton[6].setPreferredSize(new Dimension(230,20));
 		RButton[6].setMaximumSize(new Dimension(230,20));
 		cutPanel.add(RButton[6]);
 
 		cutPanel.add(new JLabel(" "));
 
-		cutPanel.add(new JLabel(RESOURCE.getString("collection.pidlist")));
+		cutPanel.add(new JLabel(Resource.getString("collection.pidlist")));
 
 		includeField = new JTextField("");
 		includeField.setPreferredSize(new Dimension(80,25));
 		includeField.setEditable(true);
 		includeField.setActionCommand("ID");
-		includeField.setToolTipText(RESOURCE.getString("collection.pidlist_tip1"));
+		includeField.setToolTipText(Resource.getString("collection.pidlist_tip1"));
 
 		includeList = new JList();
-		includeList.setToolTipText(RESOURCE.getString("collection.pidlist_tip2"));
+		includeList.setToolTipText(Resource.getString("collection.pidlist_tip2"));
 		cutPanel.add(includeField);
 
 		includeField.addActionListener(cutAction);
@@ -3683,37 +3601,37 @@ class COLLECTION extends JFrame
 		});
 
 		//DM26112003 081.5++
-		JButton pids = new JButton(RESOURCE.getString("collection.transferpids1"));
+		JButton pids = new JButton(Resource.getString("collection.transferpids1"));
 		pids.setPreferredSize(new Dimension(250,20));
 		pids.setMaximumSize(new Dimension(250,20));
 		pids.setActionCommand("transferPIDs");
-		pids.setToolTipText(RESOURCE.getString("collection.transferpids1_tip"));
+		pids.setToolTipText(Resource.getString("collection.transferpids1_tip"));
 		pids.addActionListener(cutAction);
 		cutPanel.add(pids);
 
 		//DM26112003 081.5++
-		JButton cpoints = new JButton(RESOURCE.getString("collection.transferpids2"));
+		JButton cpoints = new JButton(Resource.getString("collection.transferpids2"));
 		cpoints.setPreferredSize(new Dimension(250,20));
 		cpoints.setMaximumSize(new Dimension(250,20));
 		cpoints.setActionCommand("transferCuts");
-		cpoints.setToolTipText(RESOURCE.getString("collection.transferpids2_tip"));
+		cpoints.setToolTipText(Resource.getString("collection.transferpids2_tip"));
 		cpoints.addActionListener(cutAction);
 		cutPanel.add(cpoints);
 
 		cutPanel.add(new JLabel(" ")); //DM27042004 081.7 int02 changed
 
-		cBox[2] = new JCheckBox(RESOURCE.getString("collection.ceatesubdir"));
-		cBox[2].setToolTipText(RESOURCE.getString("collection.createsubdir_tip"));
+		cBox[2] = new JCheckBox(Resource.getString("collection.ceatesubdir"));
+		cBox[2].setToolTipText(Resource.getString("collection.createsubdir_tip"));
 		cBox[2].setPreferredSize(new Dimension(230,20));
 		cBox[2].setMaximumSize(new Dimension(230,20));
 		cutPanel.add(cBox[2]);
 
 		cutPanel.add(new JLabel(" ")); //DM27042004 081.7 int02 changed
 
-		cutPanel.add(new JLabel(RESOURCE.getString("collection.exportlimits")));
+		cutPanel.add(new JLabel(Resource.getString("collection.exportlimits")));
 
-		cBox[52] = new JCheckBox(RESOURCE.getString("collection.h_resolution"));
-		cBox[52].setToolTipText(RESOURCE.getString("collection.h_resolution_tip"));
+		cBox[52] = new JCheckBox(Resource.getString("collection.h_resolution"));
+		cBox[52].setToolTipText(Resource.getString("collection.h_resolution_tip"));
 		cBox[52].setPreferredSize(new Dimension(110,20));
 		cBox[52].setMaximumSize(new Dimension(110,20));
 
@@ -3730,8 +3648,8 @@ class COLLECTION extends JFrame
 		CL2.add(comBox[34]);  
 		cutPanel.add(CL2);
 
-		cBox[47] = new JCheckBox(RESOURCE.getString("collection.dar"));
-		cBox[47].setToolTipText(RESOURCE.getString("collection.dar_tip"));
+		cBox[47] = new JCheckBox(Resource.getString("collection.dar"));
+		cBox[47].setToolTipText(Resource.getString("collection.dar_tip"));
 		cBox[47].setPreferredSize(new Dimension(80,20));
 		cBox[47].setMaximumSize(new Dimension(80,20));
 
@@ -3752,11 +3670,11 @@ class COLLECTION extends JFrame
 		//DM17012004 081.6 int11 changed, DM18022004 081.6 int17 changed
 		Object[] cut_types = 
 		{ 
-			">> " + RESOURCE.getString("collection.cutmode_bytepos"), 
-			">> " + RESOURCE.getString("collection.cutmode_gop"),
-			">> " + RESOURCE.getString("collection.cutmode_frame"),
-			">> " + RESOURCE.getString("collection.cutmode_pts"),
-			">> " + RESOURCE.getString("collection.cutmode_timecode")
+			">> " + Resource.getString("collection.cutmode_bytepos"), 
+			">> " + Resource.getString("collection.cutmode_gop"),
+			">> " + Resource.getString("collection.cutmode_frame"),
+			">> " + Resource.getString("collection.cutmode_pts"),
+			">> " + Resource.getString("collection.cutmode_timecode")
 		}; 
 		comBox[17] = new JComboBox(cut_types);
 		comBox[17].setPreferredSize(new Dimension(230,22));
@@ -3764,12 +3682,12 @@ class COLLECTION extends JFrame
 		comBox[17].setSelectedIndex(0);
 		cutPanel.add(comBox[17]);
 
-		loadlist = new JButton(RESOURCE.getString("collection.loadcutlist"));
+		loadlist = new JButton(Resource.getString("collection.loadcutlist"));
 		loadlist.setPreferredSize(new Dimension(230,22));
 		loadlist.setMaximumSize(new Dimension(230,22));
-		loadlist.setToolTipText(RESOURCE.getString("collection.loadcutlist_tip")); //DM18022004 081.6 int17 new
+		loadlist.setToolTipText(Resource.getString("collection.loadcutlist_tip")); //DM18022004 081.6 int17 new
 
-		savelist = new JButton(RESOURCE.getString("collection.savecutlist"));
+		savelist = new JButton(Resource.getString("collection.savecutlist"));
 		savelist.setPreferredSize(new Dimension(230,22));
 		savelist.setMaximumSize(new Dimension(230,22));
 		loadlist.setActionCommand("loadlist");
@@ -3788,11 +3706,11 @@ class COLLECTION extends JFrame
 
 		container.add(grid);
 
-		close = new JButton(RESOURCE.getString("collection.apply_close"));
+		close = new JButton(Resource.getString("collection.apply_close"));
 		close.setActionCommand("apply_close");
 		close.addActionListener(cutAction);
 
-		apply = new JButton(RESOURCE.getString("collection.apply"));
+		apply = new JButton(Resource.getString("collection.apply"));
 		apply.setActionCommand("apply");
 		apply.addActionListener(cutAction);
 
@@ -3830,7 +3748,7 @@ class COLLECTION extends JFrame
 		//DM09032004 081.6 int18 changed
 		if (comBox[17].getSelectedIndex()!=0 || previewList.size()==0)
 		{
-			scannedPID.setText(RESOURCE.getString("collection.preview"));
+			scannedPID.setText(Resource.getString("collection.preview"));
 			return;
 		}
 
@@ -3840,7 +3758,7 @@ class COLLECTION extends JFrame
 		//int loadSize = 2560000; // bytes for searching the next I-frame ;changed for X0.81
 		int loadSize = loadSizeForward; // bytes for searching the next I-frame ;changed for X0.81
 
-		setTitle(title + RESOURCE.getString("collection.title.processing"));
+		setTitle(title + Resource.getString("collection.title.processing"));
 
 		if (pos>>>4 >= (long)search.getMaximum())   // last
 		{
@@ -3868,7 +3786,7 @@ class COLLECTION extends JFrame
 		catch (IOException e6)
 		{
 			//DM25072004 081.7 int07 add
-			Msg(RESOURCE.getString("collection.preview.error") + " " + e6);
+			Msg(Resource.getString("collection.preview.error") + " " + e6);
 		}
 		setTitle(title);
 		getExpectedSize();
@@ -3931,9 +3849,9 @@ class COLLECTION extends JFrame
 		if (comBox[17].getSelectedIndex()==0 && previewList.size()>0)
 			preview(0);
 		else
-			scannedPID.setText(RESOURCE.getString("collection.preview"));
+			scannedPID.setText(Resource.getString("collection.preview"));
 
-		title = RESOURCE.getString("collection.title2") + " " + activecoll + "  ";
+		title = Resource.getString("collection.title2") + " " + activecoll + "  ";
 		setTitle(title);
 
 		//DM17012004 081.6 int11 changed
@@ -4012,7 +3930,7 @@ class COLLECTION extends JFrame
 		else
 		{
 			Toolkit.getDefaultToolkit().beep();
-			String title = MessageFormat.format(RESOURCE.getString("collection.title.error"), new Object[]{""+activecoll});
+			String title = Resource.getString("collection.title.error", ""+activecoll);
 			setTitle(title);
 		}
 	}
@@ -4056,7 +3974,7 @@ class COLLECTION extends JFrame
 		listwriter.close();
 		}
 		catch (IOException e) { 
-			Msg(RESOURCE.getString("collection.access.file.error") + " "+file); 
+			Msg(Resource.getString("collection.access.file.error") + " "+file); 
 		}
 	}
 
@@ -4107,7 +4025,7 @@ class COLLECTION extends JFrame
 		listreader.close();
 		} 
 		catch (IOException e5) { 
-			Msg(RESOURCE.getString("collection.loading.error") + " " + file);
+			Msg(Resource.getString("collection.loading.error") + " " + file);
 		}
 
 		//DM17012004 081.6 int11 changed
@@ -4541,75 +4459,33 @@ public void ScanInfo(String file)
 	String values = "";
 	FileInfoTextArea.setBackground(Color.white);
 
-	values += RESOURCE.getString("scaninfo.location") + "\t" + info.getParent() + "\n";
-	values += RESOURCE.getString("scaninfo.name") + "\t" + info.getName() + "\n";
+	values += Resource.getString("scaninfo.location") + "\t" + info.getParent() + "\n";
+	values += Resource.getString("scaninfo.name") + "\t" + info.getName() + "\n";
 
 	int source = raw_interface.isAccessibleDisk(file) ? 2 : (info.exists() ? 1 : 0);
 	long size = source == 2 ? raw_interface.getFileSize(file) : info.length();
 
 	if (source > 0)
 	{
-		values += RESOURCE.getString("scaninfo.size") + "\t" + (size / 1048576) + " MB (" + size + " " + RESOURCE.getString("scaninfo.bytes") + ")" + "\n";
-		String type = RESOURCE.getString("scaninfo.type") + "\t" + scan.Type(file) + "\n"; // must be first when scanning
-		values += RESOURCE.getString("scaninfo.date") + "\t" + scan.Date(file) + "\n";
+		values += Resource.getString("scaninfo.size") + "\t" + (size / 1048576) + " MB (" + size + " " + Resource.getString("scaninfo.bytes") + ")" + "\n";
+		String type = Resource.getString("scaninfo.type") + "\t" + scan.Type(file) + "\n"; // must be first when scanning
+		values += Resource.getString("scaninfo.date") + "\t" + scan.Date(file) + "\n";
 		values += "\n";
 		values += type;
-		values += RESOURCE.getString("scaninfo.video") + "\t" + scan.getVideo() + "\n";
-		values += RESOURCE.getString("scaninfo.audio") + "\t" + scan.getAudio() + "\n";
-		values += RESOURCE.getString("scaninfo.teletext") + "\t" + scan.getText()+ "\n"; //DM28042004 081.7 int02 changed
-		values += RESOURCE.getString("scaninfo.subpicture") + "\t" + scan.getPics()+ "\n"; //DM28042004 081.7 int02 add
-		values += RESOURCE.getString("scaninfo.playtime") + "\t" + scan.getPlaytime()+ "\n";
+		values += Resource.getString("scaninfo.video") + "\t" + scan.getVideo() + "\n";
+		values += Resource.getString("scaninfo.audio") + "\t" + scan.getAudio() + "\n";
+		values += Resource.getString("scaninfo.teletext") + "\t" + scan.getText()+ "\n"; //DM28042004 081.7 int02 changed
+		values += Resource.getString("scaninfo.subpicture") + "\t" + scan.getPics()+ "\n"; //DM28042004 081.7 int02 add
+		values += Resource.getString("scaninfo.playtime") + "\t" + scan.getPlaytime()+ "\n";
 		FileInfoTextArea.setBackground(scan.isSupported() ? new Color(225,255,225) : new Color(255,225,225));
 	}
 
 	else
-		values += "\n" + RESOURCE.getString("scaninfo.notfound") + "\n";
+		values += "\n" + Resource.getString("scaninfo.notfound") + "\n";
 
 	FileInfoTextArea.setText(values);
 }
 
-/**
- * Load Language from ini file.  
- */
-public void loadLang()
-{
-	try 
-	{
-
-		if (new File(inifile).exists())
-		{
-	
-			BufferedReader inis = new BufferedReader(new FileReader(inifile));
-			String path="", ck=""; 
-			boolean val = false;
-		
-			iniread:
-			while (true)
-			{
-				path = inis.readLine();
-		
-				if (path==null) 
-					break iniread;
-		
-				if (path.startsWith("lang="))
-				{
-					String lang = path.substring(5);
-					System.out.println("lang="+lang);
-					locale=new Locale(lang);
-					System.out.println("locale="+locale);
-					RESOURCE = ResourceBundle.getBundle("pjxresources", locale);
-					System.out.println("RESOURCE="+RESOURCE.getLocale());
-				}
-			}
-		}
-	}
-	catch (IOException e1)
-	{
-		//DM25072004 081.7 int07 add
-		Msg(RESOURCE.getString("msg.loadlang.error") + " " + e1);
-	}
-}
-	
 /****************
  * load inifile * 
  ****************/
@@ -4706,7 +4582,7 @@ public void iniload()
 	catch (IOException e1)
 	{
 		//DM25072004 081.7 int07 add
-		Msg(RESOURCE.getString("msg.loadini.error") + " " + e1);
+		Msg(Resource.getString("msg.loadini.error") + " " + e1);
 	}
 }   
 
@@ -4720,11 +4596,7 @@ public static void inisave() //DM26012004 081.6 int12 changed, //DM26032004 081.
 	{
 	PrintWriter inis = new PrintWriter(new FileWriter(inifile));
 
-	if (locale != null)
-	{
-		inis.println("// language");
-		inis.println("lang="+locale);
-	}
+	Resource.saveLang(inis);
 
 	inis.println("// editable fields");
 	for (int a=0; a<d2vfield.length; a++)
@@ -4786,7 +4658,7 @@ public static void inisave() //DM26012004 081.6 int12 changed, //DM26032004 081.
 	catch (IOException e1)
 	{
 		//DM25072004 081.7 int07 add
-		Msg(RESOURCE.getString("msg.saveini.error") + " " + e1);
+		Msg(Resource.getString("msg.saveini.error") + " " + e1);
 	}
 }
 
@@ -4856,7 +4728,7 @@ class GoListener implements ActionListener
 		}
 		else if (actName.equals("cancel"))
 		{ 
-			Msg(RESOURCE.getString("golistener.msg.cacelled")); 
+			Msg(Resource.getString("golistener.msg.cacelled")); 
 			TextArea.setBackground(new Color(230, 230, 255)); //DM14052004 081.7 int02 add
 			qpause=false; 
 			qbreak=true; 
@@ -4866,13 +4738,13 @@ class GoListener implements ActionListener
 		{
 			if (!qpause)
 			{ 
-				Msg(RESOURCE.getString("golistener.msg.paused")); 
+				Msg(Resource.getString("golistener.msg.paused")); 
 				TextArea.setBackground(new Color(255, 255, 220)); //DM26032004 081.6 int18 add
 				qpause=true; 
 			}
 			else
 			{ 
-				Msg(RESOURCE.getString("golistener.msg.resumed")); 
+				Msg(Resource.getString("golistener.msg.resumed")); 
 				TextArea.setBackground(Color.white); //DM26032004 081.6 int18 add
 				qpause=false; 
 			}
@@ -4882,7 +4754,7 @@ class GoListener implements ActionListener
 			options[31]=1; 
 			options[30]=0;
 			options[33]=Integer.parseInt(comBox[9].getSelectedItem().toString(),16);
-			TextArea.setText(RESOURCE.getString("golistener.msg.extracting") + comBox[9].getSelectedItem().toString() + "...");
+			TextArea.setText(Resource.getString("golistener.msg.extracting") + comBox[9].getSelectedItem().toString() + "...");
 			new WORK().start();
 		}
 	}
@@ -4947,7 +4819,7 @@ public static int loadAC3() {
 	check = null;
 	return frame_counter;
 	} 
-	catch (IOException e5) { Msg(RESOURCE.getString("ac3.msg.loading.error")); }
+	catch (IOException e5) { Msg(Resource.getString("ac3.msg.loading.error")); }
 
 	AC3list.clear();
 	return 0;
@@ -4980,10 +4852,10 @@ public static void loadCutPoints(String file) {
 		}
 		points.close();
 		cutlist.add(pointList);
-		Msg(MessageFormat.format(RESOURCE.getString("msg.loading.cutpoints"), new String[]{""+pointList.size()}));
+		Msg(Resource.getString("msg.loading.cutpoints", ""+pointList.size()));
 	} 
 	catch (IOException e5) { 
-		Msg(RESOURCE.getString("msg.loading.cutpoints.error") + " " + file + ": " + e5);
+		Msg(Resource.getString("msg.loading.cutpoints.error") + " " + file + ": " + e5);
 	}
 	return;
 }
@@ -5001,7 +4873,7 @@ public static void loadIDs(String nIDs) {  //DM28112003 081.5++
 		a++;
 	}
 	speciallist.add(nIDList);
-	Msg(MessageFormat.format(RESOURCE.getString("msg.loading.pids"), new String[]{""+nIDList.size()}));
+	Msg(Resource.getString("msg.loading.pids", ""+nIDList.size()));
 	return;
 }
 
@@ -5037,13 +4909,14 @@ public static void main(String[] args) {
 		System.out.println("use last config or standard ...");
 	}
 
-	panel.loadLang();
+	// initialize language
+	Resource.loadLang(inifile);
 
 	String[] version = getVersion();
 	System.out.println(version[0]+"/"+version[1]+" "+version[2]+" "+version[3]);
 	System.out.println();
 
-	System.out.println(RESOURCE.getString("usage"));
+	System.out.println(Resource.getString("usage"));
 	System.out.println(" ");
 	System.out.println("java.version\t"+System.getProperty("java.version"));
 	System.out.println("java.vendor\t"+System.getProperty("java.vendor"));
@@ -5059,7 +4932,7 @@ public static void main(String[] args) {
 
 	System.out.println();
 
-	System.out.println(RESOURCE.getString("terms"));
+	System.out.println(Resource.getString("terms"));
 
 	//DM15022004 081.6 int17 new
 	StartUp startup = new StartUp();
@@ -5145,7 +5018,7 @@ public static void main(String[] args) {
 
 		//DM22062004 081.7 int05 changed
 		if ((ac3f = loadAC3()) > 0) 
-			Msg(MessageFormat.format(RESOURCE.getString("msg.ac3.frames"), new String[]{""+ac3f}));
+			Msg(Resource.getString("msg.ac3.frames", ""+ac3f));
 
 		cBox[11].setSelected(false);
 		options[30]=0;
@@ -5218,7 +5091,9 @@ public static void main(String[] args) {
 
 		//DM22062004 081.7 int05 changed
 		if ((ac3f = loadAC3()) > 0) 
-			Msg(MessageFormat.format(RESOURCE.getString("msg.ac3.frames"), new String[]{""+ac3f}));
+		{
+			Msg(Resource.getString("msg.ac3.frames", ""+ac3f));
+		}
 
 		startup.set(RButton[1].isSelected());
 
@@ -5250,7 +5125,7 @@ public static void setButton(int button, boolean selected)
 public static String[] getTerms()
 {
 	List terms = new ArrayList();
-	StringTokenizer st = new StringTokenizer(RESOURCE.getString("terms"), "\n");
+	StringTokenizer st = new StringTokenizer(Resource.getString("terms"), "\n");
 	while (st.hasMoreTokens())
 	{
 		terms.add(st.nextToken());
@@ -5267,10 +5142,10 @@ public static String[] getTerms()
 public static String[] getVersion()
 {
 	return new String[]{ 
-		RESOURCE.getString("version.name"),
-		RESOURCE.getString("version.date"),
-		RESOURCE.getString("version.info"),
-		RESOURCE.getString("version.user") + System.getProperty("user.name")
+		Resource.getString("version.name"),
+		Resource.getString("version.date"),
+		Resource.getString("version.info"),
+		Resource.getString("version.user") + System.getProperty("user.name")
 	};
 }
 
@@ -5323,7 +5198,7 @@ public static long calcvideotime(String logfile) {
 	vtime = vlog.readLong();
 	vlog.close();
 	}
-	catch (IOException e) {  Msg(RESOURCE.getString("msg.ptsfile.error") + " " + e); }
+	catch (IOException e) {  Msg(Resource.getString("msg.ptsfile.error") + " " + e); }
 	return vtime;
 }
 
@@ -5460,12 +5335,12 @@ private static void saveCuts(long cutposition, long startPTS, long lastframes, S
 
 		pts_writer.println(startPTS);
 		pts_writer.close();
-		Msg(MessageFormat.format(RESOURCE.getString("msg.savecut"), new Object[]{""+startPTS}));
+		Msg(Resource.getString("msg.savecut", ""+startPTS));
 		}
 		catch (IOException e)
 		{
 			//DM25072004 081.7 int07 add
-			Msg(RESOURCE.getString("msg.savecut.error") + " " + e);
+			Msg(Resource.getString("msg.savecut.error") + " " + e);
 		}
 	}
 }
@@ -5482,7 +5357,7 @@ class LOG extends Thread {
 		logging=new PrintStream(new FileOutputStream(loggin));
 		System.setOut(logging);
 		}
-		catch (IOException e) { Msg(RESOURCE.getString("msg.log.error") + " " + e); }
+		catch (IOException e) { Msg(Resource.getString("msg.log.error") + " " + e); }
 	}
 }
 
@@ -5521,11 +5396,11 @@ public void run() {
 	extract.setEnabled(false);
 
 	//DM01042004 081.6 int18 changed
-	progress.setString(RESOURCE.getString("run.prepare.colls"));
+	progress.setString(Resource.getString("run.prepare.colls"));
 	progress.setStringPainted(true);
 
 	progress.setValue(0);
-	msoff.setText(RESOURCE.getString("run.av.offset"));
+	msoff.setText(Resource.getString("run.av.offset"));
 	ttxheaderLabel.setText("");
 	ttxvpsLabel.setText("");
 
@@ -5534,7 +5409,7 @@ public void run() {
 
 	if (options[33]==-1) {
 		TextArea.setText(java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(new Date())+"  "+java.text.DateFormat.getTimeInstance(java.text.DateFormat.FULL).format(new Date()));
-		Msg(RESOURCE.getString("version.name")+" ("+RESOURCE.getString("version.date")+")");
+		Msg(Resource.getString("version.name")+" ("+Resource.getString("version.date")+")");
 		if (cBox[18].isSelected()) 
 			b = comBox[0].getItemCount();
 		else {
@@ -5542,13 +5417,13 @@ public void run() {
 			b = a+1;
 		}
 
-		Msg("\r\n" + RESOURCE.getString("run.session.infos"));
+		Msg("\r\n" + Resource.getString("run.session.infos"));
 
 		for ( ; a<b ; a++,d++) {
 			workinglist.clear();
 			workinglist = (ArrayList)collfiles[a].clone();
 			comBox[0].setSelectedIndex(a);
-			Msg("\r\n" + RESOURCE.getString("run.working.coll") + a);
+			Msg("\r\n" + Resource.getString("run.working.coll") + a);
 			currentcoll = a;
 
 			if (workinglist.size() > 0) { 
@@ -5565,15 +5440,23 @@ public void run() {
 				String firstfile = workinglist.get(0).toString();
 
 				//DM15072004 081.7 int06 moved and add++
-				if (options[18]>0) 
-					Msg(RESOURCE.getString("run.split.output") + (options[18]/1048576) + " MB");
+				if (options[18]>0)
+				{
+					Msg(Resource.getString("run.split.output") + (options[18]/1048576) + " MB");
+				}
 
 				if (cBox[8].isSelected())
-					Msg(MessageFormat.format(RESOURCE.getString("run.add.time.offset"), new String[]{ (""+options[28] / 90)}));
+				{
+					Msg(Resource.getString("run.add.time.offset", ""+(options[28] / 90)));
+				}
 
 				for (int i = 55; i < 61; i++)
+				{
 					if (!cBox[i].isSelected())
-						Msg(RESOURCE.getString("run.stream.type.disabled") + " " + cBox[i].getText());
+					{
+						Msg(Resource.getString("run.stream.type.disabled") + " " + cBox[i].getText());
+					}
+				}
 
 				Msg(" ");
 				//DM15072004 081.7 int06 moved and add--
@@ -5604,11 +5487,11 @@ public void run() {
 					new File(workouts).mkdirs();
 				}
 
-				Msg(RESOURCE.getString("run.write.output.to"));
+				Msg(Resource.getString("run.write.output.to"));
 				Msg("\t"+workouts);
 
 				if (ctemp.size()>0)
-					Msg("-> "+ctemp.size()+RESOURCE.getString("run.cutpoints.defined") + " ("+comBox[17].getSelectedItem()+")");
+					Msg("-> "+ctemp.size()+Resource.getString("run.cutpoints.defined") + " ("+comBox[17].getSelectedItem()+")");
 
 				String fchilds = (new File(firstfile).getName()).toString();
 				if ( fchilds.lastIndexOf(".") != -1 ) 
@@ -5643,7 +5526,7 @@ public void run() {
 					qinfo=false;
 					options[18]=splitlen;
 					workinglist = (ArrayList)collfiles[a].clone();
-					Msg(RESOURCE.getString("run.end.quick.info"));
+					Msg(Resource.getString("run.end.quick.info"));
 				}
 
 				/** doit standard **/ 
@@ -5652,11 +5535,11 @@ public void run() {
 				java.util.Arrays.fill(VBASIC,null); //DM08032004 081.6 int18 add
 
 			} else {
-				msoff.setText(RESOURCE.getString("run.av.offset"));
+				msoff.setText(Resource.getString("run.av.offset"));
 				progress.setString("");
 				progress.setStringPainted(false);
 				progress.setValue(0);
-				Msg(RESOURCE.getString("run.no.input"));
+				Msg(Resource.getString("run.no.input"));
 			}
 		}
 	} else {  // extract raw
@@ -5670,7 +5553,7 @@ public void run() {
 			workouts = new File(firstfile).getParent();
 			if ( !workouts.endsWith(filesep) ) 
 				workouts += filesep;
-				Msg(RESOURCE.getString("run.write.raw") + ": "+workouts);
+				Msg(Resource.getString("run.write.raw") + ": "+workouts);
  
 				String fchilds = (new File(firstfile).getName()).toString();
 				if ( fchilds.lastIndexOf(".") != -1 )
@@ -5679,11 +5562,11 @@ public void run() {
 				working();
 				options[33]=0;
 				inputlist();
-		} else Msg(RESOURCE.getString("run.coll.empty"));
+		} else Msg(Resource.getString("run.coll.empty"));
 	} 
 
 	timeneeded = System.currentTimeMillis() - timeneeded;
-	progress.setString(MessageFormat.format(RESOURCE.getString("run.done"), new String[]{""+d}) + " "+sms.format(new java.util.Date(timeneeded)));
+	progress.setString(Resource.getString("run.done", ""+d) + " "+sms.format(new java.util.Date(timeneeded)));
 	progress.setStringPainted(true);
 
 	doitButton.setEnabled(true);
@@ -5696,7 +5579,7 @@ public void run() {
 	}
 	catch (Exception e8) {
 		//TextArea.setForeground(new Color(200,0,0));
-		Msg(RESOURCE.getString("run.stopped"));
+		Msg(Resource.getString("run.stopped"));
 		StringWriter aa = new StringWriter();
 		e8.printStackTrace(new PrintWriter(aa));
 		Msg(""+aa.toString());
@@ -5704,7 +5587,7 @@ public void run() {
 	}
 	catch (Error e9) {
 		//TextArea.setForeground(new Color(200,0,0));
-		Msg(RESOURCE.getString("run.stopped"));
+		Msg(Resource.getString("run.stopped"));
 		StringWriter aa = new StringWriter();
 		e9.printStackTrace(new PrintWriter(aa));
 		Msg(""+aa.toString());
@@ -5718,7 +5601,7 @@ public void run() {
 	options[30]=0;
 	options[31]=0;
 	if (qinfo) 
-		Msg(RESOURCE.getString("run.end.quick.info"));
+		Msg(Resource.getString("run.end.quick.info"));
 	qpause=false;
 	qbreak=false;
 	yield();
@@ -5787,12 +5670,12 @@ public void working() {
 	int mpgtovdr = comBox[19].getSelectedIndex();
 
 	//DM14062004 081.7 int04 changed
-	String[] convertType = { RESOURCE.getString("working.convertType.demux"),
-							RESOURCE.getString("working.convertType.makeVDR"),
-							RESOURCE.getString("working.convertType.makeMPG2"),
-							RESOURCE.getString("working.convertType.makePVA"),
-							RESOURCE.getString("working.convertType.makeTS"), 
-							RESOURCE.getString("working.convertType.packetFilter") };
+	String[] convertType = { Resource.getString("working.convertType.demux"),
+							Resource.getString("working.convertType.makeVDR"),
+							Resource.getString("working.convertType.makeMPG2"),
+							Resource.getString("working.convertType.makePVA"),
+							Resource.getString("working.convertType.makeTS"), 
+							Resource.getString("working.convertType.packetFilter") };
 
 	for (int k=0; k<workinglist.size(); k++) {
 		int ft = scan.inputInt(workinglist.get(k).toString());
@@ -5911,11 +5794,11 @@ public void working() {
 
 			//DM22062004 081.7 int05 changed++
 			long file_size = raw_interface.getFileSize(file);
-			Msg("\r\n" + RESOURCE.getString("working.file") + " " + h + ":  " + file + " (" + file_size + ")");
+			Msg("\r\n" + Resource.getString("working.file") + " " + h + ":  " + file + " (" + file_size + ")");
 
 			if (file_size < 0)
 			{
-				Msg(RESOURCE.getString("working.file.not.found"));
+				Msg(Resource.getString("working.file.not.found"));
 				continue argsloop;
 			}
 			//DM22062004 081.7 int05 changed--
@@ -5926,7 +5809,7 @@ public void working() {
 
 			switch (filetype) {
 			case 1: {
-				Msg(RESOURCE.getString("working.file.pva"));
+				Msg(Resource.getString("working.file.pva"));
 				if (options[31]==0) 
 					Msg(convertType[mpgtovdr]);
 				vptslog = pvaparse(file,0,mpgtovdr,vptslog);
@@ -5935,7 +5818,7 @@ public void working() {
 				break;
 			}
 			case 2: {
-				Msg(RESOURCE.getString("working.file.mpeg1"));
+				Msg(Resource.getString("working.file.mpeg1"));
 				if (h>0) 
 					pesparse(file,vptslog,1);
 				else
@@ -5949,7 +5832,7 @@ public void working() {
 				break;
 			}
 			case 3: {
-				Msg(RESOURCE.getString("working.file.mpeg2"));
+				Msg(Resource.getString("working.file.mpeg2"));
 				if (h>0) 
 					pesparse(file,vptslog,2);
 				else {
@@ -5962,7 +5845,7 @@ public void working() {
 				break;
 			}
 			case 4: {
-				Msg(RESOURCE.getString("working.file.av.ttx"));
+				Msg(Resource.getString("working.file.av.ttx"));
 				if (options[31]==0) 
 					Msg(convertType[mpgtovdr]);
 				vptslog = vdrparse(file,0,mpgtovdr);
@@ -5972,7 +5855,7 @@ public void working() {
 			}
 			case 5: 
 			case 6: {
-				Msg(RESOURCE.getString("working.file.a.ttx"));
+				Msg(Resource.getString("working.file.a.ttx"));
 				if (h>0) {
 					splitreset(vptslog);
 					pesparse(file,vptslog,0);
@@ -5986,31 +5869,31 @@ public void working() {
 				break;
 			}
 			case 10: {
-				Msg(RESOURCE.getString("working.file.ac3.smpte"));
+				Msg(Resource.getString("working.file.ac3.smpte"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"ac");
 				break;
 			}
 			case 7: {
-				Msg(RESOURCE.getString("working.file.ac3"));
+				Msg(Resource.getString("working.file.ac3"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"ac");
 				break;
 			}
 			case 8: {
-				Msg(RESOURCE.getString("working.file.mpeg.audio"));
+				Msg(Resource.getString("working.file.mpeg.audio"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"mp");
 				break;
 			}
 			case 9: {
-				Msg(RESOURCE.getString("working.file.mpeg.video"));
+				Msg(Resource.getString("working.file.mpeg.video"));
 				vptslog = rawvideo(file);
 				splitreset(vptslog);
 				break;
 			}
 			case 11: {
-				Msg(RESOURCE.getString("working.file.dvb"));
+				Msg(Resource.getString("working.file.dvb"));
 				if (options[31]==0) 
 					Msg(convertType[mpgtovdr]);
 				vptslog = rawparse(file,scan.getPIDs(),mpgtovdr);
@@ -6020,13 +5903,13 @@ public void working() {
 			}
 			//DM19122003 081.6 int07 new
 			case 12: {
-				Msg(RESOURCE.getString("working.file.dts"));
+				Msg(Resource.getString("working.file.dts"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"ac");
 				break;
 			}
 			case 13: {
-				Msg(RESOURCE.getString("working.file.dts.smpte"));
+				Msg(Resource.getString("working.file.dts.smpte"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"ac");
 				break;
@@ -6034,7 +5917,7 @@ public void working() {
 			//DM24012004 081.6 int11 add
 			case 14:
 			{
-				Msg(RESOURCE.getString("working.file.riff"));
+				Msg(Resource.getString("working.file.riff"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"wa");
 				break;
@@ -6042,20 +5925,20 @@ public void working() {
 			//DM02032004 081.6 int18 add
 			case 16:
 			{
-				Msg(RESOURCE.getString("working.file.rle"));
+				Msg(Resource.getString("working.file.rle"));
 				splitreset(vptslog);
 				rawsub(file,vptslog);
 				break;
 			}
 
 			default: 
-				Msg(RESOURCE.getString("working.file.notsupported"));
+				Msg(Resource.getString("working.file.notsupported"));
 			}
 		}
 
 		//**** print end of splitpart
 		if (options[18]>0)
-			Msg(RESOURCE.getString("working.end.of.part") + " "+(options[19]++));
+			Msg(Resource.getString("working.end.of.part") + " "+(options[19]++));
 		else 
 			options[21]=-100;
 
@@ -6065,7 +5948,7 @@ public void working() {
 		//***** print created files summary
 		lastlist = InfoAtEnd.toArray();
 		java.util.Arrays.sort(lastlist);
-		Msg(RESOURCE.getString("working.summary"));
+		Msg(Resource.getString("working.summary"));
 		for (int l=0;l<lastlist.length;l++)
 			Msg(""+lastlist[l]);
 
@@ -6100,7 +5983,7 @@ public void working() {
 					commandline+=(""+arguments[l]+(char)32);
 				}
 
-				Msg(RESOURCE.getString("working.post.command") + " "+commandline.trim());
+				Msg(Resource.getString("working.post.command") + " "+commandline.trim());
 
 				try 
 				{ 
@@ -6114,7 +5997,7 @@ public void working() {
 		}
 	}
 
-	Msg("=> " + options[39] + " " + RESOURCE.getString("working.bytes.written"));
+	Msg("=> " + options[39] + " " + Resource.getString("working.bytes.written"));
 	Toolkit.getDefaultToolkit().beep();
 	yield();
 
@@ -6132,7 +6015,7 @@ public void working() {
 		nlf.close();
 		} 
 		catch (IOException e) { 
-			Msg(RESOURCE.getString("working.log.error2") + " "+e); 
+			Msg(Resource.getString("working.log.error2") + " "+e); 
 		}
 	}
 	messagelog="";
@@ -11591,7 +11474,7 @@ public void processTeletext(String[] args)
 				break;
 
 			case 7:
-				String[] STLhead = Teletext.getSTLHead(RESOURCE.getString("version.name")+" on "+java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(new java.util.Date(System.currentTimeMillis())));
+				String[] STLhead = Teletext.getSTLHead(Resource.getString("version.name")+" on "+java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(new java.util.Date(System.currentTimeMillis())));
 				for (int a=0;a<STLhead.length;a++) 
 					print_buffer.println(STLhead[a]);
 				print_buffer.flush();
@@ -16405,13 +16288,13 @@ class makeVDR {
 			if (toVdr==1 && cBox[54].isSelected())
 				name = out.renameVdrTo(new File(name).getParent()+filesep,name);
 
-			Msg(RESOURCE.getString("makeVDR.new.file") + " " + name);
+			Msg(Resource.getString("makeVDR.new.file") + " " + name);
 			InfoAtEnd.add("Stream:\t "+name);
 		}
 
 		}
 		catch (IOException e) { 
-			Msg(RESOURCE.getString("makeVDR.close.error") + " " + e); 
+			Msg(Resource.getString("makeVDR.close.error") + " " + e); 
 		}
 
 		makempg=false;

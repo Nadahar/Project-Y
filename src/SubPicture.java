@@ -29,16 +29,22 @@
  * http://www.via.ecp.fr/~sam/doc/dvd/
  */
 
-import java.awt.*;
-import java.awt.font.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
-import java.awt.image.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 
 public class SubPicture extends JFrame
@@ -46,7 +52,7 @@ public class SubPicture extends JFrame
 
 public Picture picture;
 
-String title = X.RESOURCE.getString("subpicture.title");
+String title = Resource.getString("subpicture.title");
 
 public SubPicture()
 {
@@ -278,7 +284,7 @@ public class Picture extends JPanel implements Runnable
 		tmp[34+tp] = (byte)(0xFF & difference>>>8);
 		tmp[35+tp] = (byte)(0xFF & difference);
 
-		newTitle(" / " + X.RESOURCE.getString("subpicture.in_time") + ": " + sms.format(new java.util.Date(in_time / 90)) + " " + X.RESOURCE.getString("subpicture.duration") + ": " + sms.format(new java.util.Date((out_time - in_time) / 90)) );
+		newTitle(" / " + Resource.getString("subpicture.in_time") + ": " + sms.format(new java.util.Date(in_time / 90)) + " " + Resource.getString("subpicture.duration") + ": " + sms.format(new java.util.Date((out_time - in_time) / 90)) );
 
 		return tmp;
 	}
@@ -502,7 +508,7 @@ public class Picture extends JPanel implements Runnable
 		} 
 		catch (IOException e)
 		{ 
-			X.Msg(X.RESOURCE.getString("subpicture.msg1")); 
+			X.Msg(Resource.getString("subpicture.msg1")); 
 		}
 
 		read_from_Image = false;
@@ -871,7 +877,7 @@ public class Picture extends JPanel implements Runnable
 		{
 			playtime_pos = packetlength;
 			simple_picture = true;
-			X.Msg(X.RESOURCE.getString("subpicture.msg2"));
+			X.Msg(Resource.getString("subpicture.msg2"));
 		}
 		else
 			start_pos[2] += off+2;
@@ -912,7 +918,7 @@ public class Picture extends JPanel implements Runnable
 					start_pos[b] = Get_Bits(data, BPos, 16);
 				break;
 			default:
-				X.Msg(X.RESOURCE.getString("subpicture.msg3") + ": " + cmd_switch);
+				X.Msg(Resource.getString("subpicture.msg3") + ": " + cmd_switch);
 			}
 		}
 

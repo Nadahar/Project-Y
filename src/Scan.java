@@ -31,18 +31,18 @@ import java.util.*;
 public class Scan
 {
 	//DM14092004 081.8.02 add
-	private final String msg_1 = X.RESOURCE.getString("scan.msg1");
-	private final String msg_2 = X.RESOURCE.getString("scan.msg2");
-	private final String msg_3 = X.RESOURCE.getString("scan.msg3");
-	private final String msg_4 = X.RESOURCE.getString("scan.msg4");
-	private final String msg_5 = X.RESOURCE.getString("scan.msg5");
-	private final String msg_6 = X.RESOURCE.getString("scan.msg6");
-	private final String msg_7 = X.RESOURCE.getString("scan.msg7");
-	private final String msg_8 = X.RESOURCE.getString("scan.msg8");
-	private final String msg_9 = X.RESOURCE.getString("scan.msg9");
+	private final String msg_1 = Resource.getString("scan.msg1");
+	private final String msg_2 = Resource.getString("scan.msg2");
+	private final String msg_3 = Resource.getString("scan.msg3");
+	private final String msg_4 = Resource.getString("scan.msg4");
+	private final String msg_5 = Resource.getString("scan.msg5");
+	private final String msg_6 = Resource.getString("scan.msg6");
+	private final String msg_7 = Resource.getString("scan.msg7");
+	private final String msg_8 = Resource.getString("scan.msg8");
+	private final String msg_9 = Resource.getString("scan.msg9");
 
 	private final String[] type = { 
-		X.RESOURCE.getString("scan.unsupported"),
+		Resource.getString("scan.unsupported"),
 		"PVA (Video/Audio PES)",
 		"MPEG-1 PS/SS (Video/Audio PES)",
 		"MPEG-2 PS/SS (Video/Audio PES)",

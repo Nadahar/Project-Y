@@ -83,7 +83,7 @@ public class PatchPanel extends JDialog {
 	 * @param f The parent Frame
 	 */
 	public PatchPanel(JFrame f) {
-		super(f, X.RESOURCE.getString("patch.title"), true);
+		super(f, Resource.getString("patch.title"), true);
 
 		JPanel container = new JPanel();
 		container.setLayout( new BorderLayout() );
@@ -101,13 +101,13 @@ public class PatchPanel extends JDialog {
 		grid.add(new JLabel(notes[3]));
 
 		JButton changebutton = new JButton();
-		X.localize(changebutton, "patch.change");
+		Resource.localize(changebutton, "patch.change");
 		changebutton.setActionCommand("change");
 		changebutton.addActionListener(patchAction);
 		grid.add(changebutton);
 
 		JButton cancelbutton = new JButton();
-		X.localize(cancelbutton, "patch.cancel");
+		Resource.localize(cancelbutton, "patch.cancel");
 		cancelbutton.setActionCommand("cancel");
 		cancelbutton.addActionListener(patchAction);
 		grid.add(cancelbutton);
@@ -148,7 +148,7 @@ public class PatchPanel extends JDialog {
 				return true;
 			}
 		} 
-		catch (IOException e) { X.Msg(X.RESOURCE.getString("patch.error") + " " + e); }
+		catch (IOException e) { X.Msg(Resource.getString("patch.error") + " " + e); }
 		return false;
 	}
 
@@ -216,7 +216,7 @@ public class PatchPanel extends JDialog {
 			pfile.write(os);
 			pfile.close();
 		} 
-		catch (IOException e) { X.Msg(X.RESOURCE.getString("patch.error2") + " " + e); }
+		catch (IOException e) { X.Msg(Resource.getString("patch.error2") + " " + e); }
 		this.setVisible(false);
 	}
 

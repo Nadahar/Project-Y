@@ -25,7 +25,6 @@
  */
 
 import java.io.*;
-import java.util.*;
 
 public class TS
 {
@@ -171,7 +170,7 @@ public class TS
 
 		if (Pids.length == 0)
 		{
-			X.Msg(X.RESOURCE.getString("ts.msg1"));
+			X.Msg(Resource.getString("ts.msg1"));
 			autopmt = pmt;
 
 			return;
@@ -368,7 +367,7 @@ public class TS
 	public byte[] init(String name, boolean ac3, boolean myTTX, int mode)
 	{ 
 		count1 = count2 = count3 = 0;
-		this.myTTX = myTTX;
+		TS.myTTX = myTTX;
 
 		java.util.Arrays.fill(pat, (byte)0xff);
 		java.util.Arrays.fill(pmt, (byte)0xff);

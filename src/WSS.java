@@ -32,7 +32,7 @@ public final class WSS
 	private static int a;
 	private static String str;
 
-	private static String start = X.RESOURCE.getString("wss.start");
+	private static String start = Resource.getString("wss.start");
 
 	public WSS()
 	{
@@ -77,21 +77,21 @@ public final class WSS
 
 		if (getRunIn())
 		{
-			str += X.RESOURCE.getString("wss.run_in") + " @ " + a + "<p>";
+			str += Resource.getString("wss.run_in") + " @ " + a + "<p>";
 			a += 29;
 
 			if (getStartCode())
 			{
-				str += X.RESOURCE.getString("wss.startcode") + " @ " + a + "<p>";
+				str += Resource.getString("wss.startcode") + " @ " + a + "<p>";
 
 				a += 24;
 
-				str += X.RESOURCE.getString("wss.group_1") + " " + start + " @ " + a + " :" + "<p>";
+				str += Resource.getString("wss.group_1") + " " + start + " @ " + a + " :" + "<p>";
 				str += " * " + getGroup1() + "<p>";
 
 				a += 24;
 
-				str += X.RESOURCE.getString("wss.group_2") + " " + start + " @ " + a + " :" + "<p>";
+				str += Resource.getString("wss.group_2") + " " + start + " @ " + a + " :" + "<p>";
 
 				String[] group = getGroup2();
 
@@ -100,7 +100,7 @@ public final class WSS
 
 				a += 24;
 
-				str += X.RESOURCE.getString("wss.group_3") + " " + start + " @ " + a + " :" + "<p>";
+				str += Resource.getString("wss.group_3") + " " + start + " @ " + a + " :" + "<p>";
 
 				group = getGroup3();
 
@@ -109,7 +109,7 @@ public final class WSS
 
 				a += 18;
 
-				str += X.RESOURCE.getString("wss.group_4") + " " + start + " @ " + a + " :" + "<p>";
+				str += Resource.getString("wss.group_4") + " " + start + " @ " + a + " :" + "<p>";
 
 				group = getGroup4();
 
@@ -118,11 +118,11 @@ public final class WSS
 
 			}
 			else
-				str += X.RESOURCE.getString("wss.no_startcode");
+				str += Resource.getString("wss.no_startcode");
 		}
 		else
 		{
-			str += X.RESOURCE.getString("wss.no_run_in");
+			str += Resource.getString("wss.no_run_in");
 			str = null;
 		}
 
@@ -170,28 +170,28 @@ public final class WSS
 		switch (b1)
 		{
 		case 0x56: // 0001  Biphase 01010110
-			return ("  " + X.RESOURCE.getString("wss.group_1.0001"));
+			return ("  " + Resource.getString("wss.group_1.0001"));
 
 		case 0x95: // 1000  Biphase 10010101
-			return ("  " + X.RESOURCE.getString("wss.group_1.1000"));
+			return ("  " + Resource.getString("wss.group_1.1000"));
 
 		case 0x65: // 0100  Biphase 01100101
-			return ("  " + X.RESOURCE.getString("wss.group_1.0100"));
+			return ("  " + Resource.getString("wss.group_1.0100"));
 
 		case 0xA6: // 1101  Biphase 10100110
-			return ("  " + X.RESOURCE.getString("wss.group_1.1101"));
+			return ("  " + Resource.getString("wss.group_1.1101"));
 
 		case 0x59: // 0010  Biphase 01011001
-			return ("  " + X.RESOURCE.getString("wss.group_1.0010"));
+			return ("  " + Resource.getString("wss.group_1.0010"));
 
 		case 0x6A: // 0111  Biphase 01101010
-			return ("  " + X.RESOURCE.getString("wss.group_1.0111"));
+			return ("  " + Resource.getString("wss.group_1.0111"));
 
 		case 0xA9: // 1110  Biphase 10101001
-			return ("  " + X.RESOURCE.getString("wss.group_1.1110"));
+			return ("  " + Resource.getString("wss.group_1.1110"));
 
 		default:  
-			return ("  " + X.RESOURCE.getString("wss.group_1.error"));
+			return ("  " + Resource.getString("wss.group_1.error"));
 		}
 	}
 
@@ -207,57 +207,57 @@ public final class WSS
 		switch (b1>>>6)
 		{
 		case 1: // 0  Biphase 01
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_2.0.01");
+			group2[0]= "  " + Resource.getString("wss.group_2.0.01");
 			break; 
 
 		case 2: // 1  Biphase 10
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_2.0.10"); 
+			group2[0]= "  " + Resource.getString("wss.group_2.0.10"); 
 			break;
 
 		default:  
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_2.0.00");
+			group2[0]= "  " + Resource.getString("wss.group_2.0.00");
 		}       
 
 		switch (0x3 & (b1>>>4))
 		{
 		case 1: // 0  Biphase 01
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_2.1.01"); 
+			group2[1]= "  " + Resource.getString("wss.group_2.1.01"); 
 			break;
 
 		case 2: // 1  Biphase 10
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_2.1.10"); 
+			group2[1]= "  " + Resource.getString("wss.group_2.1.10"); 
 			break;
 
 		default:  
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_2.1.00"); 
+			group2[1]= "  " + Resource.getString("wss.group_2.1.00"); 
 		}       
 
 		switch (0x3 & (b1>>>2))
 		{
 		case 1:  // 0  Biphase 01
-			group2[2]= "  " + X.RESOURCE.getString("wss.group_2.2.01"); 
+			group2[2]= "  " + Resource.getString("wss.group_2.2.01"); 
 			break;
 
 		case 2:  // 1  Biphase 10
-			group2[2]= "  " + X.RESOURCE.getString("wss.group_2.2.10"); 
+			group2[2]= "  " + Resource.getString("wss.group_2.2.10"); 
 			break;
 
 		default:  
-			group2[2]= "  " + X.RESOURCE.getString("wss.group_2.2.00");
+			group2[2]= "  " + Resource.getString("wss.group_2.2.00");
 		}       
 
 		switch (0x3 & b1)
 		{
 		case 1: // 0  Biphase 01
-			group2[3]= "  " + X.RESOURCE.getString("wss.group_2.3.01"); 
+			group2[3]= "  " + Resource.getString("wss.group_2.3.01"); 
 			break;
 
 		case 2:  // 1  Biphase 10
-			group2[3]= "  " + X.RESOURCE.getString("wss.group_2.3.10"); 
+			group2[3]= "  " + Resource.getString("wss.group_2.3.10"); 
 			break;
 
 		default:  
-			group2[3]= "  " + X.RESOURCE.getString("wss.group_2.3.00");
+			group2[3]= "  " + Resource.getString("wss.group_2.3.00");
 		}       
 
 		return group2;
@@ -275,37 +275,37 @@ public final class WSS
 		switch (0x3 & (b1>>>4))
 		{
 		case 1: // 0  Biphase 01
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_3.0.01"); 
+			group2[0]= "  " + Resource.getString("wss.group_3.0.01"); 
 			break;
 
 		case 2: // 1  Biphase 10
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_3.0.10"); 
+			group2[0]= "  " + Resource.getString("wss.group_3.0.10"); 
 			break;
 
 		default:
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_3.0.00");
+			group2[0]= "  " + Resource.getString("wss.group_3.0.00");
 		}       
 
 		switch (0xF & b1)
 		{
 		case 5:  // 00  Biphase 0101
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.00"); 
+			group2[1]= "  " + Resource.getString("wss.group_3.1.00"); 
 			break;
 
 		case 6:  // 01  Biphase 0110
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.01"); 
+			group2[1]= "  " + Resource.getString("wss.group_3.1.01"); 
 			break;
 
 		case 9:  // 10  Biphase 1001
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.10"); 
+			group2[1]= "  " + Resource.getString("wss.group_3.1.10"); 
 			break; 
 
 		case 0xA:  // 11  Biphase 1010
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.11"); 
+			group2[1]= "  " + Resource.getString("wss.group_3.1.11"); 
 			break;
 
 		default: 
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.err");
+			group2[1]= "  " + Resource.getString("wss.group_3.1.err");
 		}       
 
 		return group2;
@@ -323,37 +323,37 @@ public final class WSS
 		switch (0x3 & (b1>>>4))
 		{
 		case 1:  // 0  Biphase 01
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_4.0.01");
+			group2[0]= "  " + Resource.getString("wss.group_4.0.01");
 			break;
 
 		case 2:  // 1  Biphase 10
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_4.0.10");
+			group2[0]= "  " + Resource.getString("wss.group_4.0.10");
 			break;
 
 		default:
-			group2[0]= "  " + X.RESOURCE.getString("wss.group_4.0.00");
+			group2[0]= "  " + Resource.getString("wss.group_4.0.00");
 		}       
 
 		switch (0xF & b1)
 		{
 		case 5: // 00  Biphase 0101
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.00");
+			group2[1]= "  " + Resource.getString("wss.group_4.1.00");
 			break;
 
 		case 6: // 01  Biphase 0110
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.01"); 
+			group2[1]= "  " + Resource.getString("wss.group_4.1.01"); 
 			break; 
 
 		case 9:  // 10  Biphase 1001
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.10"); 
+			group2[1]= "  " + Resource.getString("wss.group_4.1.10"); 
 			break;
 
 		case 0xA:  // 11  Biphase 1010
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.11"); 
+			group2[1]= "  " + Resource.getString("wss.group_4.1.11"); 
 			break;
 
 		default:
-			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.err");
+			group2[1]= "  " + Resource.getString("wss.group_4.1.err");
 		}       
 
 		return group2;
