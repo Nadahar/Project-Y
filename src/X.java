@@ -131,8 +131,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b5_lang";
-static String version_date = "05.10.2004";
+static String version_name = "ProjectX 0.81.8.02b6_lang";
+static String version_date = "07.10.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -244,6 +244,9 @@ JFrame autoload; //DM26032004 081.6 int18 add
 TeletextPageMatrix tpm = null;  //DM17042004 081.7 int02 add
 static MPVD MPVDecoder = null;
 
+//DM04102004 081.8.02 add
+static Chapters chapters = null;
+
 //DM20072004 081.7 int07 add
 long fakedPTS = -1;
 
@@ -295,6 +298,7 @@ void buildGUI()
 	dialog = new COLLECTION();
 	executePane = new EXECUTE();
 	scan = new Scan();
+	chapters = new Chapters();
 
 	outalias = Resource.getString("working.output.std");
 
@@ -2453,7 +2457,7 @@ protected JPanel buildoptionPanel() {
 
 	Object[] bufsize = { "10240000","8192000","7168000","6144000","5120000","4096000","3072000","2048000","1024000" };
 	comBox[10]=new JComboBox(bufsize);
-	comBox[10].setSelectedIndex(4);
+	comBox[10].setSelectedIndex(5);
 	comBox[10].setEditable(true); //DM21112003 081.5++
 	comBox[10].setPreferredSize(new Dimension(100,25));
 	comBox[10].setMaximumSize(new Dimension(100,25));
@@ -5525,7 +5529,8 @@ public void run() {
 			Msg("\r\n" + Resource.getString("run.working.coll") + " " + a);
 			currentcoll = a;
 
-			if (workinglist.size() > 0) { 
+			if (workinglist.size() > 0)
+			{ 
 				java.util.Arrays.fill(VBASIC,null); //DM08032004 081.6 int18 add
 				ttxheaderLabel.setText("");
 				ttxvpsLabel.setText("");
@@ -5538,27 +5543,7 @@ public void run() {
 				workouts = collout.get(a).toString();
 				String firstfile = workinglist.get(0).toString();
 
-				//DM15072004 081.7 int06 moved and add++
-				if (options[18]>0)
-				{
-					Msg(Resource.getString("run.split.output") + " " + (options[18]/1048576) + " MB");
-				}
-
-				if (cBox[8].isSelected())
-				{
-					Msg(Resource.getString("run.add.time.offset", "" + (options[28] / 90)));
-				}
-
-				for (int i = 55; i < 61; i++)
-				{
-					if (!cBox[i].isSelected())
-					{
-						Msg(Resource.getString("run.stream.type.disabled") + " " + cBox[i].getText());
-					}
-				}
-
-				Msg(" ");
-				//DM15072004 081.7 int06 moved and add--
+				messageSettings();
 
 				if (workouts.equals(outalias))
 					workouts = new File(firstfile).getParent();
@@ -5570,8 +5555,9 @@ public void run() {
 				if ( !workouts.endsWith(filesep) ) 
 					workouts += filesep;
 
-				if (cBox[2].isSelected()){
-					workouts += "("+a+")"+filesep;
+				if (cBox[2].isSelected())
+				{
+					workouts += "(" + a + ")" + filesep;
 					new File(workouts).mkdirs();
 				}
 
@@ -5593,13 +5579,15 @@ public void run() {
 					Msg("-> " + ctemp.size() + " " + Resource.getString("run.cutpoints.defined") + " ( "+comBox[17].getSelectedItem()+" )");
 
 				String fchilds = (new File(firstfile).getName()).toString();
+
 				if ( fchilds.lastIndexOf(".") != -1 ) 
 					fchilds = fchilds.substring(0,fchilds.lastIndexOf("."));
 
-				if (cBox[11].isSelected()) {
-					loggin = workouts+fchilds+"_log.txt";
-					options[31]=0; 
-					options[30]=1;
+				if (cBox[11].isSelected())
+				{
+					loggin = workouts + fchilds + "_log.txt";
+					options[31] = 0; 
+					options[30] = 1;
 					new LOG().start();
 				} 
 
@@ -5614,7 +5602,8 @@ public void run() {
 				}
 
 				/** quick pre-run for TS autoPMT **/ 
-				if (!qinfo && comBox[19].getSelectedIndex()==4 && cBox[41].isSelected()) {
+				if (!qinfo && comBox[19].getSelectedIndex()==4 && cBox[41].isSelected())
+				{
 					qinfo=true;
 					options[56]= (0x100000L * Integer.parseInt(comBox[21].getSelectedItem().toString()));
 					long splitlen = options[18]; 
@@ -5628,12 +5617,22 @@ public void run() {
 					Msg(Resource.getString("run.end.quick.info"));
 				}
 
+
+				//M2S chapters per coll#
+				chapters.init(cBox[63].isSelected());
+
+
 				/** doit standard **/ 
 				working();
 
 				java.util.Arrays.fill(VBASIC,null); //DM08032004 081.6 int18 add
 
-			} else {
+
+				//M2S chapters per coll#
+				chapters.finish(workouts + fchilds);
+			}
+			else
+			{
 				msoff.setText(Resource.getString("run.av.offset"));
 				progress.setString("");
 				progress.setStringPainted(false);
@@ -5641,27 +5640,36 @@ public void run() {
 				Msg(Resource.getString("run.no.input"));
 			}
 		}
-	} else {  // extract raw
+	}
+	else
+	{  // extract raw
 
 		workinglist.clear();
 		currentcoll = comBox[0].getSelectedIndex();
 		workinglist = (ArrayList)collfiles[currentcoll].clone();
 
-		if (workinglist.size()>0) {
+		if (workinglist.size() > 0)
+		{
 			String firstfile = workinglist.get(0).toString();
 			workouts = new File(firstfile).getParent();
+
 			if ( !workouts.endsWith(filesep) ) 
 				workouts += filesep;
-				Msg(Resource.getString("run.write.raw") + ": "+workouts);
- 
-				String fchilds = (new File(firstfile).getName()).toString();
-				if ( fchilds.lastIndexOf(".") != -1 )
-					fchilds = fchilds.substring(0,fchilds.lastIndexOf("."));
 
-				working();
-				options[33]=0;
-				inputlist();
-		} else Msg(Resource.getString("run.coll.empty"));
+			Msg(Resource.getString("run.write.raw") + ": " + workouts);
+ 
+			String fchilds = (new File(firstfile).getName()).toString();
+
+			if ( fchilds.lastIndexOf(".") != -1 )
+				fchilds = fchilds.substring(0,fchilds.lastIndexOf("."));
+
+			working();
+			options[33]=0;
+			inputlist();
+		}
+
+		else
+			Msg(Resource.getString("run.coll.empty"));
 	} 
 
 	timeneeded = System.currentTimeMillis() - timeneeded;
@@ -5713,6 +5721,66 @@ public void run() {
 		System.exit(0);
 	frame.setTitle(frametitle);
 }  
+
+
+
+//list settings on start
+private void messageSettings()
+{
+	Msg(" ");
+
+	//biglog
+	if (cBox[11].isSelected())
+		Msg("-> " + cBox[11].getText().toString());
+
+	//normlalog
+	if (cBox[21].isSelected())
+		Msg("-> " + cBox[21].getText().toString());
+
+	//sPES
+	if (cBox[14].isSelected())
+		Msg("-> " + cBox[14].getText().toString());
+
+	//split
+	if (options[18]>0)
+		Msg(Resource.getString("run.split.output") + " " + (options[18] / 1048576) + " MB");
+
+	//add offset
+	if (cBox[8].isSelected())
+		Msg(Resource.getString("run.add.time.offset", "" + (options[28] / 90)));
+
+	//idd
+	if (cBox[34].isSelected())
+		Msg("-> " + Resource.getString("tab.extern.m2s.idd") + " " + cBox[34].getText().toString());
+
+	//d2v_1
+	if (cBox[29].isSelected())
+		Msg("-> " + Resource.getString("tab.extern.d2v") + " " + cBox[29].getText().toString());
+
+	//d2v_2
+	if (cBox[30].isSelected())
+		Msg("-> " + Resource.getString("tab.extern.d2v") + " " + cBox[30].getText().toString());
+
+	//es types
+	for (int i = 55; i < 61; i++)
+		if (!cBox[i].isSelected())
+			Msg(Resource.getString("run.stream.type.disabled") + " " + cBox[i].getText());
+
+	//dar export limit
+	if (cBox[47].isSelected())
+		Msg("-> " + Resource.getString("collection.exportlimits") + " " + cBox[47].getText().toString() + " " + comBox[24].getSelectedItem().toString());
+
+	//h_resol export limit
+	if (cBox[52].isSelected())
+		Msg("-> " + Resource.getString("collection.exportlimits") + " " + cBox[52].getText().toString() + " " + comBox[34].getSelectedItem().toString());
+
+	//C.D.Flag
+	if (cBox[35].isSelected())
+		Msg("-> " + cBox[35].getText().toString());
+
+	Msg(" ");
+}
+
 
 
 /*********
@@ -6053,6 +6121,7 @@ public void working() {
 
 		InfoAtEnd.clear();
 		yield();
+
 
 		/*** post execution ***/
 		if (!qinfo && cBox[25].isSelected()) { //DM30122003 081.6 int10 changed
@@ -9573,11 +9642,6 @@ public boolean processAudio(String[] args)
 		audiooutR.InitIdd(newnameR, 2);
 	}
 
-	//DM01102004 081.8.02 add
-	if (cBox[63].isSelected())
-		audiooutL.InitChapters(newnameL);
-
-
 	//DM150702004 081.7 int06 changed, fix
 	if (vptsdata && ptsdata)
 	{
@@ -9970,7 +10034,7 @@ public boolean processAudio(String[] args)
 
 					//DM01102004 081.8.02 add
 					if (cBox[63].isSelected())
-						audiooutL.addChapter(str + " ; " + hdr);
+						chapters.addChapter(str + " ; " + hdr);
 				}
 
 				else if (options[47] == 100) 
@@ -10582,7 +10646,7 @@ public boolean processAudio(String[] args)
 
 					//DM01102004 081.8.02 add
 					if (cBox[63].isSelected())
-						audiooutL.addChapter(str + " ; " + Audio.MPA_displayHeader());
+						chapters.addChapter(str + " ; " + Audio.MPA_displayHeader());
 				}
 
 				else if (options[47] == 100) 
@@ -13936,6 +14000,9 @@ public static void goptest(IDDBufferedOutputStream vseq, byte[] gop, byte[] pts,
 	int frametype=0;
 	byte d2vframerate = 0;
 
+	String ct = sms.format(new java.util.Date((long)( options[7] * (double)(options[14] / 90.0f))));
+	String nv = "";
+
 	if (options[13]==1) 
 		frametypebuffer.write((byte)0x88);
 	else 
@@ -13976,7 +14043,8 @@ public static void goptest(IDDBufferedOutputStream vseq, byte[] gop, byte[] pts,
 	}
 
 	/* header check */
-	if (options[13]==1) {
+	if (options[13]==1)
+	{
 
 		options[14] = fps_tabl2[15 & gop[s+7]];  // framerateconstant
 		options[15] = 16*1024*( (31 & gop[s+10])<<5 | (248 & gop[s+11])>>>3 );
@@ -13987,20 +14055,33 @@ public static void goptest(IDDBufferedOutputStream vseq, byte[] gop, byte[] pts,
 		String[] vbasics = { ""+((255&gop[s+4])<<4 | (240&gop[s+5])>>>4),""+((15&gop[s+5])<<8 | (255&gop[s+6])),(fps_tabl1[15&gop[s+7]]),aspratio[(255&gop[s+7])>>>4] };
 		clv[7] = ((255&gop[s+7])>>>4)-1;
 
-		if (newvideo || options[7]==0) {
-			infos.add(Resource.getString("video.msg.basics", "" + vbasics[0]+"*"+vbasics[1]+" @ "+vbasics[2]+" @ "+vbasics[3]+" @ "+( ((255&gop[s+8])<<10 | (255&gop[s+9])<<2 | (192 & gop[s+10])>>>6)*400  )) + " " + ( (31&gop[s+10])<<5 | (248&gop[s+11])>>>3 ));
-			if (options[7]==0) {
+		if (newvideo || options[7]==0)
+		{
+			nv = Resource.getString("video.msg.basics", "" + vbasics[0]+"*"+vbasics[1]+" @ "+vbasics[2]+" @ "+vbasics[3]+" @ "+( ((255&gop[s+8])<<10 | (255&gop[s+9])<<2 | (192 & gop[s+10])>>>6)*400  )) + " " + ( (31&gop[s+10])<<5 | (248&gop[s+11])>>>3 );
+
+			infos.add(nv);
+
+			if (options[7]==0)
+			{
 				d2vinsert=true;
 				d2vframerate=gop[s+7];
 			}
+
 			VBASIC = vbasics;
 		}
 
-		if (!java.util.Arrays.equals(VBASIC,vbasics)) {
-			Msg(Resource.getString("video.msg.newformat", "" + clv[6]));
-			Msg(Resource.getString("video.msg.basics", "" + vbasics[0]+"*"+vbasics[1]+" @ "+vbasics[2]+" @ "+vbasics[3]+" @ "+( ((255&gop[s+8])<<10 | (255&gop[s+9])<<2 | (192 & gop[s+10])>>>6)*400  )) + " " + ( (31&gop[s+10])<<5 | (248&gop[s+11])>>>3 ));
+		if (!java.util.Arrays.equals(VBASIC,vbasics))
+		{
+			String str = Resource.getString("video.msg.basics", "" + vbasics[0]+"*"+vbasics[1]+" @ "+vbasics[2]+" @ "+vbasics[3]+" @ "+( ((255&gop[s+8])<<10 | (255&gop[s+9])<<2 | (192 & gop[s+10])>>>6)*400  )) + " " + ( (31&gop[s+10])<<5 | (248&gop[s+11])>>>3 );
+
+			Msg(Resource.getString("video.msg.newformat", "" + clv[6]) + " (" + ct + ")");
+			Msg(str);
+
+			chapters.addChapter(ct + " ; " + str);
+
 			VBASIC = vbasics;
 		}
+
 		s=12;
 	}
 
@@ -14495,6 +14576,10 @@ public static void goptest(IDDBufferedOutputStream vseq, byte[] gop, byte[] pts,
 			
 			//DM12042004 081.7 int01 changed
 			brm.surf.update(vbr, ftb, sms.format(new java.util.Date((options[48]+options[42])/90)).substring(0,8));
+
+			if (newvideo && infos.size() > 0)
+				chapters.addChapter(ct + " ; " + nv);
+
 
 			for (int a=0;a<infos.size();a++) {
 				Msg(infos.get(a).toString());
