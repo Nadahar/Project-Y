@@ -8919,11 +8919,14 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 					demux.setStreamType(ismpg);
 					TSPid.setID(PVAdemuxlist.size());
 					PVAdemuxlist.add(demux);
-					IDtype+=Resource.getString("idtype.has.pesid")+Integer.toHexString(streamID).toUpperCase()+streamtypes[demux.getType()];
+
+					IDtype += " " + Resource.getString("idtype.has.pesid") + Integer.toHexString(streamID).toUpperCase() + " " + streamtypes[demux.getType()];
+
 					if (ToVDR==0) 
 						demux.init(fparent,options,bs/PVAdemuxlist.size(),PVAdemuxlist.size(),3);
 					else 
-						IDtype+=Resource.getString("idtype.mapped.to")+Integer.toHexString(demux.getnewID()).toUpperCase();
+						IDtype += Resource.getString("idtype.mapped.to") + Integer.toHexString(demux.getnewID()).toUpperCase();
+
 					break; 
 				}
 				}
