@@ -6093,7 +6093,7 @@ public void working() {
 public void splitreset(String vptslog) {
 	if ( vptslog.equals("-1") && options[18]>0 ) { 
 		options[18]=0;
-		Msg("! -> no videofile PTS, splitting disabled");
+		Msg(Resource.getString("splitreset.novideo"));
 	}
 }
 
@@ -6105,7 +6105,7 @@ private int checkPTSMatch(long video_pts_values[], long data_pts_values[])
 		if (data_pts_values[data_pts_values.length - 2] < video_pts_values[0])
 		{
 			//maybe does match later, jump just to end
-			Msg("!> 1st video PTS starts later than the last PTS of this stream");
+			Msg(Resource.getString("checkpts.1st.latter"));
 			return (data_pts_values.length - 2);
 		}
 		else
@@ -6126,7 +6126,7 @@ private int checkPTSMatch(long video_pts_values[], long data_pts_values[])
 	{
 		if (data_pts_values[0] >= video_pts_values[video_pts_values.length - 1])
 		{
-			Msg("!> last video PTS ends before the start PTS of this stream");
+			Msg(Resource.getString("checkpts.last.ends"));
 			return -1;
 		}
 		//does match anywhere, no pre-jump
@@ -6169,7 +6169,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 
 				tempfiles.set(tfs,paname);
 				String[] tfpes = { tempfiles.get(tfs).toString(), tempfiles.get(tfs+2).toString(), tempfiles.get(tfs+3).toString(), vptslog };
-				Msg("=> continue while using extracted raw data from "+file);
+				Msg(Resource.getString("pesparse.continue")+" "+file);
 				if (tfpes[2].equals("tt")) 
 					processTeletext(tfpes);
 				else 
@@ -6196,7 +6196,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 	PushbackInputStream in = raw_interface.getStream(file, bs);
 	long size = raw_interface.getStreamSize();
 
-	progress.setString("demuxing PES file  "+(new File(file)).getName());
+	progress.setString(Resource.getString("pesparse.demux.pes") + " " + (new File(file)).getName());
 	progress.setStringPainted(true);
 	progress.setValue(0);
 	yield();
@@ -6241,14 +6241,14 @@ public void pesparse(String file, String vptslog, int ismpg) {
 			if ( push6[0]!=0 || push6[1]!=0 || push6[2]!=1 || (0xFF&push6[3])<0xB9) { //DM06012004 081.6 int11 changed
 				in.unread(push6,1,5);
 				if (!cBox[3].isSelected() && !miss) //DM03112003 081.5++ info
-					Msg("!> missing startcode @ "+count);
+					Msg(Resource.getString("pesparse.missing.startcode") + " " + count);
 				miss=true;
 				count++;
 				continue pvaloop;
 			}
 
 			if (!cBox[3].isSelected() && miss) //DM03112003 081.5++ info, moved
-				Msg("!> found startcode @ "+count);
+				Msg(Resource.getString("pesparse.found.startcode") + " " + count);
 			miss=false;
 
 			if (ismpg>0 || cBox[14].isSelected()) { //DM22122003 081.6 int08 changed
@@ -6315,7 +6315,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 			in.unread(push6,0,6);
 
 			if (packlength==0) { 
-				Msg("-> ! packet length is 0 @ "+count);
+				Msg(Resource.getString("pesparse.packet.length")+" "+count);
 				count+=6;
 				in.skip(6);
 				continue pvaloop;
@@ -6327,7 +6327,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 			if (cBox[33].isSelected() && (data[6+packlength]!=0 || data[7+packlength]!=0 || data[8+packlength]!=1)) {
 				if (count+6+packlength < size) {
 					if (!cBox[3].isSelected() && !miss) //DM21112003 081.5++ info
-						Msg("!> missing next startcode @ "+(count+6+packlength)+" from "+count+" (PES-ID 0x"+Integer.toHexString(pesID).toUpperCase()+"), dropping packet..");
+						Msg(Resource.getString("pesparse.miss.next.startcode", ""+(count+6+packlength), ""+count, Integer.toHexString(pesID).toUpperCase()));
 					miss=true;
 					in.unread(data,1,data.length-1); 
 					count++;
@@ -6338,7 +6338,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 
 			clv[5]++;
 			if (options[30]==1) 
-				System.out.print("\rpacks: "+clv[5]+" "+((count*100/size))+"% "+(count));
+				System.out.print("\r"+Resource.getString("pesparse.packs", ""+clv[5], ""+((count*100/size)), ""+count));
 
 			count += 6+packlength;
 
@@ -6368,7 +6368,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 				String IDtype="";
 				switch (0xF0 & pesID) {
 				case 0xE0: { 
-					IDtype="(MPEG Video) -> ignored";
+					IDtype=Resource.getString("idtype.mpeg.video.ignored");
 					demux = new PIDdemux();
 					demux.setID(pesID);
 					demux.setsubID(0);
@@ -6378,7 +6378,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 				}
 				case 0xC0:
 				case 0xD0: { 
-					IDtype="(MPEG Audio)"; 
+					IDtype=Resource.getString("idtype.mpeg.audio"); 
 					demux = new PIDdemux();
 					demux.setID(pesID);
 					demux.setsubID(0);
@@ -6390,7 +6390,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 				}
 				switch (pesID) {
 				case 0xBD: { //DM30122003 081.6 int10 changed
-					IDtype="(private stream 1)";
+					IDtype=Resource.getString("idtype.private.stream");
 					IDtype+=(ttx?" TTX ":"")+(subID!=0?" (SubID 0x"+Integer.toHexString(subID).toUpperCase()+")":""); 
 					demux = new PIDdemux();
 					demux.setID(pesID);
@@ -6402,7 +6402,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 					break; 
 				}
 				}
-				Msg("-> found PES-ID 0x"+Integer.toHexString(pesID).toUpperCase()+" "+IDtype+" @ "+(count-6-packlength)); //DM02022004 081.6 int14 changed
+				Msg(Resource.getString("pesparse.found.pesid", Integer.toHexString(pesID).toUpperCase(), IDtype, ""+(count-6-packlength))); //DM02022004 081.6 int14 changed
 			}
 
 
@@ -6424,7 +6424,7 @@ public void pesparse(String file, String vptslog, int ismpg) {
 
 	} // end while more than 1 pva -> morepva
 
-	Msg("packs: "+clv[5]+" "+((count*100/size))+"% "+count);
+	Msg(Resource.getString("pesparse.packs", ""+clv[5], ""+((count*100/size)), ""+count));
 
 
 	in.close(); 
@@ -6455,27 +6455,27 @@ public void pesparse(String file, String vptslog, int ismpg) {
 			if ( demux.subID()!=0 && (0xF0&demux.subID())!=0x80 ) 
 				break;
 			Msg("");
-			Msg("--> AC-3/DTS Audio "+((demux.subID()!=0) ? ("(SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")") : "")); //DM19122003 081.6 int07 changed
+			Msg(Resource.getString("pesparse.ac3.audio")+((demux.subID()!=0) ? ("(SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")") : "")); //DM19122003 081.6 int07 changed
 			mpt(values);
 			break;
 		case 1: //DM30122003 081.6 int10 changed
 			Msg("");
-			Msg("--> Teletext (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
+			Msg(Resource.getString("pesparse.teletext")+" (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
 			processTeletext(values);
 			break;
 		case 2:
 			Msg("");
-			Msg("--> MPEG Audio (0x"+Integer.toHexString(demux.getID()).toUpperCase()+")");
+			Msg(Resource.getString("pesparse.mpeg.audio")+" (0x"+Integer.toHexString(demux.getID()).toUpperCase()+")");
 			mpt(values);
 			break;
 		case 4: //DM23022004 081.6 int18 add
 			Msg("");
-			Msg("--> LPCM Audio (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
+			Msg(Resource.getString("pesparse.lpcm.audio")+" (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
 			processLPCM(values);
 			break;
 		case 5: //DM23022004 081.6 int18 add, //DM12042004 081.7 int01 changed
 			Msg("");
-			Msg("--> Subpicture (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
+			Msg(Resource.getString("pesparse.subpic")+" (SubID 0x"+Integer.toHexString(demux.subID()).toUpperCase()+")");
 			processSubpicture(values);
 			break;
 		}
@@ -6497,11 +6497,11 @@ public void pesparse(String file, String vptslog, int ismpg) {
 	}
 	catch (EOFException e1) { 
 		//DM25072004 081.7 int07 add
-		Msg("pesparse EOF reached in error: " + e1); 
+		Msg(Resource.getString("pesparse.eof.error")+": " + e1); 
 	}
 	catch (IOException e2) { 
 		//DM25072004 081.7 int07 add
-		Msg("pesparse File I/O error: " + e2); 
+		Msg(Resource.getString("pesparse.io.error")+": " + e2); 
 	}
 
 	System.gc();
@@ -6617,7 +6617,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 	for (int a=0; a<abc.size(); a++) 
 		include[a] = 0xFF&Integer.parseInt(abc.get(a).toString().substring(2),16);
 	if (include.length>0)
-		Msg("-> special PES-IDs for searching defined");
+		Msg(Resource.getString("vdrparse.special.pes"));
 
 	//*** split skipping first
 	if (options[18]>0)
@@ -6648,7 +6648,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 	//size = count + new File(file).length();
 
 	if (FileNumber>0)
-		Msg("continue with file: "+file);
+		Msg(Resource.getString("vdrparse.continue")+": "+file);
 
 	//PushbackInputStream in = new PushbackInputStream(new FileInputStream(file),bs);
 
@@ -6661,7 +6661,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 		count += in.skip(startPoint-count);
 	}
 
-	progress.setString(((ToVDR==0)?"demuxing":"converting")+" A/V PES file  "+(new File(file)).getName());
+	progress.setString(((ToVDR==0)?Resource.getString("vdrparse.demuxing"):Resource.getString("vdrparse.converting"))+" "+Resource.getString("vdrparse.avpes.file")+" "+(new File(file)).getName());
 	progress.setStringPainted(true);
 	progress.setValue((int)((count-base)*100/(size-base))+1);
 	yield();
@@ -6705,14 +6705,14 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 			if ( push6[0]!=0 || push6[1]!=0 || push6[2]!=1 || (0xFF&push6[3])<0xB9) { //DM06012004 081.6 int11 changed
 				in.unread(push6,1,5);
 				if (!cBox[3].isSelected() && !miss) //DM03112003 081.5++ info
-					Msg("!> missing startcode @ "+count);
+					Msg(Resource.getString("vdrparse.missing.startcode")+" "+count);
 				miss=true;
 				count++;
 				continue pvaloop;
 			}
 
 			if (!cBox[3].isSelected() && miss) //DM04112003 081.5++ info, moved 
-				Msg("!> found startcode @ "+count);
+				Msg(Resource.getString("vdrparse.found.startcode")+" "+count);
 			miss=false;
 
 			if (ismpg>0 || cBox[14].isSelected()) { //DM22122003 081.6 int08 changed
@@ -6747,7 +6747,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 						int cellid = 0xFF&data[0x1C];
 						int vobid = (0xFF&data[0x19])<<8 | (0xFF&data[0x1A]);
 						if ((0xFF&options[52])!=cellid || (0xFFFF&options[52]>>>16)!=vobid){
-							Msg("-> VobID "+vobid+ " CellID "+cellid+" @ "+count+" (GOP#"+clv[6]+" / Frame#"+options[7]+")"); //DM30122003 081.6 int10 changed
+							Msg(Resource.getString("vdrparse.split.cellids", ""+vobid, ""+cellid, ""+count, ""+clv[6], ""+options[7])); //DM30122003 081.6 int10 changed
 							/**
 							if (options[18]>0 && options[52]!=0){
 								options[52]=cellid|vobid<<16;
@@ -6810,7 +6810,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 			if (packlength==0) { //DM04122003 081.6_int02 changed
 				packlen0=true;
 				if (options[30]==1) 
-					System.out.println("-> ! packet length is 0 @ "+count);
+					System.out.println(Resource.getString("vdrparse.packet.length")+" "+count);
       
 				byte[] data2 = new byte[packsize0_buffer];
 				in.read(data2,0,packsize0_buffer);
@@ -6857,7 +6857,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 					in.unread(data2,a+6,(data2.length-a-6));  // unread till next head
 				} else {
 					in.unread(data2,a,(data2.length-a));  // unread for next head
-					Msg("!> missing next startcode (packetsize=0) @ "+(count+a)+" from "+count+" /I-Buffer "+packsize0_buffer);
+					Msg(Resource.getString("vdrparse.miss.startcode", ""+(count+a),""+count,""+packsize0_buffer));
 					data2=null;
 					count+=a;
 					continue pvaloop;
@@ -6872,7 +6872,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 			if (cBox[33].isSelected() && (data[6+packlength]!=0 || data[7+packlength]!=0 || data[8+packlength]!=1)) {
 				if (count+6+packlength < size) {
 					if (!cBox[3].isSelected() && !miss) //DM21112003 081.5++ info
-						Msg("!> missing next startcode @ "+(count+6+packlength)+" from "+count+" (PES-ID 0x"+Integer.toHexString(pesID).toUpperCase()+"), dropping packet..");
+						Msg(Resource.getString("vdrparse.miss.startcode2", ""+(count+6+packlength), ""+count, Integer.toHexString(pesID).toUpperCase()));
 					miss=true;
 					in.unread(data,1,data.length-1); 
 					count++;
