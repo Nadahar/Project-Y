@@ -31,22 +31,26 @@ import javax.swing.JTextArea;
 /**************
  * log window *
  **************/
-public class LogArea extends JTextArea {
+public class LogArea extends JTextArea
+{
 
-public LogArea() {
-	super(null, 0, 0);
-	setEditable(true);
-	setRows(4);
-	setText("");
-}
+	public LogArea()
+	{
+		super(null, 0, 0);
+		setEditable(true);
+		setRows(4);
+		setTabSize(12);
+		setText("");
+	}
 
-public float getAlignmentX () { 
-	return LEFT_ALIGNMENT; 
-}
+	public float getAlignmentX ()
+	{ 
+		return LEFT_ALIGNMENT; 
+	}
 
-public float getAlignmentY () { 
-	return BOTTOM_ALIGNMENT; 
-}
-
+	public float getAlignmentY ()
+	{ 
+		return BOTTOM_ALIGNMENT; 
+	}
 
 }

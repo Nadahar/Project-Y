@@ -44,12 +44,20 @@ public class Chapters
 		list.clear();
 	}
 
-	public void addChapter(String str)
+	public void addChapter(String time)
 	{
 		if (!active)
 			return;
 
-		list.add(str);
+		list.add(time);
+	}
+
+	public void addChapter(String time, String comment)
+	{
+		if (!active)
+			return;
+
+		list.add(time + " ; " + comment);
 	}
 
 	public void finish(String str) throws IOException
@@ -57,7 +65,7 @@ public class Chapters
 		if (!active && list.size() == 0)
 			return;
 
-		str += ".m2s.txt";
+		str += ".chp.txt";
 
 		Object chapters[] = list.toArray();
 

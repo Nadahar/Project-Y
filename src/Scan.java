@@ -76,16 +76,23 @@ public class Scan
 	//DM18062004 081.7 int05 add
 	RawInterface raw_interface;
 
+	ArrayList video_streams, audio_streams, ttx_streams, pic_streams;
+
 	//DM18062004 081.7 int05 add
 	public Scan()
 	{
 		raw_interface = new RawInterface();
+
+		video_streams = new ArrayList();
+		audio_streams = new ArrayList();
+		ttx_streams = new ArrayList();
+		pic_streams = new ArrayList();
 	}
 
 	//DM26032004 081.6_int18 changed
 	public int inputInt(String file)
 	{ 
-		filetype = testFile(file,false);
+		filetype = testFile(file, false);
 
 		return filetype;
 	}
@@ -111,28 +118,50 @@ public class Scan
 		return raw_interface.getFileDate(file);
 	}
  
+	private String readStreams(ArrayList streams, String str)
+	{
+		str = streams.get(0).toString();
+
+		for (int a = 1; a < streams.size(); a++)
+			str += "\n\r\t" + streams.get(a).toString();
+
+		return str;
+	}
+
 	//DM10032004 081.6 int18 changed
 	public String getVideo()
 	{ 
-		return video; 
+		if (video_streams.size() == 0)
+			return video; 
+
+		return readStreams(video_streams, video);
 	}
 
 	//DM10032004 081.6 int18 changed
 	public String getAudio()
 	{ 
-		return audio; 
+		if (audio_streams.size() == 0)
+			return audio; 
+
+		return readStreams(audio_streams, audio);
 	}
 
 	//DM10032004 081.6 int18 add
 	public String getText()
 	{
-		return text; 
+		if (ttx_streams.size() == 0)
+			return text; 
+
+		return readStreams(ttx_streams, text);
 	}
 
 	//DM28042004 081.7 int02 add
 	public String getPics()
 	{
-		return pics; 
+		if (pic_streams.size() == 0)
+			return pics; 
+
+		return readStreams(pic_streams, pics);
 	}
 
 	//DM10032004 081.6 int18 changed
@@ -177,7 +206,8 @@ public class Scan
 					if ( (0xFF & check[a+Audio.Size]) > 0x3f || (0xFF & check[a+Audio.Size])==0 ) //smpte
 						continue audiocheck;
 
-					audio = Audio.AC3_saveAnddisplayHeader();
+					//audio = Audio.AC3_saveAnddisplayHeader();
+					audio_streams.add(Audio.AC3_saveAnddisplayHeader());
 
 					return 1;
 				}
@@ -204,7 +234,8 @@ public class Scan
 					if ( (0xFF & check[a+Audio.Size]) > 0x7f || (0xFF & check[a+Audio.Size])==0 ) //smpte 
 						continue audiocheck; 
 
-					audio = Audio.DTS_saveAnddisplayHeader(); 
+					//audio = Audio.DTS_saveAnddisplayHeader(); 
+					audio_streams.add(Audio.DTS_saveAnddisplayHeader()); 
 
 					return; 
 				} 
@@ -223,7 +254,8 @@ public class Scan
 			if (Audio.MPA_parseNextHeader(check, a + Audio.Size) < 0)
 				continue audiocheck;
 
-			audio = Audio.MPA_saveAnddisplayHeader();
+			//audio = Audio.MPA_saveAnddisplayHeader();
+			audio_streams.add(Audio.MPA_saveAnddisplayHeader());
 
 			return;
 		}
@@ -232,69 +264,114 @@ public class Scan
 	public byte[] loadPES(byte[] check, int a)
 	{ 
 		ByteArrayOutputStream bytecheck = new ByteArrayOutputStream();
+		int jump, offs, len;
+		boolean mpg1;
 
-		while (bytecheck.size() < 11000)
+		for (; a < check.length; )
 		{
-			int jump = (255 & check[a+4])<<8 | (255 & check[a+5]);
-			bytecheck.write(check,a+6+3+(255 & check[a+8]),jump-3-(255 & check[a+8]) );
-			a += 6+jump;
+			jump = (0xFF & check[a + 4])<<8 | (0xFF & check[a + 5]);
+			mpg1 = (0x80 & check[a + 6]) == 0 ? true : false;
+			offs = a + 6 + ( !mpg1 ? 3 + (0xFF & check[a+8]) : 0);
+			len = jump - ( !mpg1 ? 3 + (0xFF & check[a+8]) : 0);
+
+			if (offs + len > check.length)
+				break;
+
+			bytecheck.write(check, offs, len);
+
+			a += 6 + jump;
 		}
 
 		return bytecheck.toByteArray();
 	}
 
-	public void loadMPG2(byte[] check, int b, boolean vdr, boolean mpg1)
+	public void loadMPG2(byte[] check, int b, boolean vdr, boolean mpg1, int size) throws IOException
 	{ 
-		ByteArrayOutputStream vid = new ByteArrayOutputStream();
-		ByteArrayOutputStream aud = new ByteArrayOutputStream();
-		ByteArrayOutputStream ac3 = new ByteArrayOutputStream();
-		int jump = 1;
+		video = msg_1;
+		audio = msg_2;
+
+		Hashtable table = new Hashtable();
+		ScanObject scanobject;
+
+		String str;
+		int jump = 1, id;
 
 		mpg2check:
 		for (int a=b; a < 500000; a += jump)
 		{
-			if ( check[a]!=0 || check[a+1]!=0 || check[a+2]!=1 )
+			if ( check[a] != 0 || check[a+1] != 0 || check[a+2] != 1 )
 			{ 
-				jump=1; 
+				jump = 1; 
 				continue mpg2check; 
 			}
 
-			if ( (0xf0 & check[a+3]) == 0xe0)
+			id = 0xFF & check[a+3];
+			str = String.valueOf(id);
+
+			if ( id == 0xBA )
 			{
-				jump = 6+((255&check[a+4])<<8 | (255&check[a+5]));
-
-				if (nullpacket) 
-					jump = 2048;
-
-				vid.write(check,a+6+((!mpg1) ? 3+(255&check[a+8]) : 0),jump-((!mpg1) ? 6-3-(255&check[a+8]) : 0) );
+				jump = (0xC0 & check[a+4]) == 0 ? 12 : 14; 
 			}
 
-			else if ( (0xf0 & check[a+3]) == 0xc0)
+			//video mpg  e0..0f
+			else if ( (0xF0 & id) == 0xE0 )
 			{
-				jump = 6+((255&check[a+4])<<8 | (255&check[a+5]));
-				aud.write(check,a+6+3+(255&check[a+8]),jump-6-3-(255&check[a+8]) );
+				jump = nullpacket ? 2048 : (6 + ((0xFF & check[a+4])<<8 | (0xFF & check[a+5])) );
+
+				if (!table.containsKey(str))
+					table.put(str, new ScanObject(id));
+
+				scanobject = (ScanObject)table.get(str);
+
+				scanobject.write(check, a + 6 + ((!mpg1) ? 3 + (0xFF & check[a+8]) : 0), jump - ((!mpg1) ? 6 - 3 - (0xFF & check[a+8]) : 0) ); 
 			}
 
-			else if ( (0xff & check[a+3]) == 0xbd)
+			//audio mpg  c0..df
+			else if ( (0xE0 & id) == 0xC0 )
 			{
-				jump = 6+((255&check[a+4])<<8 | (255&check[a+5]));
+				jump = 6 + ((0xFF & check[a+4])<<8 | (0xFF & check[a+5]));
+
+				if (!table.containsKey(str))
+					table.put(str, new ScanObject(id));
+
+				scanobject = (ScanObject)table.get(str);
+
+				scanobject.write(check, a, jump ); 
+			}
+
+			//private bd
+			else if ( id == 0xBD )
+			{
+				jump = 6 + ((0xFF & check[a+4])<<8 | (0xFF & check[a+5]));
 
 				//DM10032004 081.6 int18 add
-				if (check[a+8]==0x24 && (0xF0&check[a+9+0x24])>>>4 == 1)
+				if (check[a+8] == 0x24 && (0xF0 & check[a + 9 + 0x24])>>>4 == 1)
 				{
-					text = "SubID 0x"+Integer.toHexString((0xFF & check[a+9+0x24])).toUpperCase();
+					text = "SubID 0x" + Integer.toHexString((0xFF & check[a + 9 + 0x24])).toUpperCase();
 				}
 
-				else if (!vdr) 
-					ac3.write(check,a+6+7+(255&check[a+8]),jump-6-7-(255&check[a+8]) );
+				else
+				{
+					if (!vdr)
+					{
+						id = 0xFF & check[a + 9 + (0xFF & check[a + 8])];
+						str = String.valueOf(id);
 
-				else 
-					ac3.write(check,a+6+3+(255&check[a+8]),jump-6-3-(255&check[a+8]) );
+						check[a + 8] = (byte)(4 + (0xFF & check[a + 8]));
+					}
+
+					if (!table.containsKey(str))
+						table.put(str, new ScanObject(id));
+
+					scanobject = (ScanObject)table.get(str);
+
+					scanobject.write(check, a, jump ); 
+				}
 			}
 
 			else
 			{
-				switch (0xFF & check[a+3])
+				switch (id)
 				{
 				case 0xBB:
 				case 0xBC:
@@ -316,137 +393,162 @@ public class Scan
 				case 0xFD:
 				case 0xFE:
 				case 0xFF:
-					jump = 6+((255&check[a+4])<<8 | (255&check[a+5])); 
+					jump = 6 + ((0xFF & check[a+4])<<8 | (0xFF & check[a+5])); 
 					break; 
+
 				default: 
 					jump=1;
 				}
 			}
 		}
 
-		try 
-		{
-			if ( vid.size()>0 ) 
-				checkVid(vid.toByteArray());
 
-			else 
-				video = msg_1;
-		} 
-		catch  ( Exception e)
-		{ 
-			video = msg_8; 
-		}
-
-		try 
+		for (Enumeration n = table.keys(); n.hasMoreElements() ; )
 		{
-			if ( ac3.size()>0 )
+			str = n.nextElement().toString();
+			id = Integer.parseInt(str);
+
+			scanobject = (ScanObject)table.get(str);
+
+			if ( (0xF0 & id) == 0xE0)
 			{
-				byte buffer[]=ac3.toByteArray(); //DM19122003 081.6 int07 changed
-
-				if (AC3Audio(buffer)<1)
-					DTSAudio(buffer);
+				try 
+				{
+					checkVid(scanobject.getData());
+				}
+				catch  ( Exception e)
+				{ 
+					video_streams.add(msg_8); 
+				}
 			}
-
-			else if ( aud.size()>0 ) 
-				MPEGAudio(aud.toByteArray());
-
-			else 
-				audio = msg_2;
-		} 
-		catch  ( Exception e)
-		{ 
-			audio = msg_8; 
+			else
+			{
+				try 
+				{
+					checkPES(scanobject.getData());
+				}
+				catch  ( Exception e)
+				{ 
+					audio_streams.add(msg_8); 
+				}
+			}
 		}
+
+		table.clear();
 
 		return;
 	}
 
-	public void loadPVA(byte[] check, int a)
+	public void loadPVA(byte[] check, int a) throws IOException
 	{ 
-		ByteArrayOutputStream vid = new ByteArrayOutputStream();
-		ByteArrayOutputStream aud = new ByteArrayOutputStream();
-		int number = 0x10000;
+		Hashtable table = new Hashtable();
+		ScanObject scanobject;
+
+		String str;
+		int jump, id;
 
 		while ( a < 550000)
 		{
-			int jump = (255&check[a+6])<<8 | (255&check[a+7]);
+			jump = (0xFF & check[a+6])<<8 | (0xFF & check[a+7]);
 
-			if (a+8+((1 & check[a+5]>>>4)*4)+jump > 700000) 
+			if (a + 8 + ((1 & check[a+5]>>>4) * 4) + jump > 700000) 
 				break;
 
-			switch (255 & check[a+2])
+			id = 0xFF & check[a+2];
+			str = String.valueOf(id);
+
+			if (!table.containsKey(str))
+				table.put(str, new ScanObject(id));
+
+			scanobject = (ScanObject)table.get(str);
+
+			switch (id)
 			{
 			case 1:
-				vid.write(check,a+8+((1 & check[a+5]>>>4)*4),jump ); 
+				scanobject.write(check, a + 8 + ((1 & check[a+5]>>>4) * 4), jump ); 
 				break; 
 
-			case 0x80: 
-			case 2:
-				aud.write(check,a+8,jump ); 
-				break; 
+			default:
+				scanobject.write(check, a + 8, jump ); 
 			}
 
-			a += 8+jump;
+			a += 8 + jump;
 		}
 
-		//addInfo = " ( "+Integer.toBinaryString(number).substring(4,17)+" )";
+		video = msg_1;
+		audio = msg_2;
 
-		try 
+		for (Enumeration n = table.keys(); n.hasMoreElements() ; )
 		{
-			if (vid.size() > 0) 
-				checkVid(vid.toByteArray());
+			str = n.nextElement().toString();
 
-			else 
-				video = msg_1;
-		}
-		catch  ( Exception e)
-		{ 
-			video = msg_8; 
+			scanobject = (ScanObject)table.get(str);
+
+			if (str.equals("1"))
+			{
+				try 
+				{
+					checkVid(scanobject.getData());
+				}
+				catch  ( Exception e)
+				{ 
+					//video = msg_8; 
+					video_streams.add(msg_8); 
+				}
+			}
+			else
+			{
+				try 
+				{
+					checkPES(scanobject.getData());
+				}
+				catch  ( Exception e)
+				{ 
+					//audio = msg_8; 
+					audio_streams.add(msg_8); 
+				}
+			}
 		}
 
-		try 
-		{
-			if (aud.size() > 0) 
-				checkPES(aud.toByteArray());
-
-			else 
-				audio = msg_2;
-		}
-		catch  ( Exception e)
-		{ 
-			audio = msg_8; 
-		}
+		table.clear();
 
 		return;
 	}
 
 	public void checkPES(byte[] check)
 	{ 
+		checkPES(check, 0);
+	}
+
+	public void checkPES(byte[] check, int a)
+	{ 
+		int end = a + 8000;
+
 		rawcheck:
-		for (int a=0; a<8000; a++)
+		for (; a < end; a++)
 		{
-			if ( check[a]!=0 || check[a+1]!=0 || check[a+2]!=1 ) 
+			if ( check[a] != 0 || check[a+1] != 0 || check[a+2] != 1 ) 
 				continue rawcheck;
 
-			if ( (0xf0 & check[a+3])==0xc0 || check[a+3]==(byte)0xbd )
+			if ( (0xE0 & check[a+3]) == 0xC0 || check[a+3] == (byte)0xBD )
 			{
-				int next = a+6+( (255&check[a+4])<<8 | (255&check[a+5]) );
+				int next = a + 6 + ( (0xFF & check[a+4])<<8 | (0xFF & check[a+5]) );
 
-				if ( check[next]!=0 || check[next+1]!=0 || check[next+2]!=1 ) 
+				if ( check[next] != 0 || check[next+1] != 0 || check[next+2] != 1 ) 
 					continue rawcheck;
 
-				if ( (0xf0 & check[a+3])==0xc0 && (0xf0 & check[a+3])==(0xf0 & check[next+3]) )
+				if ( (0xE0 & check[a+3]) == 0xC0 && (0xE0 & check[a+3]) == (0xE0 & check[next+3]) )
 				{
 					MPEGAudio(loadPES(check,a));
 
 					return;
 				}
 
-				else if ( check[a+3]==(byte)0xbd && check[a+3]==check[next+3] )
+				else if ( check[a+3] == (byte)0xBD && check[a+3] == check[next+3] )
 				{
-					byte buffer[]=loadPES(check,a); //DM19122003 081.6 int07 changed
+					byte buffer[] = loadPES(check, a); //DM19122003 081.6 int07 changed
 
-					if (AC3Audio(buffer)<1)
+					if (AC3Audio(buffer) < 1)
 						DTSAudio(buffer);
 
 					return;
@@ -473,7 +575,9 @@ public class Scan
 					hasVideo=true;
 					System.arraycopy(check,a,vbasic,0,12);
 					bytecheck.write(check,a,20);
-					video = vfc.videoformatByte(bytecheck.toByteArray());
+
+					//video = vfc.videoformatByte(bytecheck.toByteArray());
+					video_streams.add(vfc.videoformatByte(bytecheck.toByteArray()));
 
 					return;
 				}
@@ -738,6 +842,11 @@ public class Scan
 	//DM04122003 081.6_int02 changed
 	public int testFile(String infile, boolean more)
 	{
+		video_streams.clear();
+		audio_streams.clear();
+		ttx_streams.clear();
+		pic_streams.clear();
+
 		video = msg_1;
 		audio = msg_2; 
 		text = msg_3; 
@@ -892,7 +1001,7 @@ public class Scan
 				if ( (0xC0 & check[a+4])==0 )
 				{ 
 					if (more) 
-						loadMPG2(check,a,false,true); 
+						loadMPG2(check, a, false, true, bs1); 
 
 					return 2;
 				}
@@ -900,7 +1009,7 @@ public class Scan
 				else if ( (0xC0 & check[a+4])==0x40 )
 				{
 					if (more) 
-						loadMPG2(check,a,false,false); 
+						loadMPG2(check, a, false, false, bs1); 
 
 					return 3;
 				}
@@ -927,7 +1036,7 @@ public class Scan
 				else
 				{
 					if (more) 
-						loadMPG2(check,a,true,false); 
+						loadMPG2(check, a, true, false, bs3); 
 
 					return 4;
 				}
@@ -936,25 +1045,25 @@ public class Scan
 			rawcheck:
 			for (int a=0; a < bs2; a++)
 			{
-				if ( check[a]!=0 || check[a+1]!=0 || check[a+2]!=1 ) 
+				if ( check[a] != 0 || check[a+1] != 0 || check[a+2] != 1 ) 
 					continue rawcheck;
 
-				if ( (0xf0 & check[a+3])==0xc0 || (255 & check[a+3])==0xbd )
+				if ( (0xE0 & check[a+3]) == 0xC0 || (0xFF & check[a+3]) == 0xBD )
 				{
-					int next = a+6+( (255&check[a+4])<<8 | (255&check[a+5]) );
+					int next = a + 6 + ( (0xFF & check[a+4])<<8 | (0xFF & check[a+5]) );
 
-					if ( check[next]!=0 || check[next+1]!=0 || check[next+2]!=1 ) 
+					if ( check[next] != 0 || check[next+1] != 0 || check[next+2] != 1 ) 
 						continue rawcheck;
 
 					if ( (0xE0 & check[a+3])==0xC0 && (0xE0 & check[a+3])==(0xE0 & check[next+3]) )
 					{
-						if (more) 
-							MPEGAudio(loadPES(check,a));
+						if (more)
+							loadMPG2(check, a, true, false, bs3); 
 
 						return 5;
 					}
 
-					else if ( (255&check[a+3])==0xbd && check[a+3]==check[next+3] )
+					else if ( (0xFF & check[a+3]) == 0xBD && check[a+3] == check[next+3] )
 					{
 						if (more)
 						{
@@ -965,12 +1074,7 @@ public class Scan
 								text = "SubID 0x"+Integer.toHexString((0xFF & check[a+9+0x24])).toUpperCase();
 							}
 							else
-							{
-								byte buffer[]=loadPES(check,a); //DM19122003 081.6 int07 changed
-
-								if (AC3Audio(buffer)<1)
-									DTSAudio(buffer);
-							}
+								loadMPG2(check, a, true, false, bs3);
 						}
 
 						return 6;
@@ -978,6 +1082,7 @@ public class Scan
 				}
 			}
 
+			//ES audio
 			audiocheck:
 			for (int a=0; a < bs0; a++)
 			{
@@ -1086,7 +1191,9 @@ public class Scan
 								hasVideo=true;
 								System.arraycopy(check,a,vbasic,0,12);
 								bytecheck.write(check,a,20);
-								video = vfc.videoformatByte(bytecheck.toByteArray());
+
+								//video = vfc.videoformatByte(bytecheck.toByteArray());
+								video_streams.add(vfc.videoformatByte(bytecheck.toByteArray()));
 							}
 
 							return 9;
@@ -1120,5 +1227,51 @@ public class Scan
 		return 0;
 	}
 
+
+
+	class ScanObject
+	{
+		private ByteArrayOutputStream buf = null;
+		private int id;
+		private int type;
+
+		private ScanObject()
+		{
+			buf = new ByteArrayOutputStream();
+			id = 0;
+		}
+
+		private ScanObject(int val1)
+		{
+			buf = new ByteArrayOutputStream();
+			id = val1;
+		}
+
+		private int getType()
+		{
+			return type;
+		}
+
+		private void write(byte data[]) throws IOException
+		{
+			buf.write(data);
+		}
+
+		private void write(byte data[], int offset, int length) throws IOException
+		{
+			buf.write(data, offset, length);
+		}
+
+		private byte[] getData() throws IOException
+		{
+			buf.flush();
+			return buf.toByteArray();
+		}
+
+		private void reset()
+		{
+			buf.reset();
+		}
+	}
 
 } /** end class **/

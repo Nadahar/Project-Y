@@ -131,8 +131,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b6_lang";
-static String version_date = "07.10.2004";
+static String version_name = "ProjectX 0.81.8.02b8_lang";
+static String version_date = "10.10.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -637,21 +637,21 @@ protected JPanel buildFilePanel()
 	coll_label.setToolTipText(Resource.getString("filepanel.collnumber.tip"));
 	bb.add(coll_label);
 
-	JButton add_coll = new JButton("+");
+	JButton add_coll = new JButton(Resource.loadIcon("add.gif"));
 	add_coll.setActionCommand("+c");
 	add_coll.setPreferredSize(new Dimension(50,22));
 	add_coll.setMaximumSize(new Dimension(50,22));
 	add_coll.setToolTipText(Resource.getString("filepanel.addcoll.tip"));
 	bb.add(add_coll);
 
-	JButton remove_coll = new JButton("-");
+	JButton remove_coll = new JButton(Resource.loadIcon("rem.gif"));
 	remove_coll.setActionCommand("-c");
 	remove_coll.setPreferredSize(new Dimension(50,22));
 	remove_coll.setMaximumSize(new Dimension(50,22));
 	remove_coll.setToolTipText(Resource.getString("filepanel.removecoll.tip"));
 	bb.add(remove_coll);
 
-	JButton open_autoload = new JButton(Resource.getString("filepanel.autoload"));
+	JButton open_autoload = new JButton(Resource.loadIcon("al.gif"));
 	open_autoload.setActionCommand("oa");
 	open_autoload.setPreferredSize(new Dimension(50,22));
 	open_autoload.setMaximumSize(new Dimension(50,22));
@@ -688,14 +688,14 @@ protected JPanel buildFilePanel()
 	JPanel jj = new JPanel();
 	jj.setLayout(new GridLayout(0,2));
 
-	JButton add_output = new JButton("+");
+	JButton add_output = new JButton(Resource.loadIcon("add.gif"));
 	add_output.setActionCommand("+o");
 	add_output.setPreferredSize(new Dimension(50,22));
 	add_output.setMaximumSize(new Dimension(50,22));
 	add_output.setToolTipText(Resource.getString("filepanel.recentout.add.tip"));
 	jj.add(add_output);
 
-	JButton remove_output = new JButton("-");
+	JButton remove_output = new JButton(Resource.loadIcon("rem.gif"));
 	remove_output.setActionCommand("-o");
 	remove_output.setPreferredSize(new Dimension(50,22));
 	remove_output.setMaximumSize(new Dimension(50,22));
@@ -764,21 +764,21 @@ protected void buildAutoloadPanel()
 	JPanel bb = new JPanel();
 	bb.setLayout( new ColumnLayout() );
 
-	JButton remove_input = new JButton("-");
+	JButton remove_input = new JButton(Resource.loadIcon("rem.gif"));
 	remove_input.setActionCommand("-i");
 	remove_input.setPreferredSize(new Dimension(50,28));
 	remove_input.setMaximumSize(new Dimension(50,28));
 	remove_input.setToolTipText(Resource.getString("autoload.dir.remove.tip"));
 	bb.add(remove_input);
 
-	JButton add_input = new JButton("+");
+	JButton add_input = new JButton(Resource.loadIcon("add.gif"));
 	add_input.setActionCommand("+i");
 	add_input.setPreferredSize(new Dimension(50,28));
 	add_input.setMaximumSize(new Dimension(50,24));
 	add_input.setToolTipText(Resource.getString("autoload.dir.add.tip"));
 	bb.add(add_input);
 
-	JButton refresh_list = new JButton("o");
+	JButton refresh_list = new JButton(Resource.loadIcon("rf.gif"));
 	refresh_list.setActionCommand("ri");
 	refresh_list.setPreferredSize(new Dimension(50,28));
 	refresh_list.setMaximumSize(new Dimension(50,28));
@@ -787,13 +787,13 @@ protected void buildAutoloadPanel()
 
 	bb.add(new JLabel(" "));
 
-	JButton add_coll_and_files = new JButton("+<");
+	JButton add_coll_and_files = new JButton(Resource.loadIcon("addleft.gif"));
 	add_coll_and_files.setPreferredSize(new Dimension(50,28));
 	add_coll_and_files.setMaximumSize(new Dimension(50,28));
 	add_coll_and_files.setToolTipText(Resource.getString("autoload.add.coll.tip"));
 	bb.add(add_coll_and_files);
 
-	add_files = new JButton("<");
+	add_files = new JButton(Resource.loadIcon("left.gif"));
 	add_files.setEnabled(false);
 	add_files.setPreferredSize(new Dimension(50,28));
 	add_files.setMaximumSize(new Dimension(50,28));
@@ -802,7 +802,7 @@ protected void buildAutoloadPanel()
 
 	bb.add(new JLabel(" "));
 
-	JButton close = new JButton("X");
+	JButton close = new JButton(Resource.loadIcon("x.gif"));
 	close.setPreferredSize(new Dimension(50,28));
 	close.setMaximumSize(new Dimension(50,28));
 	close.setToolTipText(Resource.getString("autoload.close"));
@@ -5258,6 +5258,8 @@ public static void Msg(String msg)
 {
 	//DM25072004 081.7 int07 add
 	if (msg == null) 
+
+
 		return;
 
 	if (options[30]==1) 
@@ -6124,42 +6126,57 @@ public void working() {
 
 
 		/*** post execution ***/
-		if (!qinfo && cBox[25].isSelected()) { //DM30122003 081.6 int10 changed
+		//DM30122003 081.6 int10 changed
+		if (!qinfo && cBox[25].isSelected())
+		{
 			String com = exefield[3+comBox[19].getSelectedIndex()].getText().toString().trim();
-			if (com.length()>0 && lastlist.length>0) {
+
+			if (com.length() > 0 && lastlist.length > 0)
+			{
 				int mn = com.lastIndexOf(" ?");
 				ArrayList argList = new ArrayList();
-				if (mn>-1) {
+
+				if (mn > -1)
+				{
 					mn = Integer.parseInt(com.substring(mn+2));
 					argList.add(mn>-1 ? com.substring(0,com.lastIndexOf(" ?")) : com.trim());
+
 					if (mn==0 || mn>lastlist.length) 
 						mn = lastlist.length;
-					for (int l=0;l<lastlist.length && l<mn;l++) {
+
+					for (int l=0; l < lastlist.length && l < mn; l++)
+					{
 						String fn = lastlist[l].toString();
+
 						if (com.startsWith("\""))
-							argList.add(""+(char)34+(fn.substring(fn.lastIndexOf("\t ")+2)).trim()+(char)34);
+							argList.add("" + (char)34 + (fn.substring(fn.lastIndexOf("\t ") + 2)).trim() + (char)34);
 						else
-							argList.add(""+(fn.substring(fn.lastIndexOf("\t ")+2)).trim());
+							argList.add("" + (fn.substring(fn.lastIndexOf("\t ") + 2)).trim());
 					}
-				} else
+				}
+				else
 					argList.add(com.trim());
 
 				String commandline="";
 				String arguments[] = new String[argList.size()];
-				for (int l=0;l<arguments.length;l++){
-					arguments[l]=argList.get(l).toString();
-					commandline+=(""+arguments[l]+(char)32);
+
+				for (int l=0; l < arguments.length; l++)
+				{
+					arguments[l] = argList.get(l).toString();
+					commandline += ("" + arguments[l] + (char)32);
 				}
 
-				Msg(Resource.getString("working.post.command") + " "+commandline.trim());
+				Msg(Resource.getString("working.post.command") + " " + commandline.trim());
 
 				try 
 				{ 
-				Runtime.getRuntime().exec(commandline.trim()); 
+					Runtime.getRuntime().exec(commandline.trim()); 
 				}
-				catch (IOException re) { 
-					Msg(""+re); 
+				catch (IOException re)
+				{ 
+					Msg("" + re); 
 				}
+
 				argList=null;
 			}
 		}
@@ -10034,7 +10051,7 @@ public boolean processAudio(String[] args)
 
 					//DM01102004 081.8.02 add
 					if (cBox[63].isSelected())
-						chapters.addChapter(str + " ; " + hdr);
+						chapters.addChapter(str, hdr);
 				}
 
 				else if (options[47] == 100) 
@@ -10646,7 +10663,7 @@ public boolean processAudio(String[] args)
 
 					//DM01102004 081.8.02 add
 					if (cBox[63].isSelected())
-						chapters.addChapter(str + " ; " + Audio.MPA_displayHeader());
+						chapters.addChapter(str, Audio.MPA_displayHeader());
 				}
 
 				else if (options[47] == 100) 
@@ -11646,11 +11663,11 @@ public void processTeletext(String[] args)
 
 			Msg(Resource.getString("teletext.msg.tmpfile", filename, "" + size)); //DM18052004 081.7 int02 changed
 
-			progress.setString(Resource.getString("teletext.progress") + " " + (subtitle_type==0 ? Resource.getString("teletext.megaradio") : Resource.getString("teletext.msg.page") + " " + page));
+			progress.setString(Resource.getString("teletext.progress") + " " + (subtitle_type==0 ? Resource.getString("teletext.msg.megaradio") : Resource.getString("teletext.msg.page") + " " + page));
 			progress.setStringPainted(true);
 			progress.setValue(0);
 
-			Msg(Resource.getString("teletext.msg.search") + " " + (subtitle_type==0 ? Resource.getString("teletext.megaradio") : Resource.getString("teletext.msg.page") + " " + page));
+			Msg(Resource.getString("teletext.msg.search") + " " + (subtitle_type==0 ? Resource.getString("teletext.msg.megaradio") : Resource.getString("teletext.msg.page") + " " + page));
 
 			long[] pts_value = {0}, pts_position = {0}, video_pts_value = {0}, vtime = {0};
 
@@ -13492,7 +13509,8 @@ public void rawaudio(String args,String vptslog, String type)
 /********************
  * check pure video *
  ********************/
-public String rawvideo(String args) {
+public String rawvideo(String args)
+{
 
 	String logfile = "-1";
 	boolean valid=false;
@@ -13514,13 +13532,16 @@ public String rawvideo(String args) {
 	progress.setString(Resource.getString("video.progress") + " " + fchild);
 	progress.setStringPainted(true);
 	progress.setValue(0);
+
 	if (options[30]==1) 
 		System.out.println(" starting check of video stream file...");
+
 	yield();
 
 	PushbackInputStream in = new PushbackInputStream(new FileInputStream(args), 4);
 
 	IDDBufferedOutputStream vstream = new IDDBufferedOutputStream( new FileOutputStream(fparent+".s1"), bs);
+
 	if (cBox[34].isSelected()) //DM24112003 081.5++ mpeg2schnitt
 		vstream.InitIdd(fparent,1);
 
@@ -13605,20 +13626,15 @@ public String rawvideo(String args) {
 		int mark =0;
 
 		arrayloop:
-		for (int a=0; a<vload.length-3; a++) {
-
-			if (comBox[17].getSelectedIndex()==0 && ctemp.size()>0) {
-				if (cutcount==ctemp.size() && (cutcount&1)==0)
-					if (pos+a > Long.parseLong(ctemp.get(cutcount-1).toString())){
+		for (int a=0; a < vload.length - 3; a++)
+		{
+			if (comBox[17].getSelectedIndex() == 0 && ctemp.size() > 0)
+			{
+				if (cutcount == ctemp.size() && (cutcount & 1) == 0)
+					if (pos + a > Long.parseLong(ctemp.get(cutcount - 1).toString()))
 						break videoloop;
-					}
-
-
 			}
 
-
-			//if ( vload[a]!=0 || vload[a+1]!=0 || vload[a+2]!=1 ) 
-			//	continue arrayloop;
 
 			//DM04062004 081.7 int04 add
 			if (vload[a + 2] != 1)
@@ -13738,9 +13754,6 @@ public String rawvideo(String args) {
 					first=false;
 				}
 
-				//int diff = ( vload.length-mark < 5000 ) ? (vload.length-mark-4) : 5000;
-				//if (diff>4) {
-
 				//DM04022004 081.6 int14 fix
 				int diff = ( vload.length-mark-4 < 2500 ) ? (vload.length-mark-4) : 2500;
 				if (diff>0)
@@ -13750,6 +13763,19 @@ public String rawvideo(String args) {
 					mark = a;
 				}
 			}
+
+
+			//overload
+			if (vbuffer.size() > 6144000)
+			{
+				Arrays.fill(vptsbytes, (byte)0);
+				vbuffer.reset(); 
+				first=true;
+
+				Msg(Resource.getString("demux.error.gop.toobig"));
+			}
+
+
 		}
 
 		/****** file end reached *****/
@@ -13765,9 +13791,6 @@ public String rawvideo(String args) {
 		in.unread(vload,vload.length-diff,diff); 
 		pos-=diff;
 
-		//vbuffer.write(vload,mark,vload.length-3-mark);
-		//in.unread(vload,vload.length-3,3); 
-		//pos-=3;
 
 	}
 
@@ -14077,7 +14100,7 @@ public static void goptest(IDDBufferedOutputStream vseq, byte[] gop, byte[] pts,
 			Msg(Resource.getString("video.msg.newformat", "" + clv[6]) + " (" + ct + ")");
 			Msg(str);
 
-			chapters.addChapter(ct + " ; " + str);
+			chapters.addChapter(ct, str);
 
 			VBASIC = vbasics;
 		}
@@ -14184,6 +14207,8 @@ public static void goptest(IDDBufferedOutputStream vseq, byte[] gop, byte[] pts,
 			if (options[13]==1)
 				headerrescue = new byte[s];
 			System.arraycopy(gop,0,headerrescue,0,s); //!!copy ever sequ_hader??
+
+
 
 			java.util.Date videotime = new java.util.Date((long)((options[7])*(double)(options[14]/90.0f)));
 			cal.setTimeZone(java.util.TimeZone.getTimeZone("GMT+0:00"));
@@ -14578,7 +14603,7 @@ public static void goptest(IDDBufferedOutputStream vseq, byte[] gop, byte[] pts,
 			brm.surf.update(vbr, ftb, sms.format(new java.util.Date((options[48]+options[42])/90)).substring(0,8));
 
 			if (newvideo && infos.size() > 0)
-				chapters.addChapter(ct + " ; " + nv);
+				chapters.addChapter(ct, nv);
 
 
 			for (int a=0;a<infos.size();a++) {
