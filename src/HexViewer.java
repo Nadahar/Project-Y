@@ -300,7 +300,7 @@ private void print(byte[] data,long position) {
 
 public void view(XInputFile aXInputFile) {
 	long filelen = aXInputFile.length();
-	if (!(xinputFile).equals(aXInputFile)) {
+	if ((xinputFile != null) && !(xinputFile.equals(aXInputFile))) {
 		HexArea.setText("");
 		slider.setMaximum((int)(filelen/16));
 		xinputFile = aXInputFile;

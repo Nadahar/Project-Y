@@ -138,7 +138,7 @@ public class X extends JPanel
 
 static String version[] = { 
 	"ProjectX 0.81.8_XInput",
-	"19.09.2004",
+	"27.09.2004",
 	"TEST PROJECT ONLY",
 	", User: " + System.getProperty("user.name")
 };
