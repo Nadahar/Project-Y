@@ -132,8 +132,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b2_lang";
-static String version_date = "01.10.2004";
+static String version_name = "ProjectX 0.81.8.02b3_lang";
+static String version_date = "02.10.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -195,7 +195,8 @@ static JComboBox[] comBox = new JComboBox[38];
 
 //DM14072004 081.7 int06 changed
 //DM20072004 081.7 int07 changed
-static JCheckBox[] cBox = new JCheckBox[63];
+//DM01102004 081.8.02 changed
+static JCheckBox[] cBox = new JCheckBox[64];
 
 static JList list1, list3, list4;
 static X_JFileChooser chooser; //DM12122003 081.6 int05
@@ -1080,14 +1081,14 @@ protected JPanel buildMainPanel()
 		Resource.getString("mainpanel.box.filter")
 	};
 	comBox[19] = new JComboBox(convertTo);
-	comBox[19].setPreferredSize(new Dimension(100,22));
-	comBox[19].setMaximumSize(new Dimension(100,22));
+	comBox[19].setPreferredSize(new Dimension(110,22));
+	comBox[19].setMaximumSize(new Dimension(110,22));
 	comBox[19].setSelectedIndex(0);
 	control08.add(comBox[19]);
 
 	cBox[18] = new JCheckBox(Resource.getString("mainpanel.allcolls"));
-	cBox[18].setPreferredSize(new Dimension(100,20));
-	cBox[18].setMaximumSize(new Dimension(100,20));
+	cBox[18].setPreferredSize(new Dimension(110,20));
+	cBox[18].setMaximumSize(new Dimension(110,20));
 	cBox[18].setToolTipText(Resource.getString("mainpanel.allcolls_tip"));
 	control08.add(cBox[18]);
 
@@ -1098,8 +1099,8 @@ protected JPanel buildMainPanel()
 	control08.add(cBox[25]);
 
 	cBox[14] = new JCheckBox(Resource.getString("mainpanel.simplepes"));
-	cBox[14].setPreferredSize(new Dimension(100,20));
-	cBox[14].setMaximumSize(new Dimension(100,20));
+	cBox[14].setPreferredSize(new Dimension(110,20));
+	cBox[14].setMaximumSize(new Dimension(110,20));
 	cBox[14].setToolTipText(Resource.getString("mainpanel.simplepes_tip"));
 	control08.add(cBox[14]);
 
@@ -1109,15 +1110,15 @@ protected JPanel buildMainPanel()
 			Resource.getString("mainpanel.avoffset_tip3") + "<p>" +
 			Resource.getString("mainpanel.avoffset_tip4") + "<p>" +
 			Resource.getString("mainpanel.avoffset_tip5") + "</html>");
-	msoff.setPreferredSize(new Dimension(100,20));
-	msoff.setMaximumSize(new Dimension(100,20));
+	msoff.setPreferredSize(new Dimension(110,20));
+	msoff.setMaximumSize(new Dimension(110,20));
 	control08.add(msoff);
 
 
 
 	audiostatusLabel = new JLabel(Resource.getString("mainpanel.export"));
-	audiostatusLabel.setPreferredSize(new Dimension(100,20));
-	audiostatusLabel.setMaximumSize(new Dimension(100,20));
+	audiostatusLabel.setPreferredSize(new Dimension(110,20));
+	audiostatusLabel.setMaximumSize(new Dimension(110,20));
 	audiostatusLabel.setToolTipText(Resource.getString("mainpanel.export_tip"));
 	control08.add(audiostatusLabel);
 
@@ -1657,7 +1658,12 @@ protected JPanel buildvideo1Panel() {
 	comBox[4].setSelectedIndex(0);
 	comBox[4].setPreferredSize(new Dimension(150,20));
 	comBox[4].setMaximumSize(new Dimension(150,20));
-	vbvsPanel.add(new JLabel (Resource.getString("tab.video.vbvbuf")));
+
+	JLabel label_1 = new JLabel (Resource.getString("tab.video.vbvbuf"));
+	label_1.setPreferredSize(new Dimension(100,20));
+	label_1.setMaximumSize(new Dimension(100,20));
+
+	vbvsPanel.add(label_1);
 	vbvsPanel.add(comBox[4]);
 
 	JPanel vbvdPanel = new JPanel();
@@ -1669,7 +1675,12 @@ protected JPanel buildvideo1Panel() {
 	comBox[5].setSelectedIndex(1);
 	comBox[5].setPreferredSize(new Dimension(150,20));
 	comBox[5].setMaximumSize(new Dimension(150,20));
-	vbvdPanel.add(new JLabel (Resource.getString("tab.video.vbvdelay")));
+
+	JLabel label_2 = new JLabel (Resource.getString("tab.video.vbvdelay"));
+	label_2.setPreferredSize(new Dimension(100,20));
+	label_2.setMaximumSize(new Dimension(100,20));
+
+	vbvdPanel.add(label_2);
 	vbvdPanel.add(comBox[5]);
 
 	JPanel aspPanel = new JPanel();
@@ -1685,7 +1696,12 @@ protected JPanel buildvideo1Panel() {
 	comBox[6].setSelectedIndex(0);
 	comBox[6].setPreferredSize(new Dimension(150,20));
 	comBox[6].setMaximumSize(new Dimension(150,20));
-	aspPanel.add(new JLabel (Resource.getString("tab.video.ratio")));
+
+	JLabel label_3 = new JLabel (Resource.getString("tab.video.ratio"));
+	label_3.setPreferredSize(new Dimension(100,20));
+	label_3.setMaximumSize(new Dimension(100,20));
+
+	aspPanel.add(label_3);
 	aspPanel.add(comBox[6]);
 
 	cBox[13] = new JCheckBox(Resource.getString("tab.video.endcode"));
@@ -1801,8 +1817,8 @@ protected JPanel buildvideo1Panel() {
 		Resource.getString("tab.video.patch.bitrate1.val8")
 	};
 	comBox[3] = new JComboBox(BRperSequence);
-	comBox[3].setPreferredSize(new Dimension(250,20));
-	comBox[3].setMaximumSize(new Dimension(250,20));
+	comBox[3].setPreferredSize(new Dimension(260,20));
+	comBox[3].setMaximumSize(new Dimension(260,20));
 	comBox[3].setSelectedIndex(1);
 	newBrPanel.add(new JLabel(Resource.getString("tab.video.patch.bitrate1")));
 	newBrPanel.add(comBox[3]);
@@ -1817,8 +1833,8 @@ protected JPanel buildvideo1Panel() {
 		Resource.getString("tab.video.patch.bitrate2.val4")
 	};
 	comBox[15] = new JComboBox(BRperFile);
-	comBox[15].setPreferredSize(new Dimension(250,20));
-	comBox[15].setMaximumSize(new Dimension(250,20));
+	comBox[15].setPreferredSize(new Dimension(260,20));
+	comBox[15].setMaximumSize(new Dimension(260,20));
 	comBox[15].setSelectedIndex(2);
 	newBrPanel.add(new JLabel(Resource.getString("tab.video.patch.bitrate2")));
 	newBrPanel.add(comBox[15]);
@@ -1874,6 +1890,13 @@ protected JPanel buildexternPanel() { //DM30122003 081.6 int10 changed
 	RButton[12].setMaximumSize(new Dimension(250,20));
 	RButton[12].setToolTipText(Resource.getString("tab.extern.saveframe.tip"));
 	video2Panel.add(RButton[12]);
+
+	//DM01102004 081.8.02 add
+	cBox[63] = new JCheckBox(Resource.getString("tab.extern.chapters"));
+	cBox[63].setToolTipText(Resource.getString("tab.extern.chapters.tip"));
+	cBox[63].setPreferredSize(new Dimension(270,20));
+	cBox[63].setMaximumSize(new Dimension(270,20));
+	video2Panel.add(cBox[63]);
 
 	video2.add(video2Panel);
 
@@ -9365,6 +9388,9 @@ public boolean processAudio(String[] args)
 	options[47]=0;
 	options[49]=0;
 
+	IDDBufferedOutputStream audiooutL = null;
+	IDDBufferedOutputStream audiooutR = null;
+
 	try 
 	{
 
@@ -9481,18 +9507,26 @@ public boolean processAudio(String[] args)
 	if ( !(audiosize > 1000) ) 
 		Msg(" Filesize < 1000 byte");
 
-	IDDBufferedOutputStream audiooutL = new IDDBufferedOutputStream(new FileOutputStream(newnameL),bs/2);
-	IDDBufferedOutputStream audiooutR = new IDDBufferedOutputStream(new FileOutputStream(newnameR));
+	audiooutL = new IDDBufferedOutputStream(new FileOutputStream(newnameL),bs/2);
 
-	if (options[10]>=4)
+	if (options[10] >= 4)
 		audiooutR = new IDDBufferedOutputStream(new FileOutputStream(newnameR),(bs/2));
+	else
+		audiooutR = new IDDBufferedOutputStream(new FileOutputStream(newnameR));
+
 
 	ByteArrayOutputStream audbuf = new ByteArrayOutputStream();
 
-	if (cBox[34].isSelected()){
-		audiooutL.InitIdd(newnameL,2);
-		audiooutR.InitIdd(newnameR,2);
+	if (cBox[34].isSelected())
+	{
+		audiooutL.InitIdd(newnameL, 2);
+		audiooutR.InitIdd(newnameR, 2);
 	}
+
+	//DM01102004 081.8.02 add
+	if (cBox[63].isSelected())
+		audiooutL.InitChapters(newnameL);
+
 
 	//DM150702004 081.7 int06 changed, fix
 	if (vptsdata && ptsdata)
@@ -9874,14 +9908,27 @@ public boolean processAudio(String[] args)
 
 			/****** message frameformat *****/
 			//DM19122003 081.6 int07 changed
-			if ((newformat && awrite) || (newformat && !vptsdata)) {
+			if ((newformat && awrite) || (newformat && !vptsdata))
+			{
 				String hdr = is_DTS ? Audio.DTS_displayHeader() : Audio.AC3_displayHeader();
-				if (options[47]<100) 
-					Msg(Resource.getString("audio.msg.source", hdr) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f))));
-				else if (options[47]==100) 
+
+				if (options[47] < 100) 
+				{
+					String str = sms.format(new java.util.Date((long)(time_counter / 90.0f)));
+
+					Msg(Resource.getString("audio.msg.source", hdr) + " " + str);
+
+					//DM01102004 081.8.02 add
+					if (cBox[63].isSelected())
+						audiooutL.addChapter(str + " ; " + hdr);
+				}
+
+				else if (options[47] == 100) 
 					Msg(Resource.getString("audio.msg.source.max"));
-				else if (options[30]==1) 
+
+				else if (options[30] == 1) 
 					System.out.println("=> src_audio: "+hdr+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
+
 				options[47]++;
 				yield();
 				newformat=false;
@@ -9897,6 +9944,7 @@ public boolean processAudio(String[] args)
 			/****** message *****/
 			if (options[30]==1) 
 				System.out.println("(7)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0f)) ));
+
 			if (options[30]==1) 
 				System.out.println(" x"+((x<ptspos.length-1)?x+"/"+ptsval[x+1]+"/"+ptspos[x+1]:"-"));
 
@@ -10476,10 +10524,20 @@ public boolean processAudio(String[] args)
 			/****** message frameformat *****/
 			if ((newformat && awrite) || (newformat && !vptsdata))
 			{
-				if (options[47]<100) 
-					Msg(Resource.getString("audio.msg.source", Audio.MPA_displayHeader()) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f))));
-				else if (options[47]==100) 
+				if (options[47] < 100)
+				{
+					String str = sms.format(new java.util.Date((long)(time_counter / 90.0f)));
+
+					Msg(Resource.getString("audio.msg.source", Audio.MPA_displayHeader()) + " " + str);
+
+					//DM01102004 081.8.02 add
+					if (cBox[63].isSelected())
+						audiooutL.addChapter(str + " ; " + Audio.MPA_displayHeader());
+				}
+
+				else if (options[47] == 100) 
 					Msg(Resource.getString("audio.msg.source.max"));
+
 				else if (options[30]==1) 
 					System.out.println("=> src_audio: "+Audio.MPA_displayHeader()+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
 
@@ -10998,8 +11056,10 @@ public boolean processAudio(String[] args)
 
 	audioin.close(); 
 	audbuf.close();
+
 	audiooutL.flush(); 
 	audiooutL.close();
+
 	audiooutR.flush(); 
 	audiooutR.close();
 
@@ -11188,45 +11248,60 @@ public boolean processAudio(String[] args)
 		audiooutR.deleteIdd();
 		break;
 	}
-	case 2: {
-		if (options[10]>=4) {
+	case 2:
+	{
+		if (options[10] >= 4)
+		{
 			if ( mp2nameL.exists() ) 
 				mp2nameL.delete();
+
 			if ( mp2nameR.exists() ) 
 				mp2nameR.delete();
-			if (audioout1.length()<100) 
-				audioout1.delete();
-			else {
-				Common.renameTo(audioout1, mp2nameL); //DM13042004 081.7 int01 changed
-				//audioout1.renameTo(mp2nameL); 
 
-				Msg(Resource.getString("msg.newfile", Resource.getString("audio.msg.newfile.left")) + " " + mp2nameL); 
-				InfoAtEnd.add(comparedata+"\t "+mp2nameL); 
-			}
-			if (audioout2.length()<100) 
+
+			if (audioout2.length() < 100) 
 				audioout2.delete();
-			else { 
+
+			else
+			{ 
 				Common.renameTo(audioout2, mp2nameR); //DM13042004 081.7 int01 changed
-				//audioout2.renameTo(mp2nameR); 
 
 				Msg(Resource.getString("msg.newfile", Resource.getString("audio.msg.newfile.right")) + " " + mp2nameR); 
-				InfoAtEnd.add(comparedata+"\t "+mp2nameR); 
+				InfoAtEnd.add(comparedata + "\t " + mp2nameR); 
+			}
+
+			if (audioout1.length() < 100) 
+				audioout1.delete();
+
+			else
+			{
+				Common.renameTo(audioout1, mp2nameL); //DM13042004 081.7 int01 changed
+
+				Msg(Resource.getString("msg.newfile", Resource.getString("audio.msg.newfile.left")) + " " + mp2nameL); 
+				InfoAtEnd.add(comparedata + "\t " + mp2nameL); 
 			}
 
 			audiooutL.renameIddTo(mp2nameL);
 			audiooutR.renameIddTo(mp2nameR);
-		} else {
+		}
+
+		else
+		{
 			if ( mp2name.exists() ) 
 				mp2name.delete();
+
 			if (audioout1.length()<100) 
 				audioout1.delete();
-			else { 
+
+			else
+			{ 
 				Common.renameTo(audioout1, mp2name); //DM13042004 081.7 int01 changed
 				//audioout1.renameTo(mp2name); 
 
 				Msg(Resource.getString("msg.newfile", "") + " " + mp2name); 
 				InfoAtEnd.add(comparedata+"\t "+mp2name); 
 			}
+
 			if (audioout2.length()<100) 
 				audioout2.delete();
 
@@ -15342,6 +15417,7 @@ class PIDdemux {
 			} else {
 				ptslength = (0xFF&origdata[8]);           // read byte pts-length
 				shift=3;
+
 
 
 

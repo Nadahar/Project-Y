@@ -25,30 +25,41 @@
  */
 import java.io.*;
 
-public class IDDBufferedOutputStream extends BufferedOutputStream {
-	long pos=0;
-	int type=0;
-	String name="";
-	boolean sequenceend=false;
+public class IDDBufferedOutputStream extends BufferedOutputStream
+{
+	long pos = 0;
+	int type = 0;
+	String name = "", chaptersname = "";
+	boolean sequenceend = false, chapters = false;
+
 	byte IddHeader[][] = {
 		{ (byte)'i',(byte)'d',(byte)'d',2 },  //video V2
 		{ (byte)'i',(byte)'d',(byte)'d',3 }   //audio V3
 	};
+
 	BufferedOutputStream IddOut = null;
+	PrintWriter ChaptersOut = null;
+
 	int filenumber=1;  //DM18022004 081.6 int17 new
 
-	public IDDBufferedOutputStream(OutputStream out) {
+	public IDDBufferedOutputStream(OutputStream out)
+	{
 		super(out);
 	}
-	public IDDBufferedOutputStream(OutputStream out, int size) {
+
+	public IDDBufferedOutputStream(OutputStream out, int size)
+	{
 		super(out,size);
 	}
-	public synchronized void write(byte b[], int off, int len) throws IOException {
+
+	public synchronized void write(byte b[], int off, int len) throws IOException
+	{
 		switch (type)
 		{
 		case 3: //DM18022004 081.6 int17 new, vdrindex, //DM21022004 081.6 int18 changed
 			if ((0xF0 & b[off+3])!=0xE0)
 				break;
+
 			for (int a = off + 9+ (0xFF & b[8]); a<off+len-3; a++)
 			{
 				if (b[a]!=0 || b[a+1]!=0 || b[a+2]!=1 || b[a+3]!=0)
@@ -66,25 +77,39 @@ public class IDDBufferedOutputStream extends BufferedOutputStream {
 				IddOut.write(new byte[2]);
 				break;
 			}
+
 			break;
+
 		case 1:
-			for (int a=0; a<b.length-3; a++){
+			for (int a=0; a<b.length-3; a++)
+			{
 				if (b[a]!=0 || b[a+1]!=0 || b[a+2]!=1)
 					continue;
-				if ((0xFF&b[a+3])==0xB3){
+
+				if ((0xFF&b[a+3])==0xB3)
+				{
 					IddOut.write(0xB3);
 					IddOut.write(littleEndian(a));
 					a+=12;
-				}else if ((0xFF&b[a+3])==0xB7){
+				}
+
+				else if ((0xFF&b[a+3])==0xB7)
+				{
 					IddOut.write(0xB7);
 					IddOut.write(littleEndian(a));
 					sequenceend=true;
 					a+=3;
-				}else if ((0xFF&b[a+3])==0xB8){
+				}
+
+				else if ((0xFF&b[a+3])==0xB8)
+				{
 					IddOut.write(0xB8);
 					IddOut.write(littleEndian(a));
 					a+=7;
-				}else if (b[a+3]==0){
+				}
+
+				else if (b[a+3]==0)
+				{
 					IddOut.write(0); //type
 					IddOut.write(littleEndian(a)); //pos
 					int tref=(3&b[a+5]>>>6) | (0xFF&b[a+4])<<2;
@@ -95,6 +120,7 @@ public class IDDBufferedOutputStream extends BufferedOutputStream {
 				}
 			}
 			break;
+
 		case 2:
 			if (!(pos==0 && b.length<=0x50))
 				IddOut.write(littleEndian(0));
@@ -103,26 +129,35 @@ public class IDDBufferedOutputStream extends BufferedOutputStream {
 		super.write(b,off,len);
 		pos+=len;
 	}
-	public synchronized void write(int b) throws IOException {
+
+	public synchronized void write(int b) throws IOException
+	{
 		super.write(b);
 		pos++;
 	}
 
 	//DM18022004 081.6 int17 new
-	public byte[] VdrIndex() {
+	public byte[] VdrIndex()
+	{
 		byte bpos[] = new byte[4];
+
 		for (int a=0; a<4; a++)
 			bpos[a]=(byte)(0xFFL & pos>>>(a*8));
+
 		return bpos;
 	}
-	public void InitVdr(String vdrname, int file_number) throws IOException {
+
+	public void InitVdr(String vdrname, int file_number) throws IOException
+	{
 		name=vdrname;
 		filenumber=file_number+1;
 		type=3;
+
 		IddOut=new BufferedOutputStream(new FileOutputStream(name,filenumber==1?false:true),655350);
 	}
 
-	public String renameVdrTo(String parent, String oldName){
+	public String renameVdrTo(String parent, String oldName)
+	{
 		String num = "000"+filenumber+".vdr";
 		String newName = parent + num.substring(num.length()-7);
 
@@ -138,20 +173,31 @@ public class IDDBufferedOutputStream extends BufferedOutputStream {
 		return newName;
 	}
 
-	public byte[] littleEndian(int off) {
+	public byte[] littleEndian(int off)
+	{
 		byte bpos[] = new byte[8];
-		for (int a=0; a<8; a++)
-			bpos[a]=(byte)(0xFFL&(pos+off)>>>(a*8));
+
+		for (int a=0; a < 8; a++)
+			bpos[a] = (byte)(0xFFL & (pos + off)>>>(a * 8));
+
 		return bpos;
 	}
-	public void InitIdd(String iddname, int iddtype) throws IOException {
-		name=iddname+".id";
-		type=iddtype;
-		IddOut=new BufferedOutputStream(new FileOutputStream(name),655350);
+
+	public void InitIdd(String iddname, int iddtype) throws IOException
+	{
+		name = iddname + ".id";
+		type = iddtype;
+
+		IddOut = new BufferedOutputStream(new FileOutputStream(name),655350);
 		IddOut.write(IddHeader[type-1]);
 	}
-	public void renameIddTo(File newName){
-		File nname = new File(newName.toString()+".idd");
+
+	public void renameIddTo(File newName)
+	{
+		String str = newName.toString();
+		File nname = new File(str + ".idd");
+		File file = new File(str + ".m2s.txt");
+
 		if (newName.exists())
 		{
 			if (nname.exists())
@@ -159,40 +205,83 @@ public class IDDBufferedOutputStream extends BufferedOutputStream {
 
 			if (new File(name).exists())  //DM13042004 081.7 int01 changed
 				Common.renameTo(new File(name), nname);
-				//new File(name).renameTo(nname);
 		}
 		else
 			new File(name).delete();
+
+		if (chapters)
+		{
+			if (file.exists())
+				file.delete();
+
+			if (new File(chaptersname).exists())
+				Common.renameTo(new File(chaptersname), file);
+		}
 	}
-	public void renameVideoIddTo(String newName){
-		File nname = new File(newName+".idd");
+
+	public void renameVideoIddTo(String newName)
+	{
+		File nname = new File(newName + ".idd");
 
 		if (nname.exists())
 			nname.delete();
 
 		Common.renameTo(new File(name), nname);
-		//new File(name).renameTo(nname);
 	}
-	public void deleteIdd() {
+
+	public void deleteIdd()
+	{
 		new File(name).delete();
+		new File(chaptersname).delete();
 	}
+
+	public void InitChapters(String filename) throws IOException
+	{
+		chaptersname = filename + ".chp";
+		chapters = true;
+
+		ChaptersOut = new PrintWriter(new FileOutputStream(chaptersname));
+	}
+
+	public void addChapter(String str) throws IOException
+	{
+		if (!chapters)
+			return;
+
+		ChaptersOut.println(str);
+	}
+
 	//DM18022004 081.6 int17 changed
-	public synchronized void close() throws IOException {
-		switch (type){
+	public synchronized void close() throws IOException
+	{
+		if (chapters)
+		{
+			ChaptersOut.flush();
+			ChaptersOut.close();
+		}
+
+		switch (type)
+		{
 		case 1:
-			if(!sequenceend){
+			if(!sequenceend)
+			{
 				IddOut.write(0xB7);
 				IddOut.write(littleEndian(0));
 			}
+
 			IddOut.flush();
 			IddOut.close();
+
 			break;
+
 		case 2:
 			IddOut.write(littleEndian(0));
+
 		case 3:
 			IddOut.flush();
 			IddOut.close();
 		}
+
 		super.close();
 	}
 }
