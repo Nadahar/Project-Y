@@ -176,7 +176,7 @@ public class Resource {
 		// use key as text as fallback
 		if (text == null)
 		{
-			text = key;
+			text = "?" + key + "?";
 		}
 		
 		return text;
@@ -287,7 +287,11 @@ public class Resource {
 		button.setText(text);
 	}
 
-//	DM20032004 081.6 int18 add
+	/**
+	 * Builds the Language Menu.
+	 * 
+	 * @return JMenu
+	 */
 	public static JMenu buildLanguageMenu()
 	{
 		ActionListener listener = new LangListener();
@@ -353,7 +357,7 @@ public class Resource {
 	/**
 	 * Returns the available Locales for pjxresources.
 	 * 
-	 * @return
+	 * @return Locale[]
 	 */
 	private static Locale[] getAvailableLocales() {
 		List locales = new ArrayList();
@@ -444,7 +448,7 @@ public class Resource {
 	/**
 	 * Returns a resource (e.g. from the jar file) as an URL.
 	 * 
-	 * @param resource
+	 * @param resource the name of the resource
 	 * @return URL
 	 */
 	public static URL getResourceURL(String resource)
