@@ -661,6 +661,7 @@ protected JPanel buildFilePanel()
 	ll.setLayout(new GridLayout(0,1));
 
 	outfield = new JTextField();
+	outfield.setBackground(new Color(238, 255, 205));
 	outfield.setEditable(false);
 	outfield.setToolTipText(Resource.getString("filepanel.outputdir.tip"));
 
