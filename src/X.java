@@ -131,8 +131,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b4_lang";
-static String version_date = "02.10.2004";
+static String version_name = "ProjectX 0.81.8.02b5_lang";
+static String version_date = "05.10.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -142,7 +142,7 @@ static int loadSizeForward = 2560000;
 static BRMonitor brm;
 static SubPicture subpicture = new SubPicture(); //DM06032004 081.6 int18 changed
 
-Scan scan = new Scan();
+//Scan scan = new Scan();
 MPAC MPAConverter = new MPAC();
 MPAD MPADecoder = new MPAD();
 //static MPVD MPVDecoder = new MPVD();
@@ -219,6 +219,7 @@ private static long firstVideoPTS; //DM17012004 081.6 int11 new
 private COLLECTION dialog = null;
 private PatchPanel vpatch = null;
 EXECUTE executePane = null;
+Scan scan = null;
 
 TabListener mytabListener = new TabListener();
 FileListener my0Listener = new FileListener();
@@ -293,6 +294,7 @@ void buildGUI()
 	vpatch = new PatchPanel(frame);
 	dialog = new COLLECTION();
 	executePane = new EXECUTE();
+	scan = new Scan();
 
 	outalias = Resource.getString("working.output.std");
 
