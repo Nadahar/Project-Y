@@ -1,24 +1,35 @@
-/****************************************************************************
+/*
+ * @(#)RAWREAD.java - alias class definition, may be replaced by additional disk access
+ *
+ * Copyright (c) 2004 by dvb.matt, All Rights Reserved.
+ * 
+ * This file is part of X, a free Java based demux utility.
+ * X is intended for educational purposes only, as a non-commercial test project.
+ * It may not be used otherwise. Most parts are only experimental.
  *  
- *  Rawread.java
  *
- *  This code implements the interface to the C++ code. 
+ * This program is free software; you can redistribute it free of charge
+ * and/or modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This code was developed by chrisg to access a Topfield 4000
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  Updated:
- *    2004-04-09 Adapted to show load status
- *    2004-01-25 Initial implementation
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
-*/
-
-package rawread_samples;
-
-//DM24062004 081.7 int05 now required, but w/o additional access it must return 'false'
+ */
 
 import java.util.ArrayList;
 
-class RawRead {
+import net.sourceforge.dvb.projectx.io.RawReadIF;
+
+public class RawRead implements RawReadIF 
+{
 
 	// check DLL load status and errors
 	native public String GetLoadStatus();
@@ -68,6 +79,7 @@ class RawRead {
 
 	public boolean isAccessibleDisk(String sourcefile)
 	{
+		System.out.println("isAccessibleDisk('" + sourcefile + "');");
 		// make sure it's not a PC file (c: or UNC prefix) and not a Linux file (/ prefix)
 		// support of URLs untested ( file:// , http:// .. )
 		if (DllLoaded && sourcefile.charAt(1) != ':' && sourcefile.charAt(1) != '\\' && sourcefile.charAt(0) != '/')
@@ -82,7 +94,7 @@ class RawRead {
 		return DllLoaded;
 	}
 
-	// Loads the file Native.DLL at run-time
+	// Loads the file Rawread.dll at run-time
 	// don't load if access isn't required
 	static {
 		try 
@@ -100,4 +112,3 @@ class RawRead {
 	public RawRead()
 	{}
 }
-

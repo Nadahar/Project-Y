@@ -37,19 +37,24 @@ import net.sourceforge.dvb.projectx.common.Resource;
 
 public class RawInterface
 {
-	RawRead Rawread;
+	private RawReadIF rawread;
 	long stream_size;
 
 	public RawInterface()
 	{
-		Rawread = new RawRead();
+		try {
+			Class rawReadClass = Class.forName("RawRead");
+			rawread = (RawReadIF)rawReadClass.newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		stream_size = 0;
 	}
 
 	public void add_native_files(ArrayList arraylist)
 	{
-		if (Rawread.AccessEnabled())
-			Rawread.add_native_files(arraylist);
+		if (rawread.AccessEnabled())
+			rawread.add_native_files(arraylist);
 
 		else
 			return;
@@ -57,8 +62,8 @@ public class RawInterface
 
 	public String GetLoadStatus()
 	{
-		if (Rawread.AccessEnabled())
-			return Rawread.GetLoadStatus();
+		if (rawread != null && rawread.AccessEnabled())
+			return rawread.GetLoadStatus();
 
 		else
 			return Resource.getString("rawread.msg1");
@@ -66,13 +71,13 @@ public class RawInterface
 
 	public boolean isAccessibleDisk(String sourcefile)
 	{
-		return Rawread.isAccessibleDisk(sourcefile);
+		return rawread.isAccessibleDisk(sourcefile);
 	}
 
 	public long getFileSize(String sourcefile)
 	{
 		if (isAccessibleDisk(sourcefile))
-			return Rawread.getFileSize(sourcefile);
+			return rawread.getFileSize(sourcefile);
 
 		else if (new File(sourcefile).exists())
 			return (new File(sourcefile).length());
@@ -85,7 +90,7 @@ public class RawInterface
 	{
 		if (isAccessibleDisk(sourcefile))
 		{
-			long datetime = Rawread.lastModified(sourcefile.substring(1));
+			long datetime = rawread.lastModified(sourcefile.substring(1));
 			return java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG).format(new java.util.Date(datetime)) + "  " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.LONG).format(new java.util.Date(datetime));
 		}
 		else
@@ -101,7 +106,7 @@ public class RawInterface
 	{
 		if (isAccessibleDisk(sourcefile))
 		{
-			RawFileInputStream rawin = new RawFileInputStream(Rawread, sourcefile);
+			RawFileInputStream rawin = new RawFileInputStream(rawread, sourcefile);
 
 			rawin.skip(position);
 			rawin.read(data, 0, data.length);
@@ -117,7 +122,7 @@ public class RawInterface
 	{
 		if (isAccessibleDisk(sourcefile))
 		{
-			RawFileInputStream rawin = new RawFileInputStream(Rawread, sourcefile);
+			RawFileInputStream rawin = new RawFileInputStream(rawread, sourcefile);
 			rawin.skip(skip_size);
 			rawin.read(data, read_offset, size);
 			rawin.close();
@@ -134,7 +139,7 @@ public class RawInterface
 
 		if (isAccessibleDisk(sourcefile))
 		{
-			RawFileInputStream rawin = new RawFileInputStream(Rawread, sourcefile);
+			RawFileInputStream rawin = new RawFileInputStream(rawread, sourcefile);
 			stream = new PushbackInputStream(rawin, buffersize);
 			stream_size = rawin.streamSize();
 		}

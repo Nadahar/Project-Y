@@ -26,26 +26,78 @@
 
 
 package net.sourceforge.dvb.projectx.io;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
+public class RawFileInputStream extends InputStream {
+	String file;
+	int handle;
+	long currentpos;
+	RawReadIF rawread;
 
-//DM24062004 081.7 int05 now required, but w/o additional it will never be called
-
-import java.io.*;
-
-class RawFileInputStream extends InputStream
-{
-	public long streamSize() throws IOException
-	{
-		return -1L;
+	public int read(byte[] b, int off, int len) throws IOException {
+		len = rawread.readFile(handle,b,off,len);
+		currentpos+=len;
+		return len;
 	}
 
-	public int read() throws IOException
-	{
-		return 0;
+	public int read(byte[] b) throws IOException {
+		return read(b, 0, b.length);
 	}
 
-	RawFileInputStream(RawRead Rawread, String file) throws FileNotFoundException
-	{
-		super();
+	public int read() throws IOException {
+		byte[] b=new byte[1];
+		if (read(b)==1)
+			return (int)b[0];
+		else
+			return -1;
+	}
+
+	public int available() throws IOException {
+		long avail=streamSize()-currentpos;
+		if (avail>2*1024*1024*104)
+			return 2*1024*1024*104;
+		else
+			return (int)avail;
+	}
+
+	public void mark(int readlimit) {
+		// not implemented
+	}
+
+	public void reset() throws IOException {
+		// not implemented
+	}
+
+	public boolean markSupported() {
+		return false;
+	}
+
+	public long skip(long n) throws IOException {
+
+		long skipped = rawread.skipBytes(handle,n);
+		currentpos+=skipped;
+		return skipped;
+	}
+
+	//alias required
+	public long streamSize() throws IOException {
+
+		return rawread.getFileSize(file);
+	}
+
+	public RawFileInputStream(RawReadIF rawread,String file) throws FileNotFoundException {
+		this.rawread=rawread;
+		this.file=file;
+		this.handle=rawread.openFile(this.file);
+		currentpos=0;
+	}
+
+
+	public void close() throws IOException {
+		if (handle!=0)
+			rawread.closeFile(handle);
+		handle=0;
 	}
 }

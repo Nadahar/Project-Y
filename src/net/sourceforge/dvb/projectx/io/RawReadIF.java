@@ -25,46 +25,30 @@
  */
 
 package net.sourceforge.dvb.projectx.io;
-
-
-//DM24062004 081.7 int05 now required, but w/o additional access it must return 'false'
-
 import java.util.ArrayList;
 
-class RawRead
-{
-	public String GetLoadStatus()
-	{
-		return "";
-	}
+public interface RawReadIF {
 
-	public long getFileSize(String filename)
-	{
-		return -1L;
-	}
+	// check DLL load status and errors
+	public String GetLoadStatus();
 
-	public long lastModified(String filename)
-	{
-		return 0L;
-	}
+	// directory read functions
+	public int findOpen(String directoryname);
+	public String findNextFile(int findhandle);
+	public int findClose(int findhandle);
 
-	public void add_native_files(ArrayList arraylist)
-	{
-		return;
-	}
+	// file read functions
+	public int openFile(String filename);
+	public int readFile(int filehandle,byte[] array,int offsetinbuffer,int readlen);
+	public int closeFile(int filehandle);
+	public long skipBytes(int filehandle,long skipbytes);
+	public long getFileSize(String filename);
+	public long lastModified(String filename);
 
-	public boolean isAccessibleDisk(String sourcefile)
-	{
-		return false;
-	}
+	public void add_native_files(ArrayList arraylist);
 
-	public boolean AccessEnabled()
-	{
-		return false;
-	}
+	public boolean isAccessibleDisk(String sourcefile);
 
-	// Constructor
-	public RawRead()
-	{}
+	public boolean AccessEnabled();
+
 }
-
