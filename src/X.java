@@ -6948,11 +6948,8 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 	int packsize0_buffer=Integer.parseInt(comBox[36].getSelectedItem().toString()); //DM21112003 081.5++
 	packsize0_buffer=packsize0_buffer>bs?bs:packsize0_buffer; //DM21112003 081.5++
 
-	boolean pes_alignment, pes_ext1, pes_ext2, mpeg2;
-	int pes_shift, pes_header_length, pes_ext2_id;
-	int source_type = ismpg;
-
 	Hashtable substreams = new Hashtable();
+	int source_type = ismpg;
 
 	morepva:
 	while (true)
@@ -7190,32 +7187,37 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 
 			count += 6 + packlength;
 
-			pes_header_length = 0xFF & data[8];
-			pes_ext2_id = -1;
-			mpeg2 = (0xC0 & data[6]) == 0x80 ? true : false;
-			pes_alignment = mpeg2 && (4 & data[6]) != 0 ? true : false;
+			int pes_header_length = 0xFF & data[8];
+			int pes_ext2_id = 0;
+			boolean mpeg2 = (0xC0 & data[6]) == 0x80 ? true : false;
+			boolean pes_alignment = mpeg2 && (4 & data[6]) != 0 ? true : false;
 
 			//vdr_dvbsub determination
 			if (pesID == 0xBD && mpeg2)
 			{
 				//read flags
-				pes_shift = 9; //points to 1st appendix
+				int pes_shift = 9; //points to 1st appendix
+
 				pes_shift += (0x80 & data[7]) != 0 ? 5 : 0; //pes_pts
 				pes_shift += (0x40 & data[7]) != 0 ? 5 : 0; //pes_dts
 				pes_shift += (0x20 & data[7]) != 0 ? 6 : 0; //pes_escr
 				pes_shift += (0x10 & data[7]) != 0 ? 3 : 0; //pes_esrate
 				pes_shift += (4 & data[7]) != 0 ? 1 : 0; //pes_copy
 				pes_shift += (2 & data[7]) != 0 ? 2 : 0; //pes_crc
-				pes_ext1 = (1 & data[7]) != 0 ? true : false; //ext1
+
+				boolean pes_ext1 = (1 & data[7]) != 0 ? true : false; //ext1
 
 				if (pes_ext1 && packlength > pes_shift + 2)
 				{
 					int shift = pes_shift;
+
 					pes_shift += (0x80 & data[shift]) != 0 ? 16 : 0; //pes_private
 					pes_shift += (0x40 & data[shift]) != 0 ? 1 : 0; //pes_packfield
 					pes_shift += (0x20 & data[shift]) != 0 ? 2 : 0; //pes_sequ_counter
 					pes_shift += (0x10 & data[shift]) != 0 ? 2 : 0; //pes_P-STD
-					pes_ext2 = (1 & data[shift]) != 0 ? true : false; //ext2
+
+					boolean pes_ext2 = (1 & data[shift]) != 0 ? true : false; //ext2
+
 					pes_shift++; //skip flag_fields of ext1
 
 					if (pes_ext2 && packlength > pes_shift + 2)
@@ -7247,8 +7249,17 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 					if (ismpg == 0 && !ttx) 
 						subID = 0;
 				}
+
 				else if (ismpg != 1) 
 					data[8] = (byte)(packlength - 3);
+
+				// packet buffering esp. of subpics from vdr or other pes
+				if (ismpg == 2 && !ttx && subID < 0x40)
+				{
+
+					if (substreams.containsKey("" + pes_ext2_id))
+					{}
+				}
 			}
 
 
