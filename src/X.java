@@ -131,8 +131,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b11_lang";
-static String version_date = "15.10.2004";
+static String version_name = "ProjectX 0.81.8.02b12_lang";
+static String version_date = "16.10.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -3717,7 +3717,7 @@ class COLLECTION extends JFrame
 
 		cutPanel.add(Box.createRigidArea(new Dimension(1, 12)));
 
-		cBox[2] = new JCheckBox(Resource.getString("collection.ceatesubdir"));
+		cBox[2] = new JCheckBox(Resource.getString("collection.createsubdir"));
 		cBox[2].setToolTipText(Resource.getString("collection.createsubdir_tip"));
 		cBox[2].setPreferredSize(new Dimension(250,20));
 		cBox[2].setMaximumSize(new Dimension(250,20));
@@ -4648,6 +4648,16 @@ public void iniload()
 			if (path.length()>2 && !path.substring(1,2).equals("*"))
 				exefield[Integer.parseInt(path.substring(1,2))].setText(path.substring(2,path.length()));
 		}
+		else if (path.startsWith("f*"))
+		{ 
+			if (path.substring(2, path.length()) != null)
+			{
+				File f = new File(path.substring(2, path.length()));
+
+				if (f.exists())
+					chooser.setCurrentDirectory(f);
+			}
+		}
 		else if (path.startsWith("i*"))
 		{ 
 			if (path.substring(2,path.length())!=null && new File(path.substring(2,path.length())).exists())
@@ -4745,6 +4755,9 @@ public static void inisave() //DM26012004 081.6 int12 changed, //DM26032004 081.
 		inis.print("e"+a); 
 		inis.println(exefield[a].getText());
 	}
+
+	inis.println("// last opened directory");
+	inis.println("f*" + chooser.getCurrentDirectory().toString()); 
 
 	inis.println("// autoload directories");
 	for (int a=0; a<comBox[12].getItemCount(); a++)
@@ -5421,16 +5434,21 @@ public static String parseValue(long value){
 //DM17012004 081.6 int11 changed
 //DM29012004 081.6 int12 fix
 //DM18022004 081.6 int17 changed
-public static boolean makecut(String cuts_filename, long startPTS, long comparePoint, ArrayList newcut, int lastframes) {
+public static boolean makecut(String cuts_filename, long startPTS, long comparePoint, ArrayList newcut, int lastframes)
+{
 	if (ctemp.isEmpty())
 		return true;
 
 	CP = new long[2];
 	long[] abc;
 
-	if ( cutcount < ctemp.size() ) { 
-		if ( comparePoint > parseValue(ctemp.get(cutcount).toString(),true) ) {
-			if ((cutcount&1)==1) {		//ungerade == cutout
+	if ( cutcount < ctemp.size() )
+	{ 
+		if ( comparePoint > parseValue(ctemp.get(cutcount).toString(),true) )
+		{
+			//ungerade == cutout
+			if ((cutcount & 1)==1)
+			{
 				bool=false; 
 				for (int c = newcut.size()-1; c >- 1; c--)
 				{
@@ -5457,7 +5475,9 @@ public static boolean makecut(String cuts_filename, long startPTS, long compareP
 				cutcount++;
 				return bool;
 
-			}else{				//ungerade == cutin
+			}
+			else
+			{	//gerade == cutin
 
 				bool=true;
 				cutcount++;
@@ -5471,9 +5491,12 @@ public static boolean makecut(String cuts_filename, long startPTS, long compareP
 				if (cutcount >= ctemp.size()) 
 					return bool;
 
-				for (int c=newcut.size()-1;c>-1;c--) {
+				for (int c=newcut.size()-1;c>-1;c--)
+				{
 					abc = (long[])newcut.get(c);
-					if ( abc[0] < parseValue(ctemp.get(cutcount).toString(),true) ) { 
+
+					if ( abc[0] < parseValue(ctemp.get(cutcount).toString(),true) )
+					{ 
 						CP=abc;
 						cutcount++;
 						break;
@@ -5482,10 +5505,13 @@ public static boolean makecut(String cuts_filename, long startPTS, long compareP
 				return bool;
 			}
 		}
-	} else { 
+	}
+	else
+	{ 
 		if (!bool && options[37]==10000000) 
 			options[37]=comparePoint;
 	}
+
 	return bool;
 }
 
@@ -6719,7 +6745,8 @@ public void pesparse(String file, String vptslog, int ismpg) {
 /**************
  * VDR Parser *
  *************/
-public String vdrparse(String file, int ismpg, int ToVDR) {
+public String vdrparse(String file, int ismpg, int ToVDR)
+{
 
 	String fchild = (newOutName.equals("")) ? (new File(file).getName()).toString() : newOutName;
 	String fparent = ( fchild.lastIndexOf(".") != -1 ) ? workouts+fchild.substring(0,fchild.lastIndexOf(".")) : workouts+fchild;
@@ -6736,10 +6763,13 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 	int pesID0 = ((0xffL & options[43])!=0) ? (0xff & (int)options[43]) : 0;
 
 	/*** d2v project ***/
-	if (cBox[29].isSelected() || cBox[30].isSelected()) {
+	if (cBox[29].isSelected() || cBox[30].isSelected())
+	{
 		String[] d2vopt = new String[d2vfield.length];
+
 		for (int x=0;x<d2vfield.length;x++) 
 			d2vopt[x] = d2vfield[x].getText();
+
 		d2v.setOptions(d2vopt);
 		d2v.Init(fparent);
 	}
@@ -6834,13 +6864,17 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 	if (startPoint < 0)
 		startPoint = count;  // =0
-	else if (startPoint < count){
+
+	else if (startPoint < count)
+	{
 		for (int a=starts.length; a>0; a--)
 			if (starts[a-1] > startPoint)
 				FileNumber--;
 	}
-	else if (startPoint > count){
-		for (int a=FileNumber+1; a < starts.length; a++){  // (fix2)
+	else if (startPoint > count)
+	{
+		for (int a=FileNumber+1; a < starts.length; a++)
+		{
 			if (starts[a] > startPoint)
 				break;
 			else 
@@ -6850,21 +6884,18 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 	file = combvideo.get(FileNumber).toString();
 	count = starts[FileNumber];
-	//size = count + new File(file).length();
 
 	if (FileNumber>0)
 		Msg(Resource.getString("vdrparse.continue")+": "+file);
-
-	//PushbackInputStream in = new PushbackInputStream(new FileInputStream(file),bs);
 
 	//DM18062004 081.7 int05 changed
 	PushbackInputStream in = raw_interface.getStream(file, bs);
 	size = count + raw_interface.getStreamSize();
 	long base = count;
 
-	while (count < startPoint) {
+	while (count < startPoint)
 		count += in.skip(startPoint-count);
-	}
+
 
 	progress.setString(((ToVDR==0)?Resource.getString("vdrparse.demuxing"):Resource.getString("vdrparse.converting"))+" "+Resource.getString("vdrparse.avpes.file")+" "+(new File(file)).getName());
 	progress.setStringPainted(true);
@@ -6881,24 +6912,31 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 		// start loop fileread
 		pvaloop:
-		while ( count < size )  {     // till fileend (64bit size)
+		while ( count < size )
+		{
 
 			while (qpause) 
 				pause();
-			if (qbreak || (qinfo && count>qexit)) { 
+
+			if (qbreak || (qinfo && count > qexit))
+			{ 
 				qbreak=false; 
 				break morepva; 
 			}
 
-			/*** cut end reached ***/
-			if ((int)options[37]+20 < origframes) {
+			/*** cut end reached on demux ***/
+			if ((int)options[37] + 20 < origframes)
+			{
 				ende=true;
 				break morepva; 
-
 			}
-			if (comBox[17].getSelectedIndex()==0 && ctemp.size()>0) {
-				if (cutcount==ctemp.size() && (cutcount&1)==0)
-					if (count > Long.parseLong(ctemp.get(cutcount-1).toString())+((ToVDR==0)?2048000:64000)){
+
+			//cut mode bytepos + min 1 cutpoint
+			if (comBox[17].getSelectedIndex()==0 && ctemp.size() > 0)
+			{
+				if (cutcount==ctemp.size() && (cutcount & 1)==0)
+					if (count > Long.parseLong(ctemp.get(cutcount-1).toString()) + ((ToVDR==0) ? 2048000 : 64000))
+					{
 						ende=true;
 						break morepva;
 					}
@@ -6907,17 +6945,22 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 			in.read(push6,0,6);
 
 			/*** check 0x000001  ***/
-			if ( push6[0]!=0 || push6[1]!=0 || push6[2]!=1 || (0xFF&push6[3])<0xB9) { //DM06012004 081.6 int11 changed
+			//DM06012004 081.6 int11 changed
+			if ( push6[0]!=0 || push6[1]!=0 || push6[2]!=1 || (0xFF&push6[3])<0xB9)
+			{
 				in.unread(push6,1,5);
+
 				if (!cBox[3].isSelected() && !miss) //DM03112003 081.5++ info
-					Msg(Resource.getString("vdrparse.missing.startcode")+" "+count);
+					Msg(Resource.getString("vdrparse.missing.startcode") + " " + count);
+
 				miss=true;
 				count++;
 				continue pvaloop;
 			}
 
 			if (!cBox[3].isSelected() && miss) //DM04112003 081.5++ info, moved 
-				Msg(Resource.getString("vdrparse.found.startcode")+" "+count);
+				Msg(Resource.getString("vdrparse.found.startcode") + " " + count);
+
 			miss=false;
 
 			if (ismpg>0 || cBox[14].isSelected()) { //DM22122003 081.6 int08 changed
@@ -7568,7 +7611,8 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 /******************
  * ts Parser *
  ******************/
-public String rawparse(String file, int[] pids, int ToVDR) {
+public String rawparse(String file, int[] pids, int ToVDR)
+{
 
 	String fchild = (newOutName.equals("")) ? (new File(file).getName()).toString() : newOutName;
 	String fparent = ( fchild.lastIndexOf(".") != -1 ) ? workouts+fchild.substring(0,fchild.lastIndexOf(".")) : workouts+fchild;
@@ -7583,10 +7627,13 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 	clv = new int[10];
 
 	/*** d2v project ***/
-	if (cBox[29].isSelected() || cBox[30].isSelected()) {
+	if (cBox[29].isSelected() || cBox[30].isSelected())
+	{
 		String[] d2vopt = new String[d2vfield.length];
+
 		for (int x=0;x<d2vfield.length;x++) 
 			d2vopt[x] = d2vfield[x].getText();
+
 		d2v.setOptions(d2vopt);
 		d2v.Init(fparent);
 	}
@@ -7695,22 +7742,26 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 		Msg(Resource.getString("rawparse.special.pids"));
 
 	//*** split skipping first
-	if (options[18]>0)
-		startPoint = options[20]-(comBox[25].getSelectedIndex()*1048576L);
+	if (options[18] > 0)
+		startPoint = options[20] - (comBox[25].getSelectedIndex() * 1048576L);
 
 	//*** jump near to first cut-in point to collect more audio
 	if (comBox[17].getSelectedIndex()==0 && ctemp.size()>0 && cutcount==0)
-		startPoint = Long.parseLong(ctemp.get(cutcount).toString())-((ToVDR==0)?2048000:0);
+		startPoint = Long.parseLong(ctemp.get(cutcount).toString()) - (ToVDR==0 ? 2048000 : 0);
 
 	if (startPoint < 0)
 		startPoint = count;
-	else if (startPoint < count){
-		for (int a=starts.length; a>0; a--)
+
+	else if (startPoint < count)
+	{
+		for (int a=starts.length; a > 0; a--)
 			if (starts[a-1] > startPoint)
 				FileNumber--;
 	}
-	else if (startPoint > count){
-		for (int a=FileNumber+1; a < starts.length; a++){  // (fix2)
+	else if (startPoint > count)
+	{
+		for (int a=FileNumber+1; a < starts.length; a++)
+		{
 			if (starts[a] > startPoint)
 				break;
 			else 
@@ -7721,8 +7772,8 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 	file = combvideo.get(FileNumber).toString();
 	count = starts[FileNumber];
 
-	if (FileNumber>0)
-		Msg(Resource.getString("rawparse.continue")+" "+file);
+	if (FileNumber > 0)
+		Msg(Resource.getString("rawparse.continue") + " " + file);
 
 	long base = count;
 
@@ -7731,13 +7782,12 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 	size = count + raw_interface.getStreamSize();
 
 
-	while (count < startPoint) {
+	while (count < startPoint)
 		count += in.skip(startPoint-count);
-	}
 
-	progress.setString(((ToVDR==0)?Resource.getString("rawparse.demuxing"):Resource.getString("rawparse.converting"))+Resource.getString("rawparse.dvb.mpeg")+" "+(new File(file)).getName());
+	progress.setString(( ToVDR==0 ? Resource.getString("rawparse.demuxing") : Resource.getString("rawparse.converting"))+Resource.getString("rawparse.dvb.mpeg")+" "+(new File(file)).getName());
 	progress.setStringPainted(true);
-	progress.setValue((int)((count-base)*100/(size-base))+1);
+	progress.setValue((int)((count - base) * 100 / (size - base)) + 1);
 	yield();
 
 	boolean error = false, start = false, ttx=false;
@@ -16740,6 +16790,8 @@ class X_JFileChooser extends JFileChooser
 	public X_JFileChooser()
 	{
 		super();
+		setApproveButtonText(Resource.getString("select.file"));
+		setDialogTitle(Resource.getString("select.title"));
 	}
 	public void rescanCurrentDirectory()
 	{
