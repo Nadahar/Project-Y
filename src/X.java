@@ -5534,7 +5534,7 @@ public void run() {
 
 	if (options[33]==-1) {
 		TextArea.setText(java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(new Date())+"  "+java.text.DateFormat.getTimeInstance(java.text.DateFormat.FULL).format(new Date()));
-		Msg(""+RESOURCE.getString("version.name")+" ("+RESOURCE.getString("version.date")+")");
+		Msg(RESOURCE.getString("version.name")+" ("+RESOURCE.getString("version.date")+")");
 		if (cBox[18].isSelected()) 
 			b = comBox[0].getItemCount();
 		else {
@@ -5787,7 +5787,12 @@ public void working() {
 	int mpgtovdr = comBox[19].getSelectedIndex();
 
 	//DM14062004 081.7 int04 changed
-	String[] convertType = { "=> demux ","=> make a VDR (A/V PES)","=> make a MPG2","=> make a PVA","=> make a TS", "=> simple packet filter" };
+	String[] convertType = { RESOURCE.getString("working.convertType.demux"),
+							RESOURCE.getString("working.convertType.makeVDR"),
+							RESOURCE.getString("working.convertType.makeMPG2"),
+							RESOURCE.getString("working.convertType.makePVA"),
+							RESOURCE.getString("working.convertType.makeTS"), 
+							RESOURCE.getString("working.convertType.packetFilter") };
 
 	for (int k=0; k<workinglist.size(); k++) {
 		int ft = scan.inputInt(workinglist.get(k).toString());
@@ -5906,11 +5911,11 @@ public void working() {
 
 			//DM22062004 081.7 int05 changed++
 			long file_size = raw_interface.getFileSize(file);
-			Msg("\r\n=> File " + h + ":  " + file + " (" + file_size + ")");
+			Msg("\r\n" + RESOURCE.getString("working.file") + " " + h + ":  " + file + " (" + file_size + ")");
 
 			if (file_size < 0)
 			{
-				Msg(" ? File not found !");
+				Msg(RESOURCE.getString("working.file.not.found"));
 				continue argsloop;
 			}
 			//DM22062004 081.7 int05 changed--
@@ -5921,7 +5926,7 @@ public void working() {
 
 			switch (filetype) {
 			case 1: {
-				Msg("=> File is PVA (Video/Audio PES)");
+				Msg(RESOURCE.getString("working.file.pva"));
 				if (options[31]==0) 
 					Msg(convertType[mpgtovdr]);
 				vptslog = pvaparse(file,0,mpgtovdr,vptslog);
@@ -5930,7 +5935,7 @@ public void working() {
 				break;
 			}
 			case 2: {
-				Msg("=> File is MPEG-1 PS/SS (Video/Audio PES)");
+				Msg(RESOURCE.getString("working.file.mpeg1"));
 				if (h>0) 
 					pesparse(file,vptslog,1);
 				else
@@ -5944,7 +5949,7 @@ public void working() {
 				break;
 			}
 			case 3: {
-				Msg("=> File is MPEG-2 PS/SS (Video/Audio PES)");
+				Msg(RESOURCE.getString("working.file.mpeg2"));
 				if (h>0) 
 					pesparse(file,vptslog,2);
 				else {
@@ -5957,7 +5962,7 @@ public void working() {
 				break;
 			}
 			case 4: {
-				Msg("=> File is Video/Audio/TTX PES");
+				Msg(RESOURCE.getString("working.file.av.ttx"));
 				if (options[31]==0) 
 					Msg(convertType[mpgtovdr]);
 				vptslog = vdrparse(file,0,mpgtovdr);
@@ -5967,7 +5972,7 @@ public void working() {
 			}
 			case 5: 
 			case 6: {
-				Msg("=> File is Audio/TTX PES");
+				Msg(RESOURCE.getString("working.file.a.ttx"));
 				if (h>0) {
 					splitreset(vptslog);
 					pesparse(file,vptslog,0);
@@ -5981,31 +5986,31 @@ public void working() {
 				break;
 			}
 			case 10: {
-				Msg("=> File is AC-3 Audio ES (psb. SMPTE)");
+				Msg(RESOURCE.getString("working.file.ac3.smpte"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"ac");
 				break;
 			}
 			case 7: {
-				Msg("=> File is AC-3 Audio ES");
+				Msg(RESOURCE.getString("working.file.ac3"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"ac");
 				break;
 			}
 			case 8: {
-				Msg("=> File is MPEG Audio ES");
+				Msg(RESOURCE.getString("working.file.mpeg.audio"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"mp");
 				break;
 			}
 			case 9: {
-				Msg("=> File is MPEG Video ES");
+				Msg(RESOURCE.getString("working.file.mpeg.video"));
 				vptslog = rawvideo(file);
 				splitreset(vptslog);
 				break;
 			}
 			case 11: {
-				Msg("=> File is DVB/MPEG-2 TS (Video/Audio/TTX PES)");
+				Msg(RESOURCE.getString("working.file.dvb"));
 				if (options[31]==0) 
 					Msg(convertType[mpgtovdr]);
 				vptslog = rawparse(file,scan.getPIDs(),mpgtovdr);
@@ -6015,13 +6020,13 @@ public void working() {
 			}
 			//DM19122003 081.6 int07 new
 			case 12: {
-				Msg("=> File is DTS Audio ES");
+				Msg(RESOURCE.getString("working.file.dts"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"ac");
 				break;
 			}
 			case 13: {
-				Msg("=> File is DTS Audio ES (psb. SMPTE)");
+				Msg(RESOURCE.getString("working.file.dts.smpte"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"ac");
 				break;
@@ -6029,7 +6034,7 @@ public void working() {
 			//DM24012004 081.6 int11 add
 			case 14:
 			{
-				Msg("=> File is RIFF PCM Audio ES");
+				Msg(RESOURCE.getString("working.file.riff"));
 				splitreset(vptslog);
 				rawaudio(file,vptslog,"wa");
 				break;
@@ -6037,20 +6042,20 @@ public void working() {
 			//DM02032004 081.6 int18 add
 			case 16:
 			{
-				Msg("=> File is RLE Subpicture ES");
+				Msg(RESOURCE.getString("working.file.rle"));
 				splitreset(vptslog);
 				rawsub(file,vptslog);
 				break;
 			}
 
 			default: 
-				Msg(" ? Filetype not supported !");
+				Msg(RESOURCE.getString("working.file.notsupported"));
 			}
 		}
 
 		//**** print end of splitpart
 		if (options[18]>0)
-			Msg("===> END OF PART "+(options[19]++));
+			Msg(RESOURCE.getString("working.end.of.part") + " "+(options[19]++));
 		else 
 			options[21]=-100;
 
@@ -6060,7 +6065,7 @@ public void working() {
 		//***** print created files summary
 		lastlist = InfoAtEnd.toArray();
 		java.util.Arrays.sort(lastlist);
-		Msg("summary of created media files:");
+		Msg(RESOURCE.getString("working.summary"));
 		for (int l=0;l<lastlist.length;l++)
 			Msg(""+lastlist[l]);
 
@@ -6095,11 +6100,11 @@ public void working() {
 					commandline+=(""+arguments[l]+(char)32);
 				}
 
-				Msg("-> post command performed: "+commandline.trim());
+				Msg(RESOURCE.getString("working.post.command") + " "+commandline.trim());
 
 				try 
 				{ 
-				Runtime.getRuntime().exec(arguments); 
+				Runtime.getRuntime().exec(commandline.trim()); 
 				}
 				catch (IOException re) { 
 					Msg(""+re); 
@@ -6109,7 +6114,7 @@ public void working() {
 		}
 	}
 
-	Msg("=> "+options[39]+" bytes written...");
+	Msg("=> " + options[39] + " " + RESOURCE.getString("working.bytes.written"));
 	Toolkit.getDefaultToolkit().beep();
 	yield();
 
@@ -6127,7 +6132,7 @@ public void working() {
 		nlf.close();
 		} 
 		catch (IOException e) { 
-			Msg("log error2 "+e); 
+			Msg(RESOURCE.getString("working.log.error2") + " "+e); 
 		}
 	}
 	messagelog="";
