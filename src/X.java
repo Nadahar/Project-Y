@@ -661,7 +661,7 @@ protected JPanel buildFilePanel()
 	ll.setLayout(new GridLayout(0,1));
 
 	outfield = new JTextField();
-	outfield.setBackground(new Color(238, 255, 205));
+	outfield.setBackground(new Color(225,255,225));
 	outfield.setEditable(false);
 	outfield.setToolTipText(Resource.getString("filepanel.outputdir.tip"));
 
@@ -2881,6 +2881,8 @@ class FileListener implements ActionListener
 				outfield.setText(""); 
 			}
 			list3.setListData(collectionlist);
+
+
 		}
 		else if (actName.equals("co") && outchange==false)
 		{
@@ -8666,7 +8668,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 
 	overlapPVA(overlapnext);
 
-	progress.setString(((ToVDR==0)?Resource.getString("pvaparse.demuxing"):Resource.getString("pvaparse.converting"))+Resource.getString("pvaparse.pvafile")+" "+(new File(pvafile)).getName());
+	progress.setString((ToVDR==0 ? Resource.getString("pvaparse.demuxing") : Resource.getString("pvaparse.converting")) + Resource.getString("pvaparse.pvafile") + " " + (new File(pvafile)).getName());
 	progress.setStringPainted(true);
 	progress.setValue((int)((count-base)*100/(size-base))+1);
 	yield();
@@ -9238,7 +9240,7 @@ public boolean SyncCheck(double timecount, double timelength, long timeline, int
  ************************************************/
 public void mpt(String[] args) {
 	long op10 = options[10];
-	progress.setString("check & synchronize audio file  "+(new File(args[0])).getName());
+	progress.setString(Resource.getString("audio.progress") + "  " + (new File(args[0])).getName());
 	progress.setStringPainted(true);
 	progress.setValue(0);
 	yield();
@@ -9258,31 +9260,40 @@ public void mpt(String[] args) {
 	}
 	//DM10042004 081.7 int01 add-
 
-	if (comBox[7].getSelectedIndex() > 0){
-		Msg("-> convert MPA :");
+	if (comBox[7].getSelectedIndex() > 0)
+	{
+		Msg(Resource.getString("audio.convert"));
 		Msg("\t"+comBox[7].getSelectedItem().toString());
 	}
-	if (cBox[50].isSelected()){
-		Msg("-> decode MPA :");
-		Msg("\t"+comBox[1].getSelectedItem().toString());
+
+	if (cBox[50].isSelected())
+	{
+		Msg(Resource.getString("audio.decode"));
+		Msg("\t" + comBox[1].getSelectedItem().toString());
+
 		if (RButton[3].isSelected())
-			Msg("\t"+RButton[3].getText().toString());
+			Msg("\t" + RButton[3].getText().toString());
 		if (RButton[4].isSelected())
-			Msg("\t"+RButton[4].getText().toString());
+			Msg("\t" + RButton[4].getText().toString());
 		if (RButton[5].isSelected())
-			Msg("\t"+RButton[5].getText().toString());
+			Msg("\t" + RButton[5].getText().toString());
 		//DM07022004 081.6 int16 new
 		if (RButton[9].isSelected())
-			Msg("\t"+RButton[9].getText().toString());
+			Msg("\t" + RButton[9].getText().toString());
 	}
 
-	while ( processAudio(args) ) {
+	while ( processAudio(args) )
+	{
 		options[17] &= ~0xCL;
-		Msg("\n!> restart audio processing, forced by changes @ output frame "+(options[17]>>>18));
+
+		Msg(" ");
+		Msg(Resource.getString("audio.restart") + " " + (options[17]>>>18));
 		yield();
+
 		if ( (0x10000L&options[17])!=0) 
 			options[10]=0;
 	}
+
 	options[17] &= 3L;
 	options[10] = op10;
 }
@@ -9293,13 +9304,14 @@ public void mpt(String[] args) {
 /********************************
  *  method for audio processing *
  ********************************/
-public boolean processAudio(String[] args) {
+public boolean processAudio(String[] args)
+{
 
 	String fchild = (newOutName.equals("")) ? (new File(args[0]).getName()).toString() : newOutName;
 	String fparent = ( fchild.lastIndexOf(".") != -1 ) ? workouts+fchild.substring(0,fchild.lastIndexOf(".")) : workouts+fchild;
 
-	msoff.setText("A/V offset");
-	audiostatusLabel.setText("not started"); //DM18022004 081.6 int17 changed
+	msoff.setText(Resource.getString("mainpanel.avoffset"));
+	audiostatusLabel.setText(Resource.getString("mainpanel.export")); //DM18022004 081.6 int17 changed
 
 	if (options[11]==1 && options[18]>0) 
 		fparent+="("+options[19]+")";
@@ -9335,7 +9347,8 @@ public boolean processAudio(String[] args) {
 
 	System.gc(); //DM22122003 081.6 int09 new
 
-	if ( !args[1].equals("-1") ) {
+	if ( !args[1].equals("-1") )
+	{
 		if (options[30]==1) 
 			System.out.print("\r-> loading audio PTS logfile...");   
 
@@ -9348,7 +9361,8 @@ public boolean processAudio(String[] args) {
 		ptspos[logsize] = -1;
 		int aa=0;
 
-		for (int a=0; a<logsize; a++) {
+		for (int a=0; a<logsize; a++)
+		{
 			//DM15112003 081.5++ special4lucious
 			long ptsVal = bin.readLong();
 			long ptsPos = bin.readLong();
@@ -9372,22 +9386,11 @@ public boolean processAudio(String[] args) {
 			ptspos[aa] = ptsPos;
 			aa++;
 
-			/**
-			ptsval[a] = bin.readLong();
-			ptspos[a] = bin.readLong();
-
-			if ( (a>2) && (Math.abs(ptsval[a]-ptsval[a-2]) < 150000) && Math.abs(ptsval[a]-ptsval[a-1])>2000000 ){
-				ptsval[a-1] = ((ptsval[a-2]+ptsval[a])/2); 
-
-
-				aa++; 
-			}
-			if (options[30]==1) 
-				System.out.println(" #"+a+" _"+ptsval[a]+" #"+(a)+" _"+ptspos[a]);
-			**/
 		}
-		if (aa<logsize){ //DM15112003 081.5++ special4lucious
-			Msg("!> "+(logsize-aa)+" PTS's discarded in stream");
+
+		if (aa<logsize)
+		{ //DM15112003 081.5++ special4lucious
+			Msg(Resource.getString("audio.msg.pts.discard", "") + (logsize-aa));
 			long tmp[][] = new long[2][aa];
 			System.arraycopy(ptsval,0,tmp[0],0,aa);
 			System.arraycopy(ptspos,0,tmp[1],0,aa);
@@ -9399,30 +9402,23 @@ public boolean processAudio(String[] args) {
 			ptspos[aa]= -1;
 		}
 
-		/**
-		if (aa>0) 
-			Msg(" "+aa+" PTS's recalculated in stream"); 
-		**/
-
 		yield();
 		bin.close();
 
-		if (cBox[24].isSelected()) {
+		if (cBox[24].isSelected())
+		{
 			long[] tmp = { ptsval[0],ptspos[0] };
 			ptsval = new long[2]; 
 			ptsval[0] = tmp[0]; 
 			ptsval[1]= - 1;
 			ptspos = new long[2]; 
 
-
-
-
 			ptspos[0] = tmp[1]; 
 			ptspos[1]= - 1;
-			Msg("-> take only first Audio PTS (to sync the starttime");
+			Msg(Resource.getString("audio.msg.pts.firstonly"));
 		}
 
-		Msg("Audio PTS: first packet "+sms.format(new java.util.Date(ptsval[0]/90))+", last packet "+sms.format(new java.util.Date(ptsval[ptsval.length-2]/90)));
+		Msg(Resource.getString("audio.msg.pts.start_end", sms.format(new java.util.Date(ptsval[0]/90))) + " " + sms.format(new java.util.Date(ptsval[ptsval.length-2]/90)));
 		ptsdata=true;
 	}
 
@@ -9447,7 +9443,7 @@ public boolean processAudio(String[] args) {
 		}
 
 		vbin.close();
-		Msg("Video PTS: start 1.GOP "+sms.format(new java.util.Date(vptsval[0]/90))+", end last GOP "+sms.format(new java.util.Date(vptsval[vptsval.length-1]/90)));
+		Msg(Resource.getString("video.msg.pts.start_end", sms.format(new java.util.Date(vptsval[0]/90))) + " " + sms.format(new java.util.Date(vptsval[vptsval.length-1]/90)));
 		vptsdata=true;
 	}
 
@@ -9464,6 +9460,7 @@ public boolean processAudio(String[] args) {
 
 	IDDBufferedOutputStream audiooutL = new IDDBufferedOutputStream(new FileOutputStream(newnameL),bs/2);
 	IDDBufferedOutputStream audiooutR = new IDDBufferedOutputStream(new FileOutputStream(newnameR));
+
 	if (options[10]>=4)
 		audiooutR = new IDDBufferedOutputStream(new FileOutputStream(newnameR),(bs/2));
 
@@ -9481,7 +9478,7 @@ public boolean processAudio(String[] args) {
 
 		if (jump < 0)
 		{
-			Msg("-> !! video & audio PTS doesn't match at any time!");  
+			Msg(Resource.getString("audio.msg.pts.mismatch"));  
 			vptsdata = false; 
 			x = 0; 
 		}
@@ -9489,26 +9486,13 @@ public boolean processAudio(String[] args) {
 		else
 			x = jump;
 
-		/**
-		pvacut:
-		while ( ptsval.length>2 && Math.abs(ptsval[x] - vptsval[0]) > 20000000 ) { //DM21022004 081.6 int18 changed
-			x++;
-			if (x>=ptsval.length-1) { 
-				Msg("-> !! video & audio pts doesn't match at any time!");  
-				vptsdata=false; 
-				x=0; 
-				break pvacut; 
-			}
-			continue pvacut;
-		}
-		**/
 	}
 
 	if (vptsdata) 
-		Msg("-> adjusting audio at video-timeline");
+		Msg(Resource.getString("audio.msg.adjust.at.videopts"));
 
 	if (ptsdata && !vptsdata && options[11]==0) 
-		Msg("-> adjusting audio at its own timeline");
+		Msg(Resource.getString("audio.msg.adjust.at.ownpts"));
 
 	yield();
 
@@ -9524,22 +9508,31 @@ public boolean processAudio(String[] args) {
 	riffw[0] = new RIFFHeader();  // normal, left
 	riffw[1] = new RIFFHeader();  // right
 
-	if (cBox[4].isSelected() && args[2].equals("mp")) {
-		if (RButton[15].isSelected()) {
+	if (cBox[4].isSelected() && args[2].equals("mp"))
+	{
+		if (RButton[15].isSelected())
+		{
 			audiooutL.write(riffw[0].ACMnull());
+
 			if (options[10]>=4) 
 				audiooutR.write(riffw[1].ACMnull());
-			Msg("-> add RIFF WAVE header to MPEG Audio as ACM Waveformat");
-		} else {
+
+			Msg(Resource.getString("audio.msg.addriff.acm"));
+		}
+		else
+		{
 			audiooutL.write(riffw[0].BWFnull());
+
 			if (options[10]>=4) 
 				audiooutR.write(riffw[1].BWFnull());
-			Msg("-> add RIFF WAVE header to MPEG Audio as BWF Waveformat");
+
+			Msg(Resource.getString("audio.msg.addriff.bwf"));
 		}
 	} 
-	else if (cBox[12].isSelected() && args[2].equals("ac")) {
+	else if (cBox[12].isSelected() && args[2].equals("ac"))
+	{
 		audiooutL.write(riffw[0].AC3null());
-		Msg("-> add RIFF WAVE header to AC-3 Audio");
+		Msg(Resource.getString("audio.msg.addriff.ac3"));
 	}
 
 	int pitch[] = { 1, Integer.parseInt(d2vfield[7].getText().toString()) };
@@ -9570,8 +9563,9 @@ public boolean processAudio(String[] args) {
 			}
 
 			//test 081.5++, shall update x, only if n doesn't point to a synchword and overrun.
-			if (ptspos[x+1]!=-1 && n>ptspos[x+1]){
-				Msg("!> PTS without a frame ("+ptspos[x+1]+"/"+n+")");
+			if (ptspos[x+1]!=-1 && n>ptspos[x+1])
+			{
+				Msg(Resource.getString("audio.msg.pts.wo_frame") + ptspos[x+1] + "/" + n + ")");
 				x++;
 			}
 
@@ -9583,13 +9577,18 @@ public boolean processAudio(String[] args) {
 			/*** parse header ********/
 			//DM19122003 081.6 int07 changed
 			ERRORCODE = (is_AC3 || !is_DTS) ? Audio.AC3_parseHeader(pushback,0) : 0; 
-			if (ERRORCODE < 1) { 
+			if (ERRORCODE < 1)
+			{ 
 				if (!is_AC3 || is_DTS)
 					ERRORCODE = Audio.DTS_parseHeader(pushback,0); 
-				if (ERRORCODE < 1) { 
+
+				if (ERRORCODE < 1)
+				{ 
 					audioin.unread(pushback,1,9); 
+
 					if (!cBox[3].isSelected() && !miss) //DM04112003 081.5++ info 
-						Msg("!> missing syncword @ "+(n-10)+", @ "+sms.format(new java.util.Date((long)(time_counter/90.0f)))); //DM07022004 081.6 int16 changed
+						Msg(Resource.getString("audio.msg.syncword.lost", "" + (n-10)) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f)))); //DM07022004 081.6 int16 changed
+
 					miss=true; 
 					n-=9; 
 					continue readloopdd; 
@@ -9616,9 +9615,11 @@ public boolean processAudio(String[] args) {
 			/********* expected position for following frame ********/
 			n += Audio.Size;
 
-			if (cBox[51].isSelected()){  // skip a frame
-				if (pitch[1]*pitch[0]==frame_counter){
-					Msg("-> discard frame# "+frame_counter+" ("+pitch[0]+")");
+			if (cBox[51].isSelected())
+			{  // skip a frame
+				if (pitch[1]*pitch[0]==frame_counter)
+				{
+					Msg(Resource.getString("audio.msg.frame.discard") + frame_counter + " (" + pitch[0] + ")");
 					pitch[0]++;
 					continue readloopdd;
 				}
@@ -9658,14 +9659,15 @@ public boolean processAudio(String[] args) {
 			//DM10042004 081.7 int01
 			if (is_AC3 && !is_DTS && RButton[16].isSelected() && (ERRORCODE = CRC.checkCRC16ofAC3(frame, 2, Audio.Size)) != 0 )
 			{
-				Msg("!> CRC" + ERRORCODE + " check failed @ " + actframe);
+				Msg(Resource.getString("audio.msg.crc.error", "" + ERRORCODE) + actframe);
 				audioin.unread(frame, 2, frame.length - 2);
 				n = actframe + 2;
 				continue readloopdd; 
 			}
 
 			if (!cBox[3].isSelected() && miss) //DM04112003 081.5++ info
-				Msg("!> found syncword @ "+actframe);
+				Msg(Resource.getString("audio.msg.syncword.found") + " " + actframe);
+
 			miss=false;
 
 			/********* check for change in frametype ********/ 
@@ -9778,9 +9780,9 @@ public boolean processAudio(String[] args) {
 
 					/****** write message *****/
 					if (awrite || !vptsdata)
-						audiostatusLabel.setText("pre-inserting..."); //DM18022004 081.6 int17 changed
+						audiostatusLabel.setText(Resource.getString("audio.status.pre-insert")); //DM18022004 081.6 int17 changed
 					else
-						audiostatusLabel.setText("paused..."); //DM18022004 081.6 int17 changed
+						audiostatusLabel.setText(Resource.getString("audio.status.pause")); //DM18022004 081.6 int17 changed
 
 					/****** stop if no more audio needed *****/
 					if (precount > vptsval[vptsval.length-1]+10000) {
@@ -9810,7 +9812,7 @@ public boolean processAudio(String[] args) {
 				audioin.unread(frame);
 
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg("-> "+ins[1]+" frame(s) ("+FramesToTime((int)ins[1],Audio.Time_length)+"ms) pre-inserted @ "+sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.pre-insert", "" + ins[1], FramesToTime((int)ins[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				continue readloopdd;
 
@@ -9827,9 +9829,9 @@ public boolean processAudio(String[] args) {
 
 			/****** message *****/
 			if (awrite || !vptsdata) 
-				audiostatusLabel.setText("writing..."); //DM18022004 081.6 int17 changed
+				audiostatusLabel.setText(Resource.getString("audio.status.write")); //DM18022004 081.6 int17 changed
 			else 
-				audiostatusLabel.setText("paused..."); //DM18022004 081.6 int17 changed
+				audiostatusLabel.setText(Resource.getString("audio.status.pause")); //DM18022004 081.6 int17 changed
 
 			/****** message *****/
 			if (options[30]==1) 
@@ -9847,9 +9849,9 @@ public boolean processAudio(String[] args) {
 			if ((newformat && awrite) || (newformat && !vptsdata)) {
 				String hdr = is_DTS ? Audio.DTS_displayHeader() : Audio.AC3_displayHeader();
 				if (options[47]<100) 
-					Msg("=> src_audio: "+hdr+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
+					Msg(Resource.getString("audio.msg.source", hdr) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f))));
 				else if (options[47]==100) 
-					Msg("=> src_audio: stop displaying, more than 100 audio mode changes in one file reduce work speed");
+					Msg(Resource.getString("audio.msg.source.max"));
 				else if (options[30]==1) 
 					System.out.println("=> src_audio: "+hdr+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
 				options[47]++;
@@ -9926,7 +9928,7 @@ public boolean processAudio(String[] args) {
 			if ( ptsval[x+1] < timeline) {
 				x++;
 				timeline=ptsval[x];
-				Msg("-> skipped sourceframe(s) @ "+sms.format(new java.util.Date((long)time_counter/90L)));
+				Msg(Resource.getString("audio.msg.summary.skip") + " " + sms.format(new java.util.Date((long)time_counter/90L)));
 				ce++;
 			}
 
@@ -10011,9 +10013,9 @@ public boolean processAudio(String[] args) {
 					}
 
 					if (awrite || !vptsdata) 
-						audiostatusLabel.setText("inserting..."); //DM18022004 081.6 int17 changed
+						audiostatusLabel.setText(Resource.getString("audio.status.insert")); //DM18022004 081.6 int17 changed
 					else 
-						audiostatusLabel.setText("paused..."); //DM18022004 081.6 int17 changed
+						audiostatusLabel.setText(Resource.getString("audio.status.pause")); //DM18022004 081.6 int17 changed
 
 					if (!vptsdata || (vptsdata && awrite)) {
 						audbuf.writeTo(audiooutL);
@@ -10044,7 +10046,7 @@ public boolean processAudio(String[] args) {
 				x++;
 
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg("-> "+ins[1]+" frame(s) ("+FramesToTime((int)ins[1],Audio.Time_length)+"ms) inserted @ "+sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.insert") + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				/*** reset PTS after inserting 081.5a ***/
 				timeline=ptsval[x];
@@ -10083,7 +10085,7 @@ public boolean processAudio(String[] args) {
 					if (cBox[12].isSelected()) 
 						riffw[0].AC3RiffData(afc.AC3RiffFormat(audbuf.toByteArray())); 
 
-					audiostatusLabel.setText("adding..."); //DM18022004 081.6 int17 changed
+					audiostatusLabel.setText(Resource.getString("audio.status.add")); //DM18022004 081.6 int17 changed
 					frame_counter++;
 					time_counter+=Audio.Time_length;
 					timeline+=Audio.Time_length;
@@ -10154,7 +10156,7 @@ public boolean processAudio(String[] args) {
 
 			//test 081.5++, shall update x, only if n doesn't point to a synchword and overrun.
 			if (ptspos[x+1]!=-1 && n>ptspos[x+1]){
-				Msg("!> PTS without a frame ("+ptspos[x+1]+"/"+n+")");
+				Msg(Resource.getString("audio.msg.pts.wo_frame") + ptspos[x+1] + "/" + n + ")");
 				x++;
 			}
 
@@ -10163,10 +10165,13 @@ public boolean processAudio(String[] args) {
 			n+=4;
 
 			/*** parse header ********/
-			if ( (ERRORCODE = Audio.MPA_parseHeader(pushmpa,0)) < 1) {
+			if ( (ERRORCODE = Audio.MPA_parseHeader(pushmpa,0)) < 1)
+			{
 				audioin.unread(pushmpa,1,3);
+
 				if (!cBox[3].isSelected() && !miss) //DM04112003 081.5++ info
-					Msg("!> missing syncword @ "+(n-4)+", @ "+sms.format(new java.util.Date((long)(time_counter/90.0f)))); //DM07022004 081.6 int16 changed
+					Msg(Resource.getString("audio.msg.syncword.lost", "" + (n-4)) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f)))); //DM07022004 081.6 int16 changed
+
 				miss=true;
 				n-=3;
 				continue readloop;
@@ -10197,7 +10202,7 @@ public boolean processAudio(String[] args) {
 			/********* pitch ********/
 			if (cBox[51].isSelected()){  // skip a frame
 				if (pitch[1]*pitch[0]==frame_counter){
-					Msg("-> discard frame# "+frame_counter+" ("+pitch[0]+")");
+					Msg(Resource.getString("audio.msg.frame.discard") + frame_counter + " (" + pitch[0] + ")");
 					pitch[0]++;
 					continue readloop;
 				}
@@ -10234,14 +10239,15 @@ public boolean processAudio(String[] args) {
 			//DM10042004 081.7 int01
 			if (RButton[16].isSelected() && (ERRORCODE = CRC.checkCRC16ofMPA(Audio, frame)) != 0 )
 			{
-				Msg("!> CRC check failed @ " + actframe);
+				Msg(Resource.getString("audio.msg.crc.error", "") + actframe);
 				audioin.unread(frame, 2, frame.length - 2);
 				n = actframe + 2;
 				continue readloop;
 			}
 
 			if (!cBox[3].isSelected() && miss) //DM04112003 081.5++ info
-				Msg("!> found syncword @ "+actframe);
+				Msg(Resource.getString("audio.msg.syncword.found") + actframe);
+
 			miss=false;
 
 			/********* check for change in frametype ********/
@@ -10335,9 +10341,9 @@ public boolean processAudio(String[] args) {
 
 					/****** write message *****/
 					if (awrite || !vptsdata) 
-						audiostatusLabel.setText("pre-inserting..."); //DM18022004 081.6 int17 changed
+						audiostatusLabel.setText(Resource.getString("audio.status.pre-insert")); //DM18022004 081.6 int17 changed
 					else 
-						audiostatusLabel.setText("paused...");  //DM18022004 081.6 int17 changed
+						audiostatusLabel.setText(Resource.getString("audio.status.pause"));  //DM18022004 081.6 int17 changed
 
 					/****** stop if no more audio needed *****/
 					if (precount > vptsval[vptsval.length-1]+10000) {
@@ -10413,7 +10419,7 @@ public boolean processAudio(String[] args) {
 				audioin.unread(frame);
 
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg("-> "+ins[1]+" frame(s) ("+FramesToTime((int)ins[1],Audio.Time_length)+"ms) pre-inserted @ "+sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.pre-insert", "" + ins[1], FramesToTime((int)ins[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				continue readloop;
 			} 
@@ -10429,9 +10435,9 @@ public boolean processAudio(String[] args) {
 
 			/****** write message *****/
 			if (awrite || !vptsdata) 
-				audiostatusLabel.setText("writing..."); //DM18022004 081.6 int17 changed
+				audiostatusLabel.setText(Resource.getString("audio.status.write")); //DM18022004 081.6 int17 changed
 			else 
-				audiostatusLabel.setText("paused..."); //DM18022004 081.6 int17 changed
+				audiostatusLabel.setText(Resource.getString("audio.status.pause")); //DM18022004 081.6 int17 changed
 
 			/****** stop if no more audio needed *****/
 			if (vptsdata && timeline > vptsval[vptsval.length-1]+10000) {
@@ -10440,13 +10446,15 @@ public boolean processAudio(String[] args) {
 			}
 
 			/****** message frameformat *****/
-			if ((newformat && awrite) || (newformat && !vptsdata)) {
+			if ((newformat && awrite) || (newformat && !vptsdata))
+			{
 				if (options[47]<100) 
-					Msg("=> src_audio: "+Audio.MPA_displayHeader()+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
+					Msg(Resource.getString("audio.msg.source", Audio.MPA_displayHeader()) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f))));
 				else if (options[47]==100) 
-					Msg("=> src_audio: stop displaying, more than 100 audio mode changes in one file reduce work speed");
+					Msg(Resource.getString("audio.msg.source.max"));
 				else if (options[30]==1) 
 					System.out.println("=> src_audio: "+Audio.MPA_displayHeader()+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
+
 				options[47]++;
 				yield();
 				newformat=false;
@@ -10559,7 +10567,7 @@ public boolean processAudio(String[] args) {
 			if ( ptsval[x+1] < timeline) {
 				x++;
 				timeline=ptsval[x];
-				Msg("-> skipped sourceframe(s) @ "+sms.format(new java.util.Date((long)time_counter/90L)));
+				Msg(Resource.getString("audio.msg.summary.skip") + " " + sms.format(new java.util.Date((long)time_counter/90L)));
 				ce++;
 			}
 
@@ -10625,9 +10633,9 @@ public boolean processAudio(String[] args) {
 
 					/******** message *****/
 					if (awrite || !vptsdata) 
-						audiostatusLabel.setText("inserting..."); //DM18022004 081.6 int17 changed
+						audiostatusLabel.setText(Resource.getString("audio.status.insert")); //DM18022004 081.6 int17 changed
 					else 
-						audiostatusLabel.setText("paused..."); //DM18022004 081.6 int17 changed
+						audiostatusLabel.setText(Resource.getString("audio.status.pause")); //DM18022004 081.6 int17 changed
   
 					if (!vptsdata || (vptsdata && awrite)) {
 						if (options[16]==1) {
@@ -10704,7 +10712,7 @@ public boolean processAudio(String[] args) {
 				slloop=false;
 				x++;
 				if (ins[1]>0)  //DM17012004 081.6 int11 changed
-					Msg("-> "+ins[1]+" frame(s) ("+FramesToTime((int)ins[1],Audio.Time_length)+"ms) inserted @ "+sms.format(new java.util.Date(ins[0]/90L)));
+					Msg(Resource.getString("audio.msg.summary.insert", "" + ins[1], FramesToTime((int)ins[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(ins[0]/90L)));
 
 				/*** reset PTS after inserting 081.5a ***/
 				timeline=ptsval[x];
@@ -10798,7 +10806,7 @@ public boolean processAudio(String[] args) {
 					frame_counter++;
 					addf[1]++;
 					time_counter += Audio.Time_length;
-					audiostatusLabel.setText("adding..."); //DM18022004 081.6 int17 changed
+					audiostatusLabel.setText(Resource.getString("audio.status.add")); //DM18022004 081.6 int17 changed
 
 					if (options[30]==1) {
 						System.out.println("(4)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0f)) ));
@@ -10826,7 +10834,7 @@ public boolean processAudio(String[] args) {
 			audioin.read(frame);
 			Audio.WAV_parseHeader(frame,0);
 			audioin.unread(frame,Audio.Emphasis,1000-Audio.Emphasis);
-			Msg("=> src_audio: "+Audio.WAV_saveAnddisplayHeader()+" @ "+sms.format(new java.util.Date((long)(time_counter/90.0f))));
+			Msg(Resource.getString("audio.msg.source", Audio.WAV_saveAnddisplayHeader()) + " " + sms.format(new java.util.Date((long)(time_counter/90.0f))));
 			layertype = 5;
 
 			n = Audio.Emphasis; //start of pcm data
@@ -10947,15 +10955,15 @@ public boolean processAudio(String[] args) {
 
 
 	if (addf[1]>0) //DM17012004 081.6 int11 changed
-		Msg("-> "+addf[1]+" frame(s) ("+FramesToTime((int)addf[1],Audio.Time_length)+"ms) added @ "+sms.format(new java.util.Date(addf[0]/90L)));
+		Msg(Resource.getString("audio.msg.summary.add", "" + addf[1], FramesToTime((int)addf[1],Audio.Time_length)) + " " + sms.format(new java.util.Date(addf[0]/90L)));
 
-	audiostatusLabel.setText("finished..."); //DM18022004 081.6 int17 changed
+	audiostatusLabel.setText(Resource.getString("audio.status.finish")); //DM18022004 081.6 int17 changed
 
 	String tc = sms.format( new java.util.Date((long)(time_counter/90.0f)) );
-	Msg("audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+tc+" done..");
+	Msg(Resource.getString("audio.msg.summary.frames", "" + frame_counter + "/" + cb + "/" + ce + "/" + cc + "/" + cd, "" + tc));
 
 	if (jss>0) 
-		Msg("-> "+jss+" stereo/jointstereo change(s) detected...");
+		Msg(Resource.getString("audio.msg.summary.jstereo", "" + jss));
 
 	audioin.close(); 
 	audbuf.close();
@@ -11108,7 +11116,7 @@ public boolean processAudio(String[] args) {
 	else
 		//DM12042004 081.7 int01 changed, //DM27042004 081.7 int02 changed
 		//DM15072004 081.7 int06 changed
-		comparedata = "Audio " + (NoOfAudio++) + " " + audio_type[layertype] + ":\t" + frame_counter + " Frames\t" + tc + "\t" + infoPTSMatch(args, vptsdata, ptsdata) + cb + "/" + ce + "/" + cc + "/" + cd;
+		comparedata = Resource.getString("audio.msg.audio") + " " + (NoOfAudio++) + " " + audio_type[layertype] + ":\t" + frame_counter + " Frames\t" + tc + "\t" + infoPTSMatch(args, vptsdata, ptsdata) + cb + "/" + ce + "/" + cc + "/" + cd;
 
 	switch (layertype) { 
 	case 0: { 
@@ -11120,7 +11128,7 @@ public boolean processAudio(String[] args) {
 			Common.renameTo(audioout1, ac3name); //DM13042004 081.7 int01 changed
 			//audioout1.renameTo(ac3name); 
 
-			Msg("===> new File: "+ac3name); 
+			Msg(Resource.getString("audio.msg.newfile", "") + " " + ac3name); 
 			InfoAtEnd.add(comparedata+"\t "+ac3name);
 		}
 		if (audioout2.length()<100) 
@@ -11139,7 +11147,7 @@ public boolean processAudio(String[] args) {
 			Common.renameTo(audioout1, mp3name); //DM13042004 081.7 int01 changed
 			//audioout1.renameTo(mp3name); 
 
-			Msg("===> new File: "+mp3name); 
+			Msg(Resource.getString("audio.msg.newfile", "") + " " + mp3name); 
 			InfoAtEnd.add(comparedata+"\t "+mp3name);
 		}
 		if (audioout2.length()<100) 
@@ -11161,7 +11169,7 @@ public boolean processAudio(String[] args) {
 				Common.renameTo(audioout1, mp2nameL); //DM13042004 081.7 int01 changed
 				//audioout1.renameTo(mp2nameL); 
 
-				Msg("===> new (left) File: "+mp2nameL); 
+				Msg(Resource.getString("audio.msg.newfile", Resource.getString("audio.msg.newfile.left")) + " " + mp2nameL); 
 				InfoAtEnd.add(comparedata+"\t "+mp2nameL); 
 			}
 			if (audioout2.length()<100) 
@@ -11170,7 +11178,7 @@ public boolean processAudio(String[] args) {
 				Common.renameTo(audioout2, mp2nameR); //DM13042004 081.7 int01 changed
 				//audioout2.renameTo(mp2nameR); 
 
-				Msg("===> new (right)File: "+mp2nameR); 
+				Msg(Resource.getString("audio.msg.newfile", Resource.getString("audio.msg.newfile.right")) + " " + mp2nameR); 
 				InfoAtEnd.add(comparedata+"\t "+mp2nameR); 
 			}
 
@@ -11185,7 +11193,7 @@ public boolean processAudio(String[] args) {
 				Common.renameTo(audioout1, mp2name); //DM13042004 081.7 int01 changed
 				//audioout1.renameTo(mp2name); 
 
-				Msg("===> new File: "+mp2name); 
+				Msg(Resource.getString("audio.msg.newfile", "") + " " + mp2name); 
 				InfoAtEnd.add(comparedata+"\t "+mp2name); 
 			}
 			if (audioout2.length()<100) 
@@ -11207,7 +11215,7 @@ public boolean processAudio(String[] args) {
 			Common.renameTo(audioout1, mp1name); //DM13042004 081.7 int01 changed
 			//audioout1.renameTo(mp1name); 
 
-			Msg("===> new File: "+mp1name); 
+			Msg(Resource.getString("audio.msg.newfile", "") + " " + mp1name); 
 			InfoAtEnd.add(comparedata+"\t "+mp1name); 
 		}
 		if (audioout2.length()<100) 
@@ -11227,7 +11235,7 @@ public boolean processAudio(String[] args) {
 			Common.renameTo(audioout1, dtsname); //DM13042004 081.7 int01 changed
 			//audioout1.renameTo(dtsname); 
 
-			Msg("===> new File: "+dtsname); 
+			Msg(Resource.getString("audio.msg.newfile", "") + " " + dtsname); 
 			InfoAtEnd.add(comparedata+"\t "+dtsname);
 		}
 		if (audioout2.length()<100) 
@@ -11246,11 +11254,7 @@ public boolean processAudio(String[] args) {
 		else { 
 			Common.renameTo(audioout1, wavname); //DM13042004 081.7 int01 changed
 
-
-
-			//audioout1.renameTo(wavname); 
-
-			Msg("===> new File: "+wavname); 
+			Msg(Resource.getString("audio.msg.newfile", "") + " " + wavname); 
 			InfoAtEnd.add(comparedata+"\t "+wavname);
 		}
 		if (audioout2.length()<100) 
@@ -11262,7 +11266,7 @@ public boolean processAudio(String[] args) {
 	}
 	case 10: //DM27042004 081.7 int02 add
 	{
-		Msg("!> no Audio found on this stream data..."); 
+		Msg(Resource.getString("audio.msg.noaudio")); 
 
 		audioout1.delete();
 		audioout2.delete();
@@ -11277,7 +11281,7 @@ public boolean processAudio(String[] args) {
 	}    // end try
 	catch (IOException e) {  
 		//DM25072004 081.7 int07 add
-		Msg("file I/O error: " + e);  
+		Msg(Resource.getString("audio.error.io") + " " + e);  
 	}
 
 	progress.setValue(100); //DM13042004 081.7 int01 add
