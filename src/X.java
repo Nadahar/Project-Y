@@ -131,8 +131,8 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b10_lang";
-static String version_date = "14.10.2004";
+static String version_name = "ProjectX 0.81.8.02b11_lang";
+static String version_date = "15.10.2004";
 
 
 //DM18062004 081.7 int05 add
@@ -191,7 +191,7 @@ static JComboBox[] comBox = new JComboBox[38];
 //DM14072004 081.7 int06 changed
 //DM20072004 081.7 int07 changed
 //DM01102004 081.8.02 changed
-static JCheckBox[] cBox = new JCheckBox[71];
+static JCheckBox[] cBox = new JCheckBox[72];
 
 static JList list1, list3, list4;
 static X_JFileChooser chooser; //DM12122003 081.6 int05
@@ -2458,6 +2458,9 @@ protected JPanel buildoptionPanel() {
 	cBox[43].setSelected(false);
 	op0.add(cBox[43]);
 
+
+	op0.add(Box.createRigidArea(new Dimension(1,5)));
+
 	//DM12122003 081.6 int05
 	d2vfield[8] = new JTextField("");
 	d2vfield[8].setPreferredSize(new Dimension(250,25));
@@ -3031,19 +3034,25 @@ class EXECUTE extends JFrame
 
 		JButton exe1 = new JButton(Resource.getString("execute.exec"));
 		exe1.setActionCommand("exec1");
+
 		JButton exe2 = new JButton(Resource.getString("execute.exec"));
 		exe2.setActionCommand("exec2");
+
 		JButton exe3 = new JButton(Resource.getString("execute.exec"));
 		exe3.setActionCommand("exec3");
+
 		JButton close = new JButton(Resource.getString("execute.close"));
 		close.setActionCommand("close");
+		close.setPreferredSize(new Dimension(400,24));
 
 		exe1.setPreferredSize(new Dimension(100,20));
 		exe2.setPreferredSize(new Dimension(100,20));
 		exe3.setPreferredSize(new Dimension(100,20));
+
 		exe1.addActionListener(exli);
 		exe2.addActionListener(exli);
 		exe3.addActionListener(exli);
+		close.addActionListener(exli);
 
 		JPanel ex1 = new JPanel();
 		ex1.setLayout(new BoxLayout(ex1, BoxLayout.X_AXIS));
@@ -3090,6 +3099,8 @@ class EXECUTE extends JFrame
 			exefield[v+3].setToolTipText(ett);
 			container.add(ex4[v]);
 		}
+
+		container.add(close);
 
 		getContentPane().add(container);
 		pack();
@@ -3652,7 +3663,7 @@ class COLLECTION extends JFrame
 		RButton[6].setMaximumSize(new Dimension(230,20));
 		cutPanel.add(RButton[6]);
 
-		cutPanel.add(new JLabel(" "));
+		cutPanel.add(Box.createRigidArea(new Dimension(1, 12)));
 
 		cutPanel.add(new JLabel(Resource.getString("collection.pidlist")));
 
@@ -3704,15 +3715,21 @@ class COLLECTION extends JFrame
 		cpoints.addActionListener(cutAction);
 		cutPanel.add(cpoints);
 
-		cutPanel.add(new JLabel(" ")); //DM27042004 081.7 int02 changed
+		cutPanel.add(Box.createRigidArea(new Dimension(1, 12)));
 
 		cBox[2] = new JCheckBox(Resource.getString("collection.ceatesubdir"));
 		cBox[2].setToolTipText(Resource.getString("collection.createsubdir_tip"));
-		cBox[2].setPreferredSize(new Dimension(230,20));
-		cBox[2].setMaximumSize(new Dimension(230,20));
+		cBox[2].setPreferredSize(new Dimension(250,20));
+		cBox[2].setMaximumSize(new Dimension(250,20));
 		cutPanel.add(cBox[2]);
 
-		cutPanel.add(new JLabel(" ")); //DM27042004 081.7 int02 changed
+		cBox[71] = new JCheckBox(Resource.getString("collection.createsubdir.name"));
+		cBox[71].setToolTipText(Resource.getString("collection.createsubdir.name_tip"));
+		cBox[71].setPreferredSize(new Dimension(250,20));
+		cBox[71].setMaximumSize(new Dimension(250,20));
+		cutPanel.add(cBox[71]);
+
+		cutPanel.add(Box.createRigidArea(new Dimension(1, 12)));
 
 		cutPanel.add(new JLabel(Resource.getString("collection.exportlimits")));
 
@@ -3751,7 +3768,7 @@ class COLLECTION extends JFrame
 		CL3.add(comBox[24]);  
 		cutPanel.add(CL3);
 
-		cutPanel.add(new JLabel(" ")); //DM27042004 081.7 int02 changed
+		cutPanel.add(Box.createRigidArea(new Dimension(1, 12)));
 
 		//DM17012004 081.6 int11 changed, DM18022004 081.6 int17 changed
 		Object[] cut_types = 
@@ -5612,6 +5629,13 @@ public void run() {
 					new File(workouts).mkdirs();
 				}
 
+				//out directory named by first file of coll.
+				if (cBox[71].isSelected())
+				{
+					workouts += "_" + new File(firstfile).getName() + filesep;
+					new File(workouts).mkdirs();
+				}
+
 				//DM12072004 081.7 int06 add
 				if (cBox[54].isSelected() && comBox[19].getSelectedIndex() == 1)
 				{
@@ -5624,7 +5648,7 @@ public void run() {
 				}
 
 				Msg(Resource.getString("run.write.output.to"));
-				Msg("\t"+workouts);
+				Msg("\t" + workouts);
 
 				if (ctemp.size()>0)
 					Msg("-> " + ctemp.size() + " " + Resource.getString("run.cutpoints.defined") + " ( "+comBox[17].getSelectedItem()+" )");
