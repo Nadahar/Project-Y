@@ -4053,6 +4053,7 @@ class COLLECTION extends JFrame
 			if (point==null) 
 				break;
 
+
 			if (point.trim().equals("")) 
 				continue;
 
@@ -9692,7 +9693,8 @@ public boolean processAudio(String[] args)
 				compare = Audio.DTS_compareHeader(); 
 			else 
 				compare = Audio.AC3_compareHeader(); 
-			if ( compare > 0 ) 
+
+			if (compare > 0) 
 				newformat=true; 
 
 			if (frame_counter==0) 
@@ -9702,11 +9704,15 @@ public boolean processAudio(String[] args)
 
 			/**** replace not 3/2 with silence ac3 3/2 061i++ ****/
 			//R_One18122003 081.6 int07 changed
-			if (!is_DTS && cBox[10].isSelected() && Audio.Mode != 7 ) {
-				for (int c=0;c<AC3list.size();c++) {
+			if (!is_DTS && cBox[10].isSelected() && Audio.Mode != 7 )
+			{
+				for (int c=0; c < AC3list.size(); c++)
+				{
 					byte[] ac3data = (byte[])AC3list.get(c);
+
 					if ( ((0xE0 & ac3data[6])>>>5) != 7 ) 
 						continue;
+
 					frame = ac3data;
 					break;
 				}
@@ -10783,6 +10789,7 @@ public boolean processAudio(String[] args)
 							}
 						} else {
 							audiooutL.write(copyframe[0]);
+
 
 
 
@@ -15329,6 +15336,7 @@ class PIDdemux {
 			} else {
 				ptslength = (0xFF&origdata[8]);           // read byte pts-length
 				shift=3;
+
 
 
 				if ((0x80&origdata[7])==0) { 
