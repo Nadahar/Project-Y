@@ -94,6 +94,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
+import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -5648,7 +5649,8 @@ public void run() {
 				//out directory named by first file of coll.
 				if (cBox[71].isSelected())
 				{
-					workouts += "_" + new File(firstfile).getName() + filesep;
+					File f = new File(firstfile);
+					workouts += new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date(f.lastModified())) + "_" + f.getName() + filesep;
 					new File(workouts).mkdirs();
 				}
 
@@ -5657,7 +5659,7 @@ public void run() {
 				{
 					workouts += new File(firstfile).getName()
 						+ filesep
-						+ new java.text.SimpleDateFormat("yyyy-MM-dd.HH.mm.ss.SS").format(new Date()) + ".rec"
+						+ new java.text.SimpleDateFormat("yyyy-MM-dd.HH.mm.ss.SSS").format(new Date()) + ".rec"
 						+ filesep;
 
 					new File(workouts).mkdirs();
@@ -10098,6 +10100,8 @@ public boolean processAudio(String[] args)
 
 				if (ERRORCODE<1) { 
 					audioin.unread(frame,1,frame.length-1);
+
+
 					n = actframe+1; 
 					continue readloopdd; 
 				} else {
