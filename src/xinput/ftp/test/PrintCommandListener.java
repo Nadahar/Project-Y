@@ -1,4 +1,4 @@
-package xinput.test;
+package xinput.ftp.test;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
