@@ -91,8 +91,7 @@ public class Resource {
 	/**
 	 * Loads Language from ini file.
 	 * 
-	 * @param filename
-	 *            Name of the inifile.
+	 * @param filename Name of the inifile.
 	 */
 	public static void loadLang(String inifile)
 	{
@@ -113,7 +112,7 @@ public class Resource {
 						locale=new Locale(lang);
 						System.out.println("locale="+locale);
 						try {
-							resource = ResourceBundle.getBundle("pjxresources");
+							resource = ResourceBundle.getBundle("pjxresources", locale);
 						} catch (MissingResourceException e) {
 							// our fallback is english
 							resource = defaultResource;
@@ -308,20 +307,6 @@ public class Resource {
 		group.add(item_sys);
 
 		langMenu.addSeparator();
-
-/*
- * JRadioButtonMenuItem item_eng = new JRadioButtonMenuItem();
- * localize(item_eng, "language.english"); item_eng.addActionListener(listener);
- * item_eng.setSelected(Locale.ENGLISH.equals(locale));
- * item_eng.setActionCommand(Locale.ENGLISH.toString()); langMenu.add(item_eng);
- * group.add(item_eng);
- * 
- * JRadioButtonMenuItem item_ger = new JRadioButtonMenuItem();
- * localize(item_ger, "language.german"); item_ger.addActionListener(listener);
- * item_ger.setSelected(Locale.GERMAN.equals(locale));
- * item_ger.setActionCommand(Locale.GERMAN.toString()); langMenu.add(item_ger);
- * group.add(item_ger);
- */
 
 		Locale[] locales = getAvailableLocales();
 		for (int i = 0; i < locales.length; i++) {
