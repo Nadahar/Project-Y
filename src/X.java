@@ -168,7 +168,7 @@ static java.text.DateFormat base_time = new java.text.SimpleDateFormat("HH:mm:ss
 PrintStream logging;
 static String loggin="", workouts ="", loggin2="";
 static boolean comchange=false, outchange=false, singleraw=false, newvideo=true, running=false, qinfo=false, qbreak=false, qpause=false;
-static String outalias = "output to same location as 1st file in collection";
+static String outalias = ">> output to same location as 1st file in collection";
 static String newOutName = "";
 
 static long[] options = new long[58];
@@ -2969,28 +2969,44 @@ class FileListener implements ActionListener
 /*****************
  * execute panel *
  *****************/
-class EXECUTE extends JFrame {
+class EXECUTE extends JFrame
+{
 
-	public EXECUTE() {
-		addWindowListener (new WindowAdapter(){ public void windowClosing(WindowEvent e) { close(); } });
-		setTitle("external program executions");
+	public EXECUTE()
+	{
+		addWindowListener (new WindowAdapter()
+		{
+			public void windowClosing(WindowEvent e)
+			{
+				close();
+			}
+		});
 
-		ActionListener exli = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		setTitle(RESOURCE.getString("execute.title"));
+
+		ActionListener exli = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				try 
 				{
-				String actName = e.getActionCommand();
-				if (actName.equals("close")) 
-					close();
-				else if (actName.equals("exec1")) 
-					Runtime.getRuntime().exec(exefield[0].getText().toString());
-				else if (actName.equals("exec2")) 
-					Runtime.getRuntime().exec(exefield[1].getText().toString());
-				else if (actName.equals("exec3")) 
-					Runtime.getRuntime().exec(exefield[2].getText().toString());
+					String actName = e.getActionCommand();
+
+					if (actName.equals("close")) 
+						close();
+
+					else if (actName.equals("exec1")) 
+						Runtime.getRuntime().exec(exefield[0].getText().toString());
+
+					else if (actName.equals("exec2")) 
+						Runtime.getRuntime().exec(exefield[1].getText().toString());
+
+					else if (actName.equals("exec3")) 
+						Runtime.getRuntime().exec(exefield[2].getText().toString());
 				}
-				catch (Exception ex) { 
-					Msg(" ! execution error: "+ex); 
+				catch (Exception ex)
+				{ 
+					Msg(RESOURCE.getString("execute.error") + " " + ex); 
 				}
 			}
 		};
@@ -2998,23 +3014,25 @@ class EXECUTE extends JFrame {
 		JPanel container = new JPanel();
 		container.setLayout( new ColumnLayout() );
 
-		exefield[0] = new JTextField("commandline #1");
+		exefield[0] = new JTextField(RESOURCE.getString("execute.cmdl"));
 		exefield[0].setPreferredSize(new Dimension(300,25));
-		exefield[1] = new JTextField("commandline #2");
+		exefield[1] = new JTextField(RESOURCE.getString("execute.cmdl"));
 		exefield[1].setPreferredSize(new Dimension(300,25));
-		exefield[2] = new JTextField("commandline #3");
+		exefield[2] = new JTextField(RESOURCE.getString("execute.cmdl"));
 		exefield[2].setPreferredSize(new Dimension(300,25));
 
-		JButton exe1 = new JButton("exec");
+		JButton exe1 = new JButton(RESOURCE.getString("execute.exec"));
 		exe1.setActionCommand("exec1");
-		JButton exe2 = new JButton("exec");
+		JButton exe2 = new JButton(RESOURCE.getString("execute.exec"));
 		exe2.setActionCommand("exec2");
-		JButton exe3 = new JButton("exec");
+		JButton exe3 = new JButton(RESOURCE.getString("execute.exec"));
 		exe3.setActionCommand("exec3");
-		JButton close = new JButton("close");
-		exe1.setPreferredSize(new Dimension(70,20));
-		exe2.setPreferredSize(new Dimension(70,20));
-		exe3.setPreferredSize(new Dimension(70,20));
+		JButton close = new JButton(RESOURCE.getString("execute.close"));
+		close.setActionCommand("close");
+
+		exe1.setPreferredSize(new Dimension(100,20));
+		exe2.setPreferredSize(new Dimension(100,20));
+		exe3.setPreferredSize(new Dimension(100,20));
 		exe1.addActionListener(exli);
 		exe2.addActionListener(exli);
 		exe3.addActionListener(exli);
@@ -3023,10 +3041,12 @@ class EXECUTE extends JFrame {
 		ex1.setLayout(new BoxLayout(ex1, BoxLayout.X_AXIS));
 		ex1.add(exefield[0]); 
 		ex1.add(exe1);  
+
 		JPanel ex2 = new JPanel();
 		ex2.setLayout(new BoxLayout(ex2, BoxLayout.X_AXIS));
 		ex2.add(exefield[1]); 
 		ex2.add(exe2);  
+
 		JPanel ex3 = new JPanel();
 		ex3.setLayout(new BoxLayout(ex3, BoxLayout.X_AXIS));
 		ex3.add(exefield[2]); 
@@ -3037,13 +3057,21 @@ class EXECUTE extends JFrame {
 		container.add(ex1);
 		container.add(ex2);
 		container.add(ex3);
-		container.add(new JLabel("post commands: "));
+		container.add(new JLabel(RESOURCE.getString("execute.postcommand")));
 
-		String ett = "execute this command after a coll./split part has been processed";
-		String[] ln = { " demux"," to VDR"," to MPG"," to PVA"," to TS" };
+		String ett = RESOURCE.getString("execute.postcommand_tip");
+		String[] ln = { 
+			RESOURCE.getString("mainpanel.box.demux"),
+			RESOURCE.getString("mainpanel.box.toVDR"),
+			RESOURCE.getString("mainpanel.box.toM2P"),
+			RESOURCE.getString("mainpanel.box.toPVA"),
+			RESOURCE.getString("mainpanel.box.toTS")
+		};
 
 		JPanel[] ex4 = new JPanel[5];
-		for (int v=0;v<5;v++) {
+
+		for (int v=0; v < 5; v++)
+		{
 			exefield[v+3] = new JTextField("");
 			exefield[v+3].setPreferredSize(new Dimension(300,25));
 			ex4[v] = new JPanel();
@@ -3061,7 +3089,8 @@ class EXECUTE extends JFrame {
 		UIManager.addPropertyChangeListener(new UISwitchListener(container));
 	}
 
-	protected void centerDialog() {
+	protected void centerDialog()
+	{
 		Dimension screenSize = this.getToolkit().getScreenSize();
 		Dimension size = this.getSize();
 		screenSize.height = screenSize.height/2;
@@ -3073,7 +3102,8 @@ class EXECUTE extends JFrame {
 		this.setLocation(x,y);
 	}
 
-	public void close() {
+	public void close()
+	{
 		dispose(); //DM26032004 081.6 int18 changed
 	}
 }
@@ -3241,7 +3271,8 @@ class PREVIEW
 /*************
  * cut panel *
  *************/
-class COLLECTION extends JFrame {
+class COLLECTION extends JFrame
+{
 
 	JTextField includeField, framecutfield;
 	JList includeList;
@@ -3263,16 +3294,20 @@ class COLLECTION extends JFrame {
 	//PREVIEW Preview = new PREVIEW();
 
 	//DM18022004 081.6 int17 new
-	class DNDListener2 implements DropTargetListener {
-		public void drop(DropTargetDropEvent e) {
+	class DNDListener2 implements DropTargetListener
+	{
+		public void drop(DropTargetDropEvent e)
+		{
 			try 
 			{
 			int da = e.getDropAction();  // 1=copy, 2=move
 
-			if ( da==0 || da>2) { 
+			if ( da==0 || da>2)
+			{ 
 				e.rejectDrop(); 
 				return; 
 			}
+
 			e.acceptDrop(da);
 
 			Transferable tr = e.getTransferable();
@@ -3280,6 +3315,7 @@ class COLLECTION extends JFrame {
 			java.util.List li = (java.util.List)tr.getTransferData(df[0]);
 
 			Object[] val = li.toArray();
+
 			if (val.length>0)
 				loadList(val[0].toString());
 
@@ -3303,54 +3339,83 @@ class COLLECTION extends JFrame {
 		{}
 	}
 
-	class JumpListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
+	class JumpListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
 			if (!action) 
 				return;
+
 			String actName = e.getActionCommand();
 			int val = search.getValue();
+
 			if (actName.equals("<<"))
 				search.setValue(val-312500);
+
 			else if (actName.equals("<"))
 				search.setValue(val-2);
+
 			else if (actName.equals(">"))
 				search.setValue(val+2);
+
 			else if (actName.equals(">>"))
 				search.setValue(val+312500);
+
 			else if (actName.equals("loadlist"))
 				loadList();
+
 			else if (actName.equals("savelist"))
 				saveList();
 		}
 	}
 
-	class CutListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
+	class CutListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
 			if (!action)
 				return;
 
 			action=false;
 			String actName = e.getActionCommand();
 
-			if (actName.equals("del point")) {
+			if (actName.equals("delpoint"))
+			{
 				comBox[14].removeItemAt(comBox[14].getSelectedIndex());
+
 				if (comBox[14].getItemCount()>0)
 					comBox[14].setSelectedIndex(comBox[14].getItemCount()-1);
-			}else if (actName.equals("cutnumber") || actName.equals("add point")) {
-				if (!framecutfield.getText().equals("")) {
+			}
+
+			else if (actName.equals("cutnumber") || actName.equals("addpoint"))
+			{
+				if (!framecutfield.getText().equals(""))
+				{
 					comBox[14].addItem(framecutfield.getText());
 					comBox[14].setSelectedIndex(comBox[14].getItemCount()-1);
 				}
+
 				framecutfield.setText("");
-			}else if (actName.equals("apply")) {
+			}
+
+			else if (actName.equals("apply"))
+			{
 				apply();
 				action=true;
+
 				return;
-			}else if (actName.equals("apply & close")) {
+			}
+
+			else if (actName.equals("apply_close"))
+			{
 				close();
 				action=true;
+
 				return;
-			}else if (actName.equals("ID")) {   //DM20032004 081.6 int18 changed
+			}
+
+			else if (actName.equals("ID"))    //DM20032004 081.6 int18 changed
+			{
 				try
 				{
 					String val = includeField.getText().toString();
@@ -3371,12 +3436,19 @@ class COLLECTION extends JFrame {
 				{
 					Msg("-> wrong number as ID");
 				}
+
 				includeField.setText("");
 				action=true;
+
 				return;
-			}else if (actName.equals("transferPIDs")) {  //DM28112003 081.5++
+			}
+
+			else if (actName.equals("transferPIDs"))  //DM28112003 081.5++
+			{
 				Object[] val = includeList.getSelectedValues();
-				if (val.length>0) {
+
+				if (val.length>0)
+				{
 					comchange=true;
 					ArrayList cf[] = collfiles;
 					ArrayList infiles = (ArrayList)collfiles[activecoll];
@@ -3385,11 +3457,15 @@ class COLLECTION extends JFrame {
 
 					//transfer files + selected PIDs
 					collfiles[cf.length] = new ArrayList();
+
 					for (int a=0; a<infiles.size(); a++)
 						collfiles[cf.length].add(infiles.get(a));
+
 					ArrayList npids = new ArrayList();
+
 					for (int a=0; a<val.length; a++) 
 						npids.add(val[a]);
+
 					speciallist.add(npids);
 					cutlist.add(new ArrayList());
 					collout.add(collout.get(activecoll));
@@ -3402,35 +3478,48 @@ class COLLECTION extends JFrame {
 
 					if (comBox[0].getItemCount() > 0) //DM26032004 081.6 int18 changed
 						comBox[0].addItem("" + comBox[0].getItemCount());
+
 					else 
 						comBox[0].addItem("0");
 
 					comchange=false;
 				}
 				action=true;
+
 				return;
-			}else if (actName.equals("transferCuts")) {  //DM28112003 081.5++
+			}
+
+			else if (actName.equals("transferCuts"))  //DM28112003 081.5++
+			{
 				int NumOfPts=0;
 				comchange=true;
-				if ((NumOfPts=comBox[14].getItemCount())>2){ //2cutpoints are to few
+
+				if ((NumOfPts=comBox[14].getItemCount())>2) //2cutpoints are to few
+				{
 					ArrayList infiles = (ArrayList)collfiles[activecoll];
-					for (int b=2; b<NumOfPts; b+=2){
+
+					for (int b=2; b<NumOfPts; b+=2)
+					{
 						ArrayList cf[] = collfiles;
 						collfiles = new ArrayList[cf.length+1];
 						System.arraycopy(cf,0,collfiles,0,cf.length);
 
 						//transfer files + selected PIDs
 						collfiles[cf.length] = new ArrayList();
+
 						for (int a=0; a<infiles.size(); a++)
 							collfiles[cf.length].add(infiles.get(a));
 
 						ArrayList npids = new ArrayList();
+
 						for (int a=0; a<dataList.size(); a++) 
 							npids.add(dataList.get(a));
+
 						speciallist.add(npids);
 						collout.add(collout.get(activecoll));
 
 						ArrayList Cuts = new ArrayList();
+
 						for (int a=b; a<NumOfPts && a<b+2; a++) 
 							Cuts.add(comBox[14].getItemAt(a));
 
@@ -3438,57 +3527,75 @@ class COLLECTION extends JFrame {
 
 						if (comBox[0].getItemCount() > 0) //DM26032004 081.6 int18 changed
 							comBox[0].addItem(""+comBox[0].getItemCount());
+
 						else
 							comBox[0].addItem("0");
 					}
+
 					while (comBox[14].getItemCount()>2)
 						comBox[14].removeItemAt(2);
 				}
+
 				comchange=false;
 				action=true;
+
 				return;
 			}
 
 			//DM17012004 081.6 int11 changed
 			//DM29012004 081.6 int12 fix
-			if (comBox[14].getItemCount()>0){
+			if (comBox[14].getItemCount()>0)
+			{
 				cutdel.setEnabled(true);
 
 				Object selectedItem = comBox[14].getSelectedItem();
 				cutPoints = new long[comBox[14].getItemCount()];
+
 				for (int a=0;a<cutPoints.length;a++)
 					cutPoints[a] = parseValue(comBox[14].getItemAt(a).toString(),false);
+
 				java.util.Arrays.sort(cutPoints);
 				comBox[14].removeAllItems();
+
 				for (int a=0;a<cutPoints.length;a++)
 					comBox[14].addItem(parseValue(cutPoints[a]));
+
 				comBox[14].setSelectedItem(selectedItem);
 
 				//DM27042004 081.7 int02 changed
 				if ((comBox[14].getSelectedIndex()&1)==1) 
 					MPVDecoder.picture.showCut(false, cutPoints, previewList);
+
 				else
 					MPVDecoder.picture.showCut(true, cutPoints, previewList);
 
-				if (actName.equals("cutbox") || actName.equals("del point")){
-					if (comBox[17].getSelectedIndex()==0){
+				if (actName.equals("cutbox") || actName.equals("delpoint"))
+				{
+					if (comBox[17].getSelectedIndex()==0)
+					{
 						long cutpoint = Long.parseLong(selectedItem.toString());
 						preview(cutpoint);
 					}
 				}
-			}else{
+			}
+
+			else
+			{
 				cutdel.setEnabled(false);
 				cutPoints = new long[0];
 				MPVDecoder.picture.showCut(true, cutPoints, previewList); //DM27042004 081.7 int02 changed
 			}
+
 			if (comBox[17].getSelectedIndex()==0)
 				search.requestFocus();
+
 			getExpectedSize(); //DM24082003 
 			action=true;
 		}
 	}
 
-	public COLLECTION() {
+	public COLLECTION()
+	{
  
 		addWindowListener (new WindowAdapter(){ public void windowClosing(WindowEvent e) { close(); } });
 		setTitle("collection specials");
@@ -3503,7 +3610,7 @@ class COLLECTION extends JFrame {
 		JPanel previewPanel = new JPanel();
 		previewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "videofile cuts (demux only!)")); //DM27042004 081.7 int02 changed
 		previewPanel.setLayout ( new BorderLayout() );
-		previewPanel.setToolTipText("also use the keyboard keys for navigation"); //DM18052004 081.7 int02 add
+		previewPanel.setToolTipText("use also the keyboard keys for navigation"); //DM18052004 081.7 int02 add
 		previewPanel.add(MPVDecoder.picture);
 
 		search = new JSlider(0, (10240000/16), 0);
@@ -3516,7 +3623,9 @@ class COLLECTION extends JFrame {
 
 		String jumpstring[] = { "<<", "<", ">", ">>" };
 		JButton jump[] = new JButton[4];
-		for (int a=0; a<4; a++){
+
+		for (int a=0; a<4; a++)
+		{
 			jump[a] = new JButton(jumpstring[a]);
 			jump[a].setPreferredSize(new Dimension(60,20));
 			jump[a].setMaximumSize(new Dimension(60,20));
@@ -3548,6 +3657,7 @@ class COLLECTION extends JFrame {
 		CL1.add(framecutfield);
 
 		cutadd = new JButton("add point");
+		cutadd.setActionCommand("addpoint");
 		cutadd.setPreferredSize(new Dimension(100,25));
 		cutadd.setMaximumSize(new Dimension(100,25));
 		CL1.add(cutadd);
@@ -3565,6 +3675,7 @@ class COLLECTION extends JFrame {
 		CL5.add(comBox[14]);
 
 		cutdel = new JButton("del point");
+		cutdel.setActionCommand("delpoint");
 		cutdel.setPreferredSize(new Dimension(100,22));
 		cutdel.setMaximumSize(new Dimension(100,22));
 		cutdel.setEnabled(false);
@@ -3599,13 +3710,17 @@ class COLLECTION extends JFrame {
 		previewPanel.add(grid_2,BorderLayout.SOUTH);
 		//DM27042004 081.7 int02 changed--
 
-		search.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e)  {
-				if (!search.getValueIsAdjusting() && action){
+		search.addChangeListener(new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent e)
+			{
+				if (!search.getValueIsAdjusting() && action)
+				{
 					long val = ((comBox[17].getSelectedIndex()==0)?16L:1L) * search.getValue();
 
 					if (comBox[17].getSelectedIndex()==0 && val!=(lastpos&~15))
 						preview(val);
+
 					else if (comBox[17].getSelectedIndex() > 0) //DM30032004 081.6 int18 add
 						scannedPID.setText("preview not available");
 
@@ -3613,11 +3728,14 @@ class COLLECTION extends JFrame {
 				}
 		}});
 
-		search.addKeyListener(new KeyAdapter() { 
-			public void keyPressed(KeyEvent e) { 
+		search.addKeyListener(new KeyAdapter()
+		{ 
+			public void keyPressed(KeyEvent e)
+			{ 
 				int i=0, ic=0, offs=0; 
 				int keyval=e.getKeyCode(); 
-				switch(e.getKeyChar()) { 
+				switch(e.getKeyChar())
+				{ 
 				case 'p': 
 					ic=comBox[14].getItemCount(); 
 					if (ic>0) { 
@@ -3654,7 +3772,8 @@ class COLLECTION extends JFrame {
 				else 
 					return; 
 
-				switch (keyval) { 
+				switch (keyval)
+				{ 
 				case KeyEvent.VK_RIGHT: 
 					search.setValue(search.getValue()+offs); 
 					break; 
@@ -3705,11 +3824,13 @@ class COLLECTION extends JFrame {
 		scrollList.setViewportView(includeList);
 		cutPanel.add(scrollList);
 
-		includeList.addMouseListener( new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
+		includeList.addMouseListener( new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent e)
+			{
 				int index = includeList.locationToIndex(e.getPoint());
-				if (e.getClickCount() == 2 && index>-1) {
-
+				if (e.getClickCount() == 2 && index>-1)
+				{
 					dataList.remove(index);
 					includeList.setListData(dataList.toArray());
 				}
@@ -3786,11 +3907,11 @@ class COLLECTION extends JFrame {
 		//DM17012004 081.6 int11 changed, DM18022004 081.6 int17 changed
 		Object[] cut_types = 
 		{ 
-			"use BytePos. for cuts", 
-			"use GOP number for cuts",
-			"use Frame number for cuts",
-			"use PTS for cuts",
-			"use Timecode for cuts"
+			">> " + "use BytePos. for cuts", 
+			">> " + "use GOP number for cuts",
+			">> " + "use Frame number for cuts",
+			">> " + "use PTS for cuts",
+			">> " + "use Timecode for cuts"
 		}; 
 		comBox[17] = new JComboBox(cut_types);
 		comBox[17].setPreferredSize(new Dimension(200,22));
@@ -3822,7 +3943,9 @@ class COLLECTION extends JFrame {
 		container.add(grid);
 
 		close = new JButton("apply & close");
+		close.setActionCommand("apply_close");
 		apply = new JButton("apply");
+		apply.setActionCommand("apply");
 		close.addActionListener(cutAction);
 		apply.addActionListener(cutAction);
 
@@ -3838,17 +3961,20 @@ class COLLECTION extends JFrame {
 		UIManager.addPropertyChangeListener(new UISwitchListener(container));
 	}
 
-	public void getType() {
+	public void getType()
+	{
 		int keyIndex = java.util.Arrays.binarySearch(cutPoints,lastpos); //DM17012004 081.6 int11 changed , DM29012004 081.6 int12 fix
 
 		//DM27042004 081.7 int02 changed
 		if (cutPoints.length!=0)
 			MPVDecoder.picture.showCut((keyIndex&1)==0, cutPoints, previewList);
+
 		else
 			MPVDecoder.picture.showCut(true, cutPoints, previewList);
 	}
 
-	public void preview(long pos) {
+	public void preview(long pos)
+	{
 		boolean direction=false;
 
 		try 
@@ -3902,7 +4028,8 @@ class COLLECTION extends JFrame {
 		action=true;
 	}
 
-	public void entry() {
+	public void entry()
+	{
 
 		ArrayList xyz = (ArrayList)speciallist.get(activecoll);
 		dataList.clear();
@@ -3966,26 +4093,34 @@ class COLLECTION extends JFrame {
 		//DM29012004 081.6 int12 fix
 		Object listData[] = ((ArrayList)cutlist.get(activecoll)).toArray(); 
 		cutPoints = new long[listData.length];
+
 		for (int a=0;a<cutPoints.length;a++)
 			cutPoints[a] = parseValue(listData[a].toString(),false);
+
 		java.util.Arrays.sort(cutPoints);
 		action=false;
 		comBox[14].removeAllItems();
-		if (cutPoints.length==0) {
+
+		if (cutPoints.length==0)
 			cutdel.setEnabled(false);
-		} else { 
+
+		else
+		{ 
 			for (int a=0;a<cutPoints.length;a++)
 				comBox[14].addItem(parseValue(cutPoints[a]));
+
 			action=true;
 			comBox[14].setSelectedIndex(comBox[14].getItemCount()-1);
 		}
+
 		getExpectedSize(); //DM24082003 //pointscount.setText(""+comBox[14].getItemCount());
 		getType();
 		action=true;
 		this.show();
 	}
 
-	protected void centerDialog() {
+	protected void centerDialog()
+	{
 		Dimension screenSize = this.getToolkit().getScreenSize();
 		this.pack(); //DM30122003 081.6 int10 add
 		Dimension size = this.getSize();
@@ -3998,22 +4133,27 @@ class COLLECTION extends JFrame {
 		this.setLocation(x,y);
 	}
 
-	public boolean apply() {
-		if (activecoll<comBox[0].getItemCount()) {
+	public boolean apply()
+	{
+		if (activecoll<comBox[0].getItemCount())
+		{
 			ArrayList abc = new ArrayList();
-			if (comBox[14].getItemCount()>0) {
 
+			if (comBox[14].getItemCount()>0)
+			{
 				for (int a=0;a<comBox[14].getItemCount();a++)
 					abc.add(comBox[14].getItemAt(a).toString());
-
 			}
 			cutlist.set(activecoll,abc);
 
 			ArrayList xyz = new ArrayList();
+
 			for (int a=0; a<dataList.size(); a++)
 				xyz.add(dataList.get(a));
+
 			speciallist.set(activecoll,xyz);
 		}
+
 		return true;
 	}
 
@@ -4029,7 +4169,8 @@ class COLLECTION extends JFrame {
 		}
 	}
 
-	public void saveList() {
+	public void saveList()
+	{
 		if (comBox[14].getItemCount()==0)
 			return;
 
@@ -4038,12 +4179,18 @@ class COLLECTION extends JFrame {
 		chooser.rescanCurrentDirectory();
 
 		int retval = chooser.showSaveDialog(this);
-		if(retval == JFileChooser.APPROVE_OPTION) {
+
+		if(retval == JFileChooser.APPROVE_OPTION)
+		{
 			File theFile = chooser.getSelectedFile();
-			if(theFile != null && !theFile.isDirectory()) {
+
+			if(theFile != null && !theFile.isDirectory())
+			{
 				newfile = theFile.getAbsolutePath();
 			}
-		} else 
+		}
+
+		else 
 			return;
 
 		try
@@ -4101,7 +4248,7 @@ class COLLECTION extends JFrame {
 				continue;
 
 			//DM09032004 081.6 int18 add
-			if (point.startsWith("use")) 
+			if (point.startsWith(">>")) 
 			{
 				comBox[17].setSelectedItem(point);
 				continue;
@@ -4975,7 +5122,7 @@ public static void loadCutPoints(String file) {
 				continue;
 
 			//DM09032004 081.6 int18 add
-			if (point.startsWith("use")) 
+			if (point.startsWith(">>")) 
 			{
 				comBox[17].setSelectedItem(point);
 				continue;
