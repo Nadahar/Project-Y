@@ -38,7 +38,7 @@ public class Html extends JFrame
 {
 	public Html()
 	{
-		setBounds( 200, 25, 600, 500);
+		setBounds( 200, 25, 600, 400);
 		HtmlPane html = new HtmlPane();
 		setContentPane(html);
 		setTitle("Html Frame");

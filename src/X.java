@@ -125,6 +125,8 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.stanford.ejalbert.BrowserLauncher;
+
 
 public class X extends JPanel
 {
@@ -533,12 +535,25 @@ protected JMenu buildHelpMenu()
 	Resource.localize(openHtml, "help.help");
 	openHtml.setActionCommand("helphtml");
 
+	JMenuItem lucikeInfo = new JMenuItem();
+	Resource.localize(lucikeInfo, "help.lucike.info");
+	lucikeInfo.setActionCommand("helplucikeinfo");
+
+	JMenuItem lucikeForum = new JMenuItem();
+	Resource.localize(lucikeForum, "help.lucike.forum");
+	lucikeForum.setActionCommand("helplucikeforum");
+
 	help.add(about);
 	help.addSeparator();
 	help.add(openHtml);
+	help.addSeparator();
+	help.add(lucikeInfo);
+	help.add(lucikeForum);
 
 	about.addActionListener(menulistener);
 	openHtml.addActionListener(menulistener);
+	lucikeInfo.addActionListener(menulistener);
+	lucikeForum.addActionListener(menulistener);
 
 	return help;
 }
@@ -2562,7 +2577,23 @@ class MenuListener implements ActionListener
 
 		else if (actName.equals("helphtml"))
 			new Html().show();
-
+		else if (actName.equals("helplucikeinfo"))
+		{
+			try {
+				BrowserLauncher.openURL("http://www.lucike.info");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		else if (actName.equals("helplucikeforum"))
+		{
+			try {
+				BrowserLauncher.openURL("http://forum.lucike.info");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 		else if (actName.equals("about"))
 			showAboutBox();
 
