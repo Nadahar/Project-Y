@@ -404,6 +404,9 @@ public class TS
 
 		switch (mode)
 		{
+		case 0:
+			return old_name;
+
 		case 1:
 			new_name = old_name.substring(0, old_name.length() - 3) + ".raw";
 

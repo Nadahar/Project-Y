@@ -131,6 +131,11 @@ import javax.swing.event.ChangeListener;
 public class X extends JPanel
 {
 
+/* main version index */
+static String version_name = "ProjectX 0.81.8.02_lang";
+static String version_date = "26.09.2004";
+
+
 //DM18062004 081.7 int05 add
 RawInterface raw_interface = new RawInterface();
 static int loadSizeForward = 2560000;
@@ -1266,16 +1271,14 @@ protected JPanel buildMessagePanel()
 
 	cBox[40] = new JCheckBox(Resource.getString("tab.msg.msg1"));
 	cBox[40].setToolTipText(Resource.getString("tab.msg.msg1_tip"));
-	cBox[40].setPreferredSize(new Dimension(300,20));
-	cBox[40].setMaximumSize(new Dimension(300,20));
-	cBox[40].setSelected(false);
+	cBox[40].setPreferredSize(new Dimension(400,20));
+	cBox[40].setMaximumSize(new Dimension(400,20));
 	msgPanel_1.add(cBox[40]);
 
 	cBox[3] = new JCheckBox(Resource.getString("tab.msg.msg2"));
 	cBox[3].setToolTipText(Resource.getString("tab.msg.msg2_tip"));
-	cBox[3].setPreferredSize(new Dimension(250,20));
-	cBox[3].setMaximumSize(new Dimension(250,20));
-	cBox[3].setSelected(false);
+	cBox[3].setPreferredSize(new Dimension(400,20));
+	cBox[3].setMaximumSize(new Dimension(400,20));
 	msgPanel_1.add(cBox[3]);
 
 	msgPanel.add(msgPanel_1);
@@ -1315,7 +1318,6 @@ protected JPanel buildidPanel()
 	cBox[48] = new JCheckBox(Resource.getString("tab.specials.pva.overlap"));
 	cBox[48].setPreferredSize(new Dimension(270,20));
 	cBox[48].setMaximumSize(new Dimension(270,20));
-	cBox[48].setSelected(false);
 	cBox[48].setToolTipText(Resource.getString("tab.specials.pva.overlap.tip"));
 	idPanel3.add(cBox[48]);
 
@@ -1324,6 +1326,7 @@ protected JPanel buildidPanel()
 	cBox[28].setToolTipText(Resource.getString("tab.specials.pva.audio.tip"));
 	cBox[28].setPreferredSize(new Dimension(270,20));
 	cBox[28].setMaximumSize(new Dimension(270,20));
+	cBox[28].setSelected(true);
 	idPanel3.add(cBox[28]);
 
 	//DM14052004 081.7 int02 add
@@ -1341,6 +1344,7 @@ protected JPanel buildidPanel()
 	cBox[61].setToolTipText(Resource.getString("tab.specials.ts.search.tip"));
 	cBox[61].setPreferredSize(new Dimension(270,20));
 	cBox[61].setMaximumSize(new Dimension(270,20));
+	cBox[61].setSelected(true);
 	idPanel3.add(cBox[61]);
 
 	//Ghost23012004 081.6 int11 add
@@ -1349,6 +1353,7 @@ protected JPanel buildidPanel()
 	cBox[53].setToolTipText(Resource.getString("tab.specials.ts.join.tip"));
 	cBox[53].setPreferredSize(new Dimension(270,20));
 	cBox[53].setMaximumSize(new Dimension(270,20));
+	cBox[53].setSelected(true);
 	idPanel3.add(cBox[53]);
 
 	cBox[41] = new JCheckBox(Resource.getString("tab.specials.ts.pmt"));
@@ -1410,11 +1415,11 @@ protected JPanel buildidPanel()
 	cBox[16].addActionListener(mytabListener);
 	cBox[16].setPreferredSize(new Dimension(270,20));
 	cBox[16].setMaximumSize(new Dimension(270,20));
+	cBox[16].setSelected(true);
 	idPanel2.add(cBox[16]);
 
 	cBox[32] = new JCheckBox(Resource.getString("tab.specials.misc.renamevideo"));
 	cBox[32].setToolTipText(Resource.getString("tab.specials.misc.renamevideo.tip"));
-	cBox[32].setSelected(true);
 	cBox[32].setPreferredSize(new Dimension(270,20));
 	cBox[32].setMaximumSize(new Dimension(270,20));
 	idPanel2.add(cBox[32]);
@@ -1716,7 +1721,7 @@ protected JPanel buildvideo1Panel() {
 	cBox[35] = new JCheckBox(Resource.getString("tab.video.patch.cdf"));
 	cBox[35].setPreferredSize(new Dimension(260,20));
 	cBox[35].setMaximumSize(new Dimension(260,20));
-	cBox[35].setSelected(false);
+	cBox[35].setSelected(true);
 	cBox[35].setToolTipText(Resource.getString("tab.video.patch.cdf.tip"));
 
 
@@ -2391,6 +2396,7 @@ protected JPanel buildoptionPanel() {
 	cBox[21] = new JCheckBox(Resource.getString("tab.options.normallog"));
 	cBox[21].setToolTipText(Resource.getString("tab.options.normallog_tip"));
 	cBox[21].setActionCommand("normallog");
+	cBox[21].setSelected(true);
 	op0.add(cBox[21]);
 
 	//DM24012004 081.6 int11 moved
@@ -2423,7 +2429,7 @@ protected JPanel buildoptionPanel() {
 
 	Object[] bufsize = { "10240000","8192000","7168000","6144000","5120000","4096000","3072000","2048000","1024000" };
 	comBox[10]=new JComboBox(bufsize);
-	comBox[10].setSelectedIndex(3);
+	comBox[10].setSelectedIndex(4);
 	comBox[10].setEditable(true); //DM21112003 081.5++
 	comBox[10].setPreferredSize(new Dimension(100,25));
 	comBox[10].setMaximumSize(new Dimension(100,25));
@@ -4046,6 +4052,7 @@ class COLLECTION extends JFrame
 			point = listreader.readLine();
 			if (point==null) 
 				break;
+
 			if (point.trim().equals("")) 
 				continue;
 
@@ -5206,8 +5213,8 @@ public static String[] getTerms()
 public static String[] getVersion()
 {
 	return new String[]{ 
-		"ProjectX 0.81.8.02_lang",
-		"26.09.2004",
+		version_name,
+		version_date,
 		Resource.getString("version.info"),
 		Resource.getString("version.user") + System.getProperty("user.name")
 	};
@@ -5265,6 +5272,7 @@ public static long calcvideotime(String logfile) {
 	catch (IOException e) {  Msg(Resource.getString("msg.ptsfile.error") + " " + e); }
 	return vtime;
 }
+
 
 
 // parse cut field value
@@ -5471,9 +5479,11 @@ public void run() {
 	brm.surf.stop();
 	yield();
 
-	if (options[33]==-1) {
+	if (options[33]==-1)
+	{
 		TextArea.setText(java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(new Date())+"  "+java.text.DateFormat.getTimeInstance(java.text.DateFormat.FULL).format(new Date()));
-		Msg(Resource.getString("version.name")+" ("+Resource.getString("version.date")+")");
+		Msg(version_name + " (" + version_date + ")");
+
 		if (cBox[18].isSelected()) 
 			b = comBox[0].getItemCount();
 		else {
@@ -5858,7 +5868,7 @@ public void working() {
 
 			//DM22062004 081.7 int05 changed++
 			long file_size = raw_interface.getFileSize(file);
-			Msg("\r\n" + Resource.getString("working.file") + " " + h + ":  " + file + " (" + file_size + ")");
+			Msg("\r\n" + Resource.getString("working.file", "" + h, file, "" + file_size));
 
 			if (file_size < 0)
 			{
@@ -6966,7 +6976,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 						//DM09072004 081.7 int06 changed
 						if (ToVDR > 0) 
-							IDtype += Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[0] - 1).toUpperCase();
+							IDtype += " " + Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[0] - 1).toUpperCase();
 
 						pesID0=pesID;
 					} else 
@@ -6988,7 +6998,7 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 
 					//DM09072004 081.7 int06 changed
 					if (ToVDR > 0) 
-						IDtype += Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[1] - 1).toUpperCase();
+						IDtype += " " + Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[1] - 1).toUpperCase();
 
 					break; 
 				}
@@ -7041,9 +7051,9 @@ public String vdrparse(String file, int ismpg, int ToVDR) {
 					if (ToVDR > 0)
 					{
 						if (ismpg==0) 
-							IDtype+=Resource.getString("idtype.mapped.to")+Integer.toHexString(demux.getnewID()).toUpperCase();
+							IDtype+=" " + Resource.getString("idtype.mapped.to") + Integer.toHexString(demux.getnewID()).toUpperCase();
 						else if (ttx || subID>>>4 == 8) //DM23022004 081.6 int18 changed
-							IDtype+=Resource.getString("idtype.mapped.to")+Integer.toHexString(demux.getnewID()).toUpperCase();
+							IDtype+=" " + Resource.getString("idtype.mapped.to") + Integer.toHexString(demux.getnewID()).toUpperCase();
 						else
 						{ 
 							IDtype+=Resource.getString("idtype.ignored"); 
@@ -7804,7 +7814,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 
 						//DM09072004 081.7 int06 changed
 						if (ToVDR > 0) 
-							type += Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[0] - 1).toUpperCase();
+							type += " " + Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[0] - 1).toUpperCase();
 
 						break;
 					case 0x1c0:
@@ -7824,7 +7834,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 
 						//DM09072004 081.7 int06 changed
 						if (ToVDR > 0) 
-							type+=Resource.getString("idtype.mapped.to")+Integer.toHexString(newID[1]-1).toUpperCase();
+							type+=" " + Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[1]-1).toUpperCase();
 
 						break;
 					}
@@ -7866,7 +7876,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 
 						//DM09072004 081.7 int06 changed
 						if (ToVDR > 0 && !ttx) 
-							type += Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[2]-1).toUpperCase();
+							type += " " + Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[2]-1).toUpperCase();
 
 						break;
 					//DM27042004 081.7 int02 changed--
@@ -8882,7 +8892,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 					if (ToVDR==0) 
 						demux.initVideo(fparent,options,bs,PVAdemuxlist.size(),3);
 					else 
-						IDtype+=Resource.getString("idtype.mapped.to.e0")+streamtypes[3];
+						IDtype+=" " + Resource.getString("idtype.mapped.to.e0") + streamtypes[3];
 					break; 
 				}
 				case 2: { 
@@ -8905,7 +8915,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 					if (ToVDR==0) 
 						demux.init(fparent,options,bs/PVAdemuxlist.size(),PVAdemuxlist.size(),3);
 					else 
-						IDtype+=Resource.getString("idtype.mapped.to")+Integer.toHexString(demux.getnewID()).toUpperCase();
+						IDtype+=" " + Resource.getString("idtype.mapped.to") + Integer.toHexString(demux.getnewID()).toUpperCase();
 					break; 
 				**/
 				}
@@ -8936,7 +8946,7 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 					if (ToVDR==0) 
 						demux.init(fparent,options,bs/PVAdemuxlist.size(),PVAdemuxlist.size(),3);
 					else 
-						IDtype += Resource.getString("idtype.mapped.to") + Integer.toHexString(demux.getnewID()).toUpperCase();
+						IDtype += " " + Resource.getString("idtype.mapped.to") + Integer.toHexString(demux.getnewID()).toUpperCase();
 
 					break; 
 				}
@@ -10774,6 +10784,8 @@ public boolean processAudio(String[] args)
 						} else {
 							audiooutL.write(copyframe[0]);
 
+
+
 							/**** RIFF ****/
 							if (cBox[4].isSelected()) 
 								riffw[0].RiffData(afc.RiffFormat(copyframe[0]));
@@ -11559,7 +11571,7 @@ public void processTeletext(String[] args)
 				break;
 
 			case 7:
-				String[] STLhead = Teletext.getSTLHead(Resource.getString("version.name")+" on "+java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(new java.util.Date(System.currentTimeMillis())));
+				String[] STLhead = Teletext.getSTLHead(version_name + " on "+java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(new java.util.Date(System.currentTimeMillis())));
 				for (int a=0;a<STLhead.length;a++) 
 					print_buffer.println(STLhead[a]);
 				print_buffer.flush();
@@ -15317,6 +15329,8 @@ class PIDdemux {
 			} else {
 				ptslength = (0xFF&origdata[8]);           // read byte pts-length
 				shift=3;
+
+
 				if ((0x80&origdata[7])==0) { 
 					shift += ptslength;
 					ptslength=0;
