@@ -547,17 +547,23 @@ protected JMenu buildHelpMenu()
 	Resource.localize(lucikeForum, "help.lucike.forum");
 	lucikeForum.setActionCommand("helplucikeforum");
 
+	JMenuItem sourceforge = new JMenuItem();
+	Resource.localize(sourceforge, "help.sourceforge.net");
+	sourceforge.setActionCommand("sourceforge");
+
 	help.add(about);
 	help.addSeparator();
 	help.add(openHtml);
 	help.addSeparator();
 	help.add(lucikeInfo);
 	help.add(lucikeForum);
+	help.add(sourceforge);
 
 	about.addActionListener(menulistener);
 	openHtml.addActionListener(menulistener);
 	lucikeInfo.addActionListener(menulistener);
 	lucikeForum.addActionListener(menulistener);
+	sourceforge.addActionListener(menulistener);
 
 	return help;
 }
@@ -2593,6 +2599,14 @@ class MenuListener implements ActionListener
 		{
 			try {
 				BrowserLauncher.openURL("http://forum.lucike.info");
+			} catch (IOException e1) {
+				Msg(Resource.getString("msg.browser.launcher.error") + " " + e1);
+			}
+		}
+		else if (actName.equals("sourceforge"))
+		{
+			try {
+				BrowserLauncher.openURL("http://sourceforge.net/projects/project-x");
 			} catch (IOException e1) {
 				Msg(Resource.getString("msg.browser.launcher.error") + " " + e1);
 			}
