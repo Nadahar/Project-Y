@@ -1,11 +1,6 @@
 package xinput;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.util.Iterator;
-
-import xinput.ftp.FtpServer;
-import xinput.ftp.FtpVO;
 
 public class XInputDirectory implements XInputDirectoryIF {
 
@@ -38,7 +33,8 @@ public class XInputDirectory implements XInputDirectoryIF {
 
 			try {
 				if (debug) System.out.println("Try DirType '" + dirType.getName() + "'");
-				impl = (XInputDirectoryIF) dirType.getImplementation().getConstructor(parameterTypes).newInstance(parameterValues);
+				impl = (XInputDirectoryIF) dirType.getImplementation().getConstructor(parameterTypes).newInstance(
+						parameterValues);
 				if (debug) System.out.println("Use DirType '" + dirType.getName() + "' for file '" + impl.toString() + "'");
 				return;
 			} catch (Exception e) {
@@ -49,8 +45,10 @@ public class XInputDirectory implements XInputDirectoryIF {
 		try {
 			dirType = DirType.DEFAULT;
 			if (debug) System.out.println("Try default DirType '" + dirType.getName() + "'");
-			impl = (XInputDirectoryIF) dirType.getImplementation().getConstructor(parameterTypes).newInstance(parameterValues);
-			if (debug) System.out.println("Use default DirType '" + dirType.getName() + "' for file '" + impl.toString() + "'");
+			impl = (XInputDirectoryIF) dirType.getImplementation().getConstructor(parameterTypes)
+					.newInstance(parameterValues);
+			if (debug)
+					System.out.println("Use default DirType '" + dirType.getName() + "' for file '" + impl.toString() + "'");
 			return;
 		} catch (Exception e) {
 			// Failed, no type left, so this is final failure
@@ -60,85 +58,91 @@ public class XInputDirectory implements XInputDirectoryIF {
 			throw new IllegalArgumentException(s);
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object aObj) {
 		return impl.equals(aObj);
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public String getDirectory() {
 		return impl.getDirectory();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public DirType getDirType() {
 		return impl.getDirType();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public XInputFile[] getFiles() {
 		return impl.getFiles();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public String getLog() {
 		return impl.getLog();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public String getPassword() {
 		return impl.getPassword();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public String getServer() {
 		return impl.getServer();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public String getTestMsg() {
 		return impl.getTestMsg();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public String getUser() {
 		return impl.getUser();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
 		return impl.hashCode();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public boolean test() {
 		return impl.test();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {

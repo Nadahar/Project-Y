@@ -5,9 +5,13 @@ import org.apache.commons.net.ftp.FTPFile;
 public class FtpVO implements Cloneable {
 
 	private String server = null;
+
 	private String user = null;
+
 	private String password = null;
+
 	private String directory = null;
+
 	private FTPFile ftpFile = null;
 
 	public FtpVO(String server, String user, String password, String directory, FTPFile ftpFile) {
@@ -43,62 +47,78 @@ public class FtpVO implements Cloneable {
 	public String getDirectory() {
 		return directory;
 	}
+
 	/**
-	 * @param directory The directory to set.
+	 * @param directory
+	 *          The directory to set.
 	 */
 	public void setDirectory(String directory) {
 		this.directory = directory;
 	}
+
 	/**
 	 * @return Returns the password.
 	 */
 	public String getPassword() {
 		return password;
 	}
+
 	/**
-	 * @param password The password to set.
+	 * @param password
+	 *          The password to set.
 	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 	/**
 	 * @return Returns the server.
 	 */
 	public String getServer() {
 		return server;
 	}
+
 	/**
-	 * @param server The server to set.
+	 * @param server
+	 *          The server to set.
 	 */
 	public void setServer(String server) {
 		this.server = server;
 	}
+
 	/**
 	 * @return Returns the user.
 	 */
 	public String getUser() {
 		return user;
 	}
+
 	/**
-	 * @param user The user to set.
+	 * @param user
+	 *          The user to set.
 	 */
 	public void setUser(String user) {
 		this.user = user;
 	}
+
 	/**
 	 * @return Returns the ftpFile.
 	 */
 	public FTPFile getFtpFile() {
 		return ftpFile;
 	}
+
 	/**
-	 * @param aFtpFile The ftpFile to set.
+	 * @param aFtpFile
+	 *          The ftpFile to set.
 	 */
 	public void setFtpFile(FTPFile aFtpFile) {
 		ftpFile = aFtpFile;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#clone()
 	 */
 	public Object clone() {

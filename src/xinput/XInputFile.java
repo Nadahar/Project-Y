@@ -1,22 +1,10 @@
 package xinput;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Iterator;
-
-import org.apache.commons.net.ftp.FTPFile;
-
-import xinput.file.*;
-import xinput.ftp.*;
 
 public class XInputFile implements XInputFileIF {
 
@@ -61,7 +49,8 @@ public class XInputFile implements XInputFileIF {
 			fileType = FileType.DEFAULT;
 			if (debug) System.out.println("Try default FileType '" + fileType.getName() + "'");
 			impl = (XInputFileIF) fileType.getImplementation().getConstructor(parameterTypes).newInstance(parameterValues);
-			if (debug) System.out.println("Use default FileType '" + fileType.getName() + "' for file '" + impl.toString() + "'");
+			if (debug)
+					System.out.println("Use default FileType '" + fileType.getName() + "' for file '" + impl.toString() + "'");
 			return;
 		} catch (Exception e) {
 			// Failed, no type left, so this is final failure
@@ -158,6 +147,14 @@ public class XInputFile implements XInputFileIF {
 	}
 
 	/**
+	 * @return @throws
+	 *         IOException
+	 */
+	public int randomAccessRead() throws IOException {
+		return impl.randomAccessRead();
+	}
+
+	/**
 	 * @param aBuffer
 	 * @return @throws
 	 *         IOException
@@ -167,11 +164,38 @@ public class XInputFile implements XInputFileIF {
 	}
 
 	/**
+	 * @param aBuffer
+	 * @param aOffset
+	 * @param aLength
+	 * @return @throws
+	 *         IOException
+	 */
+	public int randomAccessRead(byte[] aBuffer, int aOffset, int aLength) throws IOException {
+		return impl.randomAccessRead(aBuffer, aOffset, aLength);
+	}
+
+	/**
+	 * @return Read line 
+	 * @throws IOException
+	 */
+	public String randomAccessReadLine() throws IOException {
+		return impl.randomAccessReadLine();
+	}
+
+	/**
 	 * @param aPosition
 	 * @throws IOException
 	 */
 	public void randomAccessSeek(long aPosition) throws IOException {
 		impl.randomAccessSeek(aPosition);
+	}
+
+	/**
+	 * @return @throws
+	 *         IOException
+	 */
+	public long randomAccessGetFilePointer() throws IOException {
+		return impl.randomAccessGetFilePointer();
 	}
 
 	/**

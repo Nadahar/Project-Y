@@ -3,24 +3,23 @@ package xinput.file;
 import java.io.File;
 import java.io.FileFilter;
 
-import com.sun.rsasign.af;
-
 import xinput.DirType;
 import xinput.XInputDirectoryIF;
 import xinput.XInputFile;
-import xinput.ftp.FtpServer;
-import xinput.ftp.FtpVO;
 
 public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	private DirType dirType = null;
 
 	private File file = null;
+
 	private String testMsg = null;
 
 	/**
 	 * Mustn't be used
-	 * @throws UnsupportedOperationException Because it mustn't be used!
+	 * 
+	 * @throws UnsupportedOperationException
+	 *           Because it mustn't be used!
 	 */
 	private XInputDirectoryImpl() {
 		throw new UnsupportedOperationException("Usage is not allowed!");
@@ -28,8 +27,11 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Create a XInputDirectory of type DirType.FILE_DIR.
-	 * @param aFile Directory data to use
-	 * @throws IllegalArgumentException If aFile is not a directory
+	 * 
+	 * @param aFile
+	 *          Directory data to use
+	 * @throws IllegalArgumentException
+	 *           If aFile is not a directory
 	 */
 	public XInputDirectoryImpl(File aFile) {
 		if (aFile.exists() && aFile.isDirectory()) {
@@ -37,27 +39,31 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 			file = aFile;
 		} else {
 			throw new IllegalArgumentException("aFile is not a directory!");
-		} 
+		}
 	}
 
 	/**
 	 * Create a XInputDirectory of type DirType.FILE_DIR.
-	 * @param aFileIdentifier Directory name
-	 * @throws IllegalArgumentException If aFile is not a directory
+	 * 
+	 * @param aFileIdentifier
+	 *          Directory name
+	 * @throws IllegalArgumentException
+	 *           If aFile is not a directory
 	 */
 	public XInputDirectoryImpl(String aFileIdentifier) {
-		
+
 		File f = new File(aFileIdentifier);
 		if (f.exists() && f.isDirectory()) {
 			dirType = DirType.FILE_DIR;
 			file = f;
 		} else {
 			throw new IllegalArgumentException("'" + aFileIdentifier + "' is not a directory!");
-		} 
+		}
 	}
 
 	/**
 	 * Get String representation of the object.
+	 * 
 	 * @return String representation of the object
 	 */
 	public String toString() {
@@ -67,6 +73,7 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Get path of directory
+	 * 
 	 * @return Path of directory
 	 */
 	public String getDirectory() {
@@ -76,8 +83,10 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Get password for the ftp server
+	 * 
 	 * @return Password for the ftp server
-	 * @throws IllegalStateException If file type of object is not DirType.FTP_DIR
+	 * @throws IllegalStateException
+	 *           If file type of object is not DirType.FTP_DIR
 	 */
 	public String getPassword() {
 
@@ -86,8 +95,10 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Get name or ip address of the ftp server
+	 * 
 	 * @return Name or ip address of the ftp server
-	 * @throws IllegalStateException If file type of object is not DirType.FTP_DIR
+	 * @throws IllegalStateException
+	 *           If file type of object is not DirType.FTP_DIR
 	 */
 	public String getServer() {
 
@@ -96,8 +107,10 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Get user for the ftp server
+	 * 
 	 * @return User for the ftp server
-	 * @throws IllegalStateException If file type of object is not DirType.FTP_DIR
+	 * @throws IllegalStateException
+	 *           If file type of object is not DirType.FTP_DIR
 	 */
 	public String getUser() {
 
@@ -106,8 +119,10 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Get log of communication with ftp server.
+	 * 
 	 * @return Log of communication with ftp server
-	 * @throws IllegalStateException If file type of object is not DirType.FTP_DIR
+	 * @throws IllegalStateException
+	 *           If file type of object is not DirType.FTP_DIR
 	 */
 	public String getLog() {
 
@@ -116,6 +131,7 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Get files in the directory.
+	 * 
 	 * @return files in the directory
 	 */
 	public XInputFile[] getFiles() {
@@ -123,6 +139,7 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 		XInputFile[] xInputFiles = null;
 
 		class MyFileFilter implements FileFilter {
+
 			public boolean accept(File pathname) {
 				return pathname.isFile();
 			}
@@ -138,6 +155,7 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Test if directory data is valid.
+	 * 
 	 * @return Test successful or not
 	 */
 	public boolean test() {
@@ -152,6 +170,7 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 	/**
 	 * Get result message after test().
+	 * 
 	 * @return result message after test()
 	 */
 	public String getTestMsg() {

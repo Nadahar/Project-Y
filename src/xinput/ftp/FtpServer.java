@@ -12,9 +12,13 @@ import xinput.XInputFile;
 public class FtpServer {
 
 	private FtpVO ftpVO;
+
 	private StringCommandListener scl;
+
 	private FTPClient ftpClient;
+
 	private boolean isOpen;
+
 	private String testMsg;
 
 	private FtpServer() {
@@ -23,9 +27,7 @@ public class FtpServer {
 
 	public FtpServer(FtpVO aFtpVO) {
 
-		if (aFtpVO == null) {
-			throw new IllegalArgumentException("aFtpVO mustn't be null!");
-		}
+		if (aFtpVO == null) { throw new IllegalArgumentException("aFtpVO mustn't be null!"); }
 
 		ftpVO = aFtpVO;
 		scl = new StringCommandListener();
@@ -37,9 +39,7 @@ public class FtpServer {
 	public boolean open() {
 		boolean isSuccessful = false;
 
-		if (isOpen) {
-			throw new IllegalStateException("Is already open, must be closed before!");
-		}
+		if (isOpen) { throw new IllegalStateException("Is already open, must be closed before!"); }
 
 		try {
 			int reply;
@@ -89,7 +89,7 @@ public class FtpServer {
 			ftpInputFiles = new XInputFile[ftpFiles.length];
 
 			for (int i = 0; i < ftpFiles.length; i++) {
-				FtpVO tempFtpVO = (FtpVO)ftpVO.clone();
+				FtpVO tempFtpVO = (FtpVO) ftpVO.clone();
 				tempFtpVO.setFtpFile(ftpFiles[i]);
 				ftpInputFiles[i] = new XInputFile(tempFtpVO);
 			}
@@ -105,9 +105,7 @@ public class FtpServer {
 	}
 
 	public void close() {
-		if (!isOpen) {
-			throw new IllegalStateException("Is already closed, must be opened before!");
-		}
+		if (!isOpen) { throw new IllegalStateException("Is already closed, must be opened before!"); }
 
 		try {
 			ftpClient.logout();
@@ -180,74 +178,38 @@ public class FtpServer {
 	}
 }
 /*
-	int base = 0;
-	boolean storeFile = false, binaryTransfer = false, error = false;
-	String server, username, password, remote, local, remoteDir;
-	FTPClient ftp;
-	FTPFile[] ftpFiles; 
-
-	server = "192.168.0.5";
-	username = "root";
-	password = "dreambox";
-	remote = "";
-	local = "";
-	remoteDir = "/hdd/movie";
-
-	ftp = new FTPClient();
-	ftp.addProtocolCommandListener(
-		new PrintCommandListener(new PrintWriter(System.out)));
-
-
-	try {
-		if (!ftp.login(username, password)) {
-			ftp.logout();
-			error = true;
-		} else {
-			System.out.println("Remote system is " + ftp.getSystemName());
-
-			ftp.setFileType(FTP.BINARY_FILE_TYPE);
-			ftp.enterLocalPassiveMode();
-
-			ftp.changeWorkingDirectory(remoteDir);
-			ftpFiles = ftp.listFiles();
-			for (int i = 0; i < ftpFiles.length; i++) {
-				FTPFile file = ftpFiles[i];
-				System.out.println("Listing of " + remoteDir + ": " + file.getName());
-			}
-
-			
-			if (storeFile)
-			{
-					InputStream input;
-			
-					input = new FileInputStream(local);
-					ftp.storeFile(remote, input);
-			}
-			else
-			{
-					OutputStream output;
-			
-					output = new FileOutputStream(local);
-					ftp.retrieveFile(remote, output);
-			}
-			
-
-			ftp.logout();
-		}
-	} catch (FTPConnectionClosedException e) {
-		error = true;
-		System.err.println("Server closed connection.");
-		e.printStackTrace();
-	} catch (IOException e) {
-		error = true;
-		e.printStackTrace();
-	} finally {
-		if (ftp.isConnected()) {
-			try {
-				ftp.disconnect();
-			} catch (IOException f) {
-				// do nothing
-			}
-		}
-	}
-*/
+ * int base = 0; boolean storeFile = false, binaryTransfer = false, error =
+ * false; String server, username, password, remote, local, remoteDir; FTPClient
+ * ftp; FTPFile[] ftpFiles;
+ * 
+ * server = "192.168.0.5"; username = "root"; password = "dreambox"; remote =
+ * ""; local = ""; remoteDir = "/hdd/movie";
+ * 
+ * ftp = new FTPClient(); ftp.addProtocolCommandListener( new
+ * PrintCommandListener(new PrintWriter(System.out)));
+ * 
+ * 
+ * try { if (!ftp.login(username, password)) { ftp.logout(); error = true; }
+ * else { System.out.println("Remote system is " + ftp.getSystemName());
+ * 
+ * ftp.setFileType(FTP.BINARY_FILE_TYPE); ftp.enterLocalPassiveMode();
+ * 
+ * ftp.changeWorkingDirectory(remoteDir); ftpFiles = ftp.listFiles(); for (int i =
+ * 0; i < ftpFiles.length; i++) { FTPFile file = ftpFiles[i];
+ * System.out.println("Listing of " + remoteDir + ": " + file.getName()); }
+ * 
+ * 
+ * if (storeFile) { InputStream input;
+ * 
+ * input = new FileInputStream(local); ftp.storeFile(remote, input); } else {
+ * OutputStream output;
+ * 
+ * output = new FileOutputStream(local); ftp.retrieveFile(remote, output); }
+ * 
+ * 
+ * ftp.logout(); } } catch (FTPConnectionClosedException e) { error = true;
+ * System.err.println("Server closed connection."); e.printStackTrace(); } catch
+ * (IOException e) { error = true; e.printStackTrace(); } finally { if
+ * (ftp.isConnected()) { try { ftp.disconnect(); } catch (IOException f) { // do
+ * nothing } } }
+ */

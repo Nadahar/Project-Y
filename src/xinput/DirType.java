@@ -2,7 +2,6 @@ package xinput;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 
 public class DirType {
 
@@ -12,22 +11,24 @@ public class DirType {
 	private final static Collection dirTypes = new ArrayList(10);
 
 	/**
-	 *  Directory in a normal filesystem
+	 * Directory in a normal filesystem
 	 */
 	public final static DirType FILE_DIR = new DirType(0, "FILE_DIR", xinput.file.XInputDirectoryImpl.class);
 
 	/**
-	 *  Directory on a ftp server
+	 * Directory on a ftp server
 	 */
 	public final static DirType FTP_DIR = new DirType(1, "FTP_DIR", xinput.ftp.XInputDirectoryImpl.class);
 
 	/**
-	 *  Default DirType
+	 * Default DirType
 	 */
 	public final static DirType DEFAULT = FILE_DIR;
 
 	private int type;
+
 	private String name;
+
 	private Class implementation;
 
 	private DirType(int aType, String aName, Class aImplementation) {
@@ -39,6 +40,7 @@ public class DirType {
 
 	/**
 	 * Get type name
+	 * 
 	 * @return type name
 	 */
 	public String getName() {
@@ -47,6 +49,7 @@ public class DirType {
 
 	/**
 	 * Get type value
+	 * 
 	 * @return type value
 	 */
 	public int getType() {
@@ -59,7 +62,7 @@ public class DirType {
 	public Class getImplementation() {
 		return implementation;
 	}
-	
+
 	/**
 	 * @return Returns the fileTypes.
 	 */

@@ -2,7 +2,6 @@ package xinput;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 
 public class FileType {
 
@@ -12,22 +11,24 @@ public class FileType {
 	private final static Collection fileTypes = new ArrayList(10);
 
 	/**
-	 *  File in a normal filesystem
+	 * File in a normal filesystem
 	 */
 	public final static FileType FILE = new FileType(0, "FILE", xinput.file.XInputFileImpl.class);
 
 	/**
-	 *  File on a ftp server
+	 * File on a ftp server
 	 */
 	public final static FileType FTP = new FileType(1, "FTP", xinput.ftp.XInputFileImpl.class);
 
 	/**
-	 *  Default FileType
+	 * Default FileType
 	 */
 	public final static FileType DEFAULT = FILE;
 
 	private int type;
+
 	private String name;
+
 	private Class implementation;
 
 	private FileType(int aType, String aName, Class aImplementation) {
@@ -39,6 +40,7 @@ public class FileType {
 
 	/**
 	 * Get type name
+	 * 
 	 * @return type name
 	 */
 	public String getName() {
@@ -47,6 +49,7 @@ public class FileType {
 
 	/**
 	 * Get type value
+	 * 
 	 * @return type value
 	 */
 	public int getType() {
@@ -59,7 +62,7 @@ public class FileType {
 	public Class getImplementation() {
 		return implementation;
 	}
-	
+
 	/**
 	 * @return Returns the fileTypes.
 	 */

@@ -1,6 +1,5 @@
 package xinput.file;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,15 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
-import org.apache.commons.net.ftp.FTPFile;
 
 import xinput.FileType;
 import xinput.XInputFileIF;
-import xinput.XInputStream;
-import xinput.ftp.FtpVO;
 
 public class XInputFileImpl implements XInputFileIF {
 
@@ -24,11 +17,14 @@ public class XInputFileImpl implements XInputFileIF {
 
 	// Members, which are type independent
 	private FileType fileType = null;
+
 	private boolean isopen = false;
+
 	private InputStream inputStream = null;
 
 	// Members used for type FileType.FILE
 	private File file = null;
+
 	private RandomAccessFile randomAccessFile = null;
 
 	/**
@@ -43,26 +39,22 @@ public class XInputFileImpl implements XInputFileIF {
 	 * Create a XInputFile of type FileType.FILE.
 	 * 
 	 * @param aFile
-	 *            File data to use
+	 *          File data to use
 	 * @throws IllegalArgumentException
-	 *             If aFile is not a file
+	 *           If aFile is not a file
 	 */
 	public XInputFileImpl(File aFile) {
 
 		if (debug) System.out.println("Try to create XInputFile of Type FILE");
 
-		if (!aFile.isFile()) {
-			throw new IllegalArgumentException("aFile is not a file!");
-		}
+		if (!aFile.isFile()) { throw new IllegalArgumentException("aFile is not a file!"); }
 		file = aFile;
 		fileType = FileType.FILE;
-		
-		if (!exists()) {
-			throw new IllegalArgumentException("File doesn't exist");
-		}
+
+		if (!exists()) { throw new IllegalArgumentException("File doesn't exist"); }
 
 		if (debug) System.out.println("Succeeded to create XInputFile of Type FILE");
-}
+	}
 
 	/**
 	 * Get String representation of the object.
@@ -139,8 +131,7 @@ public class XInputFileImpl implements XInputFileIF {
 	 * 
 	 * @return Input stream from the file
 	 */
-	public InputStream getInputStream() throws FileNotFoundException,
-			MalformedURLException, IOException {
+	public InputStream getInputStream() throws FileNotFoundException, MalformedURLException, IOException {
 
 		return new FileInputStream(file);
 	}
@@ -149,14 +140,12 @@ public class XInputFileImpl implements XInputFileIF {
 	 * Opens XInputFile for random access
 	 * 
 	 * @param mode
-	 *            Access mode as in RandomAccessFile
+	 *          Access mode as in RandomAccessFile
 	 * @throws IOException
 	 */
 	public void randomAccessOpen(String mode) throws IOException {
 
-		if (isopen) {
-			throw new IllegalStateException("XInputFile is already open!");
-		}
+		if (isopen) { throw new IllegalStateException("XInputFile is already open!"); }
 		randomAccessFile = new RandomAccessFile(file, mode);
 		isopen = true;
 	}
@@ -166,9 +155,7 @@ public class XInputFileImpl implements XInputFileIF {
 	 */
 	public void randomAccessClose() throws IOException {
 
-		if (!isopen) {
-			throw new IllegalStateException("XInputFile is already closed!");
-		}
+		if (!isopen) { throw new IllegalStateException("XInputFile is already closed!"); }
 		if (randomAccessFile != null) {
 			randomAccessFile.close();
 			randomAccessFile = null;
@@ -178,8 +165,8 @@ public class XInputFileImpl implements XInputFileIF {
 
 	/**
 	 * @param aPosition
-	 *            The offset position, measured in bytes from the beginning of
-	 *            the file, at which to set the file pointer.
+	 *          The offset position, measured in bytes from the beginning of the
+	 *          file, at which to set the file pointer.
 	 * @throws java.io.IOException
 	 */
 	public void randomAccessSeek(long aPosition) throws IOException {
@@ -188,19 +175,56 @@ public class XInputFileImpl implements XInputFileIF {
 	}
 
 	/**
+	 * @return @throws
+	 *         IOException
+	 */
+	public long randomAccessGetFilePointer() throws IOException {
+		return randomAccessFile.getFilePointer();
+	}
+
+	/**
+	 * @return @throws
+	 *         IOException
+	 */
+	public int randomAccessRead() throws IOException {
+		return randomAccessFile.read();
+	}
+
+	/**
 	 * @param aBuffer
-	 *            The buffer into which the data is read.
+	 *          The buffer into which the data is read.
 	 * @return @throws
 	 *         java.io.IOException
 	 */
 	public int randomAccessRead(byte[] aBuffer) throws IOException {
-
 		return randomAccessFile.read(aBuffer);
 	}
 
 	/**
 	 * @param aBuffer
-	 *            The data.
+	 *          The buffer into which the data is written.
+	 * @param aOffset
+	 *          The offset at which the data should be written.
+	 * @param aLength
+	 *          The amount of data to be read.
+	 * @return 
+	 * @throws IOException
+	 */
+	public int randomAccessRead(byte[] aBuffer, int aOffset, int aLength) throws IOException {
+		return randomAccessFile.read(aBuffer, aOffset, aLength);
+	}
+
+	/**
+	 * @return Read line 
+	 * @throws IOException
+	 */
+	public String randomAccessReadLine() throws IOException {
+		return randomAccessFile.readLine();
+	}
+
+	/**
+	 * @param aBuffer
+	 *          The data.
 	 * @throws java.io.IOException
 	 */
 	public void randomAccessWrite(byte[] aBuffer) throws IOException {
@@ -213,13 +237,12 @@ public class XInputFileImpl implements XInputFileIF {
 	 * file is opened before and closed after read.
 	 * 
 	 * @param aBuffer
-	 *            Buffer to fill with read bytes (up to aBuffer.length() bytes)
+	 *          Buffer to fill with read bytes (up to aBuffer.length() bytes)
 	 * @param aPosition
-	 *            Fileposition at which we want read
+	 *          Fileposition at which we want read
 	 * @throws IOException
 	 */
-	public void randomAccessSingleRead(byte[] aBuffer, long aPosition)
-			throws IOException {
+	public void randomAccessSingleRead(byte[] aBuffer, long aPosition) throws IOException {
 
 		randomAccessOpen("r");
 		randomAccessSeek(aPosition);
