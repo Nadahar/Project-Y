@@ -132,7 +132,7 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b3_lang";
+static String version_name = "ProjectX 0.81.8.02b4_lang";
 static String version_date = "02.10.2004";
 
 
@@ -7728,8 +7728,9 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 			if (addlength>183 || (addlength>180 && start))
 				error=true;
 
-			if (error){
-				Msg(Resource.getString("rawparse.bit.error",Integer.toHexString(pid).toUpperCase(),""+packet,""+(count-188)));
+			if (error)
+			{
+				Msg(Resource.getString("rawparse.bit.error", Integer.toHexString(pid).toUpperCase(), "" + packet, "" + (count-188)));
 				continue pvaloop;
 			}
 
@@ -7777,47 +7778,70 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 			if (options[30]==1) 
 				System.out.println(""+packet+"/"+Integer.toHexString(pid)+"/"+Integer.toHexString(pesID)+"/"+TSPid.isneeded()+"/"+ttx+"/"+error+"/"+start+"/"+scram+"/"+addfield+"/"+addlength);
 
-
+			// PID not of interest
 			if (!TSPid.isneeded()) 
-				continue pvaloop;        // PID not of interest
+				continue pvaloop;
 
-			if (cBox[38].isSelected()) {
-				if (scram>0) {           // cannot work with scrambled data
-					if (!TSPid.getScram()) {
+			if (cBox[38].isSelected())
+			{
+				// cannot work with scrambled data
+				if (scram>0)
+				{
+					if (!TSPid.getScram())
+					{
 						TSPid.setScram(true);
-						Msg(Resource.getString("rawparse.scrambled",Integer.toHexString(pid).toUpperCase(),""+packet,""+(count-188)));
+						Msg(Resource.getString("rawparse.scrambled", Integer.toHexString(pid).toUpperCase(), "" + packet, "" + (count-188)));
 					}
 					continue pvaloop;
-				} else {
-					if (TSPid.getScram()) {
+				}
+
+				else
+				{
+					if (TSPid.getScram())
+					{
 						TSPid.setScram(false);
-						Msg(Resource.getString("rawparse.clear",Integer.toHexString(pid).toUpperCase(),""+packet,""+(count-188)));
+						Msg(Resource.getString("rawparse.clear", Integer.toHexString(pid).toUpperCase(), "" + packet, "" + (count-188)));
 					}
 				}
 			}
 
 			/** out of sequence? **/
-			if (!cBox[40].isSelected() && (cBox[46].isSelected() || (!cBox[46].isSelected() && (1&addfield)!=0 ) )) {  // no payload == no counter++
-				if (TSPid.getCounter()!=-1) {
-					if (TSPid.isStarted() && counter!=TSPid.getCounter()) { //DM20122003 081.6 int07 changed
-						Msg(Resource.getString("rawparse.outof.sequence",Integer.toHexString(pid).toUpperCase(),""+packet,""+(count-188),""+counter,""+TSPid.getCounter()));
+			// no payload == no counter++
+			if (!cBox[40].isSelected() && (cBox[46].isSelected() || (!cBox[46].isSelected() && (1 & addfield) != 0 ) ))
+			{
+				if (TSPid.getCounter()!=-1)
+				{
+					//DM20122003 081.6 int07 changed
+					if (TSPid.isStarted() && counter != TSPid.getCounter())
+					{
+						Msg(Resource.getString("rawparse.outof.sequence", Integer.toHexString(pid).toUpperCase(), "" + packet, "" + (count-188), "" + counter, "" + TSPid.getCounter()) + " (~" + Common.formatTime_1( (long)((options[14] / 90.0f) * options[7])) + ")");
 						TSPid.setCounter(counter);
 					}
+
 					TSPid.count();
-				} else { 
+				}
+
+				else
+				{ 
 					TSPid.setCounter(counter);
 					TSPid.count();
 				}
 			}
 
-			if (!start) {
+			if (!start)
+			{
 				if (TSPid.isneeded() && TSPid.isStarted())
 					TSPid.writeData(push189,4+addlength,184-addlength);
-			} else {
+			}
+			else
+			{
 				TSPid.setStarted(true);
-				if (TSPid.getID()==-1) {    // create new demux object
+
+				// create new demux object
+				if (TSPid.getID()==-1)
+				{
 					TSPid.setID(pesID);
-					String type="";
+					String type = "";
 					switch (0xfffffff0 & pesID) {
 					case 0x1e0:
 						type=Resource.getString("idtype.mpeg.video");
@@ -7830,9 +7854,12 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 						demux.setType(3);
 						demux.setStreamType(0);
 						TSdemuxlist.add(demux);
-						if (ToVDR==0){
+
+						if (ToVDR==0)
+						{
 							if (newID[0]==0xE1) //DM02112003 081.5++
 								demux.initVideo(fparent,options,bs/TSdemuxlist.size(),TSdemuxlist.size(),2);
+
 							else
 							{
 								type+=Resource.getString("idtype.ignored");
@@ -7845,6 +7872,7 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 							type += " " + Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[0] - 1).toUpperCase();
 
 						break;
+
 					case 0x1c0:
 					case 0x1d0:
 						type=Resource.getString("idtype.mpeg.audio"); 
@@ -7857,15 +7885,17 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 						demux.setType(2);
 						demux.setStreamType(0);
 						TSdemuxlist.add(demux);
+
 						if (ToVDR==0) 
 							demux.init(fparent,options,bs/TSdemuxlist.size(),TSdemuxlist.size(),2);
 
 						//DM09072004 081.7 int06 changed
 						if (ToVDR > 0) 
-							type+=" " + Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[1]-1).toUpperCase();
+							type += " " + Resource.getString("idtype.mapped.to") + Integer.toHexString(newID[1]-1).toUpperCase();
 
 						break;
 					}
+
 					switch (pesID)
 					{
 					//DM27042004 081.7 int02 changed++
@@ -7899,7 +7929,6 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 						{
 							type += Resource.getString("idtype.ignored");
 							TSPid.setneeded(false);
-
 						}
 
 						//DM09072004 081.7 int06 changed
@@ -8021,16 +8050,21 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 							type += " ..)";
 						}
 
-						if (scram>0 && !cBox[38].isSelected()) {
-							type+=" (0x"+Long.toHexString(count-188).toUpperCase()+" #"+packet+") ";  // pos + packno
+						if (scram>0 && !cBox[38].isSelected())
+						{
+							type += " (0x"+Long.toHexString(count-188).toUpperCase()+" #"+packet+") ";  // pos + packno
+
 							if (!TSPid.getScram()) 
 								Msg(Resource.getString("rawparse.scrambled.notignored",Integer.toHexString(pid).toUpperCase(),""+type));
+
 							TSPid.setScram(true);
 							TSPid.setStarted(false);
 							TSPid.setID(-1);
 							TSPid.reset();
+
 							continue pvaloop;
 						}
+
 						type += " (" + (count-188) + " #" + packet + ") ";  // pos + packno
 						Msg("--> PID 0x"+Integer.toHexString(pid).toUpperCase()+" "+type+Resource.getString("rawparse.ignored"));
 
@@ -8041,9 +8075,12 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 							TSPid.setID(-1);
 
 						continue pvaloop;
-					} else {
-						type+=" (" + (count-188) + " #" + packet + ") ";  // pos + packno
-						Msg(Resource.getString("rawparse.pid.has.pes",Integer.toHexString(pid).toUpperCase(),Integer.toHexString(0xff&pesID).toUpperCase(),""+type));
+					}
+
+					else
+					{
+						type += " (" + (count-188) + " #" + packet + ") ";  // pos + packno
+						Msg(Resource.getString("rawparse.pid.has.pes",Integer.toHexString(pid).toUpperCase(), Integer.toHexString(0xff & pesID).toUpperCase(), "" + type));
 						usedPIDs.add("0x"+Integer.toHexString(pid));
 					}
 				}
@@ -8057,10 +8094,14 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 				if (!demux.StreamEnabled())
 				{}
 
-				else if (TSPid.getDataSize()<7) {
-					if (demux.getPackCount()!=-1) 
+				else if (TSPid.getDataSize() < 7)
+				{
+					if (demux.getPackCount() != -1) 
 						Msg(Resource.getString("rawparse.lackof.pes", Integer.toHexString(pid).toUpperCase()));
-				} else {
+				}
+
+				else
+				{
 
 					/***!!! warning , special handling, packet may be bigger than 0xff ff max. size ****/
 					byte[] setorig = TSPid.getData().toByteArray();
@@ -8215,7 +8256,6 @@ public String rawparse(String file, int[] pids, int ToVDR) {
 			String newfile = values[3]+ ((lfn[demux.getType()]>0) ? ("_"+lfn[demux.getType()]) : "") + "." + values[2];
 
 			Common.renameTo(values[0], newfile); //DM13042004 081.7 int01 changed
-			//new File(values[0]).renameTo(new File(newfile));
 
 			values[0] = newfile;
 			values[3] = vptslog;     // set videolog
@@ -8865,32 +8905,45 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 				continue pvaloop;
 			}
 
-			int pidcheck=-1;
-			for (int a=0;a<PVAPidlist.size();a++) {
+			int pidcheck = -1;
+			for (int a = 0; a < PVAPidlist.size(); a++)
+			{
 				TSPid = (TSPID)PVAPidlist.get(a);
-				if (pid==TSPid.getPID()) { 
-					pidcheck=a; 
+
+				if (pid == TSPid.getPID())
+				{ 
+					pidcheck = a; 
 					break; 
 				}
 			}
-			if (pidcheck==-1) {   // create new PID object
+
+			if (pidcheck==-1)
+			{   // create new PID object
 				TSPid = new TSPID();
 				TSPid.setPID(pid);
+
 				Msg(Resource.getString("pvaparse.found.id")+Integer.toHexString(pid).toUpperCase()+" @ "+options[20]); //DM02022004 081.6 int14 changed
+
 				comBox[9].addItem(Integer.toHexString(pid));
 				PVAPidlist.add(TSPid);
 			} 
 
 			/** out of sequence? **/
-			if (!cBox[40].isSelected()) {
-				if (TSPid.getCounter()!=-1) {
-					if (counter!=TSPid.getCounter()) { 
-						Msg(Resource.getString("pvaparse.outof.sequence", Integer.toHexString(pid).toUpperCase(),""+packet,""+(count-8-packlength),""+counter, ""+TSPid.getCounter()));
+			if (!cBox[40].isSelected())
+			{
+				if (TSPid.getCounter() != -1)
+				{
+					if (counter != TSPid.getCounter())
+					{ 
+						Msg(Resource.getString("pvaparse.outof.sequence", Integer.toHexString(pid).toUpperCase(), "" + packet, "" + (count-8-packlength), "" + counter, "" + TSPid.getCounter()) + " (~" + Common.formatTime_1( (long)((options[14] / 90.0f) * options[7])) + ")");
 						TSPid.setCounter(counter);
 					}
-					TSPid.countPVA();
-				} else { 
 
+					TSPid.countPVA();
+				}
+
+				else
+				{ 
 					TSPid.setCounter(counter);
 					TSPid.countPVA();
 				}
@@ -10815,6 +10868,7 @@ public boolean processAudio(String[] args)
 			System.out.println("(3)audio frames: wri/pre/skip/ins/add "+frame_counter+"/"+cb+"/"+ce+"/"+cc+"/"+cd+"  @ "+sms.format( new java.util.Date((long)(time_counter/90.0f)) ));
 
 		/*** add frames at the end ***/
+
 		if (args[2].equals("mp") && options[38]==1 && vptsdata && awrite && (w < vptsval.length)) {
 
 			timeline += Audio.Time_length;
