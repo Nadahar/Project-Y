@@ -27,6 +27,7 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -38,6 +39,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JViewport;
 
 
 /**
@@ -69,10 +73,24 @@ public class AboutBox extends JDialog
 		logo.setOpaque(true);
 		logo.setBackground(BACKGROUND_COLOR);
 
-		String credits[] = Resource.getStringByLines("credits");
+		container.add(new JLabel(Resource.getString("about.credits.label")));
 
-		for (int a=0; a<credits.length; a++) 
-			container.add(new JLabel(credits[a]));
+		//String credits[] = Resource.getStringByLines("credits");
+		//for (int a=0; a<credits.length; a++) 
+			//container.add(new JLabel(credits[a]));
+
+		String credits = "\n"+Resource.getString("credits")+"\n";
+		JTextArea list = new JTextArea(credits, 5, 10);
+		list.setEditable(false);
+		list.setFocusable(false);
+		JScrollPane scroll = new JScrollPane(list);
+		scroll.setBackground(Color.white);
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+		container.add(scroll);
+		
+		final CreditsScroller creditScroller = new CreditsScroller(scroll);
+		creditScroller.start();
 
 		container.add(new JLabel(" ")); // as spacer
 
@@ -86,6 +104,7 @@ public class AboutBox extends JDialog
 		ok.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0) {
+				creditScroller.stopIt();
 				dispose(); 
 			}
 		});
@@ -106,12 +125,90 @@ public class AboutBox extends JDialog
 
 		addWindowListener (new WindowAdapter() { 
 			public void windowClosing(WindowEvent e) { 
+				creditScroller.stopIt();
 				dispose(); 
 			}
 		});
 
 		setVisible(true);
 	}
+	
+	/**
+	 * A Thread which scrolls a JScrollPane from top to bottom and vice versa
+	 * until it is stopped by calling stopIt().
+	 */
+	private class CreditsScroller extends Thread
+	{
+		/** direction up? */
+		private boolean up = true;
+		
+		/** should this Thread be stopped? */
+		private boolean stopIt = false;
+		
+		/** the JScrollPane to scroll */
+		private JScrollPane scroll;
+		
+		/**
+		 * Constructor of CreditsScroller.
+		 * 
+		 * @param scroll The JScrollPane of the credits JTextArea
+		 */
+		public CreditsScroller(JScrollPane scroll)
+		{
+			this.scroll = scroll;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Runnable#run()
+		 */
+		public void run() 
+		{
+			while (!stopIt)
+			{
+				try {
+					sleep(100);
+				} catch (InterruptedException e) {
+				}
+				
+				JViewport viewport = scroll.getViewport();
+				int height = viewport.getViewSize().height - viewport.getViewRect().height;
+				int viewHeight = (int)viewport.getViewPosition().getY();
+				if (up)
+				{
+					if (viewHeight < height)
+					{
+						viewHeight++;
+					}
+					else
+					{
+						viewHeight--;
+						up = false;
+					}
+				}
+				else
+				{
+					if (viewHeight > 0)
+					{
+						viewHeight--;
+					}
+					else
+					{
+						viewHeight++;
+						up = true;
+					}
+				}
+				viewport.setViewPosition(new Point(0,viewHeight));
+			}
+		}
+		
+		/**
+		 * Sets the variable stopIt to bring this Thread to an end.
+		 */
+		public void stopIt()
+		{
+			stopIt = true;
+		}
+}
 
 }
 
