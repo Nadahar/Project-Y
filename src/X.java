@@ -131,7 +131,7 @@ public class X extends JPanel
 {
 
 /* main version index */
-static String version_name = "ProjectX 0.81.8.02b12_lang";
+static String version_name = "ProjectX 0.81.8.02b13_lang";
 static String version_date = "16.10.2004";
 
 
@@ -5428,6 +5428,12 @@ public static String parseValue(long value){
 }
 
 
+
+public static boolean makecut(long comparePoint)
+{
+	return makecut(null, 0, comparePoint, new ArrayList(), 0);
+}
+
 /************
  * make cut *
  ************/
@@ -5518,7 +5524,7 @@ public static boolean makecut(String cuts_filename, long startPTS, long compareP
 //DM18022004 081.6 int17 new
 private static void saveCuts(long cutposition, long startPTS, long lastframes, String cuts_filename)
 {
-	if (cBox[64].isSelected())
+	if (cBox[64].isSelected() && cuts_filename != null)
 	{
 		try
 		{
@@ -5673,8 +5679,7 @@ public void run() {
 					new File(workouts).mkdirs();
 				}
 
-				Msg(Resource.getString("run.write.output.to"));
-				Msg("\t" + workouts);
+				Msg(Resource.getString("run.write.output.to") + " " + workouts);
 
 				if (ctemp.size()>0)
 					Msg("-> " + ctemp.size() + " " + Resource.getString("run.cutpoints.defined") + " ( "+comBox[17].getSelectedItem()+" )");
@@ -5705,15 +5710,15 @@ public void run() {
 				/** quick pre-run for TS autoPMT **/ 
 				if (!qinfo && comBox[19].getSelectedIndex()==4 && cBox[41].isSelected())
 				{
-					qinfo=true;
+					qinfo = true;
 					options[56]= (0x100000L * Integer.parseInt(comBox[21].getSelectedItem().toString()));
 					long splitlen = options[18]; 
-					options[18]=0;
+					options[18] = 0;
 
 					working();
 
-					qinfo=false;
-					options[18]=splitlen;
+					qinfo = false;
+					options[18] = splitlen;
 					workinglist = (ArrayList)collfiles[a].clone();
 					Msg(Resource.getString("run.end.quick.info"));
 				}
@@ -5876,7 +5881,7 @@ private void messageSettings()
 		Msg("-> " + Resource.getString("collection.exportlimits") + " " + cBox[52].getText().toString() + " " + comBox[34].getSelectedItem().toString());
 
 	//C.D.Flag
-	if (cBox[35].isSelected())
+	if (cBox[35].isSelected() && comBox[19].getSelectedIndex() == 0)
 		Msg("-> " + cBox[35].getText().toString());
 
 	Msg(" ");
@@ -6568,6 +6573,9 @@ public void pesparse(String file, String vptslog, int ismpg) {
 				in.unread(data,6+packlength,6);
 
 			clv[5]++;
+
+
+
 			if (options[30]==1) 
 				System.out.print("\r"+Resource.getString("pesparse.packs", ""+clv[5], ""+((count*100/size)), ""+count));
 
@@ -7418,6 +7426,8 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 					break export;
 				}
 
+
+			/***
 				if (ToVDR==1) 
 					options = makevdr.writeVDR(nPes,options,demux,6);
 				else if (ToVDR==2) 
@@ -7426,9 +7436,10 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 					options = makevdr.writePVA(nPes,options,demux,6);
 				else if (ToVDR==4) 
 					options = makevdr.writeTS(nPes,options,demux,6);
+			***/
 
 				//DM14062004 081.7 int04 changed
-				else if (ToVDR == 0)
+				if (ToVDR == 0)
 				{
 					if (demux.getType()==3) { 
 						if (pesID0!=demux.getID()) 
@@ -7439,8 +7450,11 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 					if (demux.getPTS()>lastpts) 
 						lastpts=demux.getPTS();
 				}
+				else
+					options = makevdr.write(ToVDR, nPes, options, demux, 6, CUT_BYTEPOSITION);
 
-				if (a>=PesLength)
+
+				if (a >= PesLength)
 					break export;
 			}
 
@@ -7720,10 +7734,11 @@ public String rawparse(String file, int[] pids, int ToVDR)
 			Msg(Resource.getString("rawparse.no.pmt"));
 	}
 
-	long count=0, size=0, startPoint=0;
+	long count = 0, size = 0, startPoint = 0;
 	long starts[] = new long[combvideo.size()];
 
-	for (int a=0; a<combvideo.size(); a++){
+	for (int a = 0; a < combvideo.size(); a++)
+	{
 		file = combvideo.get(a).toString();
 		starts[a] = size;
 		size += new File(file).length();
@@ -7736,9 +7751,11 @@ public String rawparse(String file, int[] pids, int ToVDR)
 	//** pid inclusion 
 	ArrayList abc = (ArrayList)speciallist.get(currentcoll);
 	int[] include = new int[abc.size()];
-	for (int a=0; a<abc.size(); a++) 
-		include[a] = 0x1FFF&Integer.parseInt(abc.get(a).toString().substring(2),16);
-	if (abc.size()>0)
+
+	for (int a=0; a < abc.size(); a++) 
+		include[a] = 0x1FFF & Integer.parseInt(abc.get(a).toString().substring(2), 16);
+
+	if (abc.size() > 0)
 		Msg(Resource.getString("rawparse.special.pids"));
 
 	//*** split skipping first
@@ -7746,7 +7763,7 @@ public String rawparse(String file, int[] pids, int ToVDR)
 		startPoint = options[20] - (comBox[25].getSelectedIndex() * 1048576L);
 
 	//*** jump near to first cut-in point to collect more audio
-	if (comBox[17].getSelectedIndex()==0 && ctemp.size()>0 && cutcount==0)
+	if (comBox[17].getSelectedIndex() == 0 && ctemp.size() > 0 && cutcount == 0)
 		startPoint = Long.parseLong(ctemp.get(cutcount).toString()) - (ToVDR==0 ? 2048000 : 0);
 
 	if (startPoint < 0)
@@ -7783,7 +7800,7 @@ public String rawparse(String file, int[] pids, int ToVDR)
 
 
 	while (count < startPoint)
-		count += in.skip(startPoint-count);
+		count += in.skip(startPoint - count);
 
 	progress.setString(( ToVDR==0 ? Resource.getString("rawparse.demuxing") : Resource.getString("rawparse.converting"))+Resource.getString("rawparse.dvb.mpeg")+" "+(new File(file)).getName());
 	progress.setStringPainted(true);
@@ -7810,7 +7827,7 @@ public String rawparse(String file, int[] pids, int ToVDR)
 
 			if (qbreak || (qinfo && count > qexit))
 			{ 
-				qbreak=false; 
+				qbreak = false; 
 				break morepva; 
 			}
 
@@ -8351,15 +8368,8 @@ public String rawparse(String file, int[] pids, int ToVDR)
 						set[4] = (byte)(setlength>>>8);
 						set[5] = (byte)(0xff & setlength);
 
-						if (ToVDR==1) 
-							options = makevdr.writeVDR(set,options,demux,0);
-						else if (ToVDR==2) 
-							options = makevdr.writeMPG(set,options,demux,0);
-						else if (ToVDR==3) 
-							options = makevdr.writePVA(set,options,demux,0);
-						else if (ToVDR==4) 
-							options = makevdr.writeTS(set,options,demux,0);
-						else if (ToVDR == 0) //DM14062004 081.7 int04 changed
+
+						if (ToVDR == 0) //DM14062004 081.7 int04 changed
 						{
 							if (demux.getType()==3)
 							{
@@ -8369,6 +8379,20 @@ public String rawparse(String file, int[] pids, int ToVDR)
 							else 
 								demux.write(set,true);
 						}
+						else
+							options = makevdr.write(ToVDR, set, options, demux, 0, next_CUT_BYTEPOSITION);
+
+					/***
+						if (ToVDR==1) 
+							options = makevdr.writeVDR(set,options,demux,0);
+						else if (ToVDR==2) 
+							options = makevdr.writeMPG(set,options,demux,0);
+						else if (ToVDR==3) 
+							options = makevdr.writePVA(set,options,demux,0);
+						else if (ToVDR==4) 
+							options = makevdr.writeTS(set,options,demux,0);
+					***/
+
 					}
 					//28042004 081.7 int02 changed--
 				}
@@ -8782,30 +8806,34 @@ public long nextFilePTS(int type, int ismpg, long lastpts, int file_number) {
 /**********************
  * read bytes for overlap pva check *
  **********************/
-public byte[] overlapPVA(byte[] overlapnext) {
-	//if (combvideo.size()>1) {
-	if (FileNumber < combvideo.size()-1) {
+public byte[] overlapPVA(byte[] overlapnext)
+{
+	if (FileNumber < combvideo.size()-1)
+	{
 		try 
 		{
-		//RandomAccessFile ovl = new RandomAccessFile(combvideo.get(1).toString(),"r");
-		RandomAccessFile ovl = new RandomAccessFile(combvideo.get(FileNumber+1).toString(),"r");
-		ovl.seek(0);
-		ovl.read(overlapnext);
-		ovl.close();
+			RandomAccessFile ovl = new RandomAccessFile(combvideo.get(FileNumber + 1).toString(), "r");
+
+			ovl.seek(0);
+			ovl.read(overlapnext);
+			ovl.close();
 		}
-		catch (IOException e) {
-			Msg(Resource.getString("overlappva.io.error")+" "+e); 
+		catch (IOException e)
+		{
+			Msg(Resource.getString("overlappva.io.error") + " " + e); 
 		}
 	}
+
 	return overlapnext;
 }
 
 
 /**********************************
- * PVA/PSV/PSA alternative Parser *
+ * PVA/PSV/PSA  Parser *
  **********************************/
 
-public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
+public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog)
+{
 
 	String fchild = (newOutName.equals("")) ? (new File(pvafile).getName()).toString() : newOutName;
 	String fparent = ( fchild.lastIndexOf(".") != -1 ) ? workouts+fchild.substring(0,fchild.lastIndexOf(".")) : workouts+fchild;
@@ -9281,12 +9309,6 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 				if ( options[18]>0 && options[18]<options[41] ) 
 					break pvaloop;
 
-
-
-
-
-
-
 				continue pvaloop;
 			}
 
@@ -9330,6 +9352,9 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 				}
 			}
 
+			options = makevdr.write(ToVDR, data2, options, demux, 0, CUT_BYTEPOSITION);
+
+		/***
 			if (ToVDR==1) 
 				options = makevdr.writeVDR(data2,options,demux,0);
 			else if (ToVDR==2) 
@@ -9338,9 +9363,11 @@ public String pvaparse(String pvafile,int ismpg,int ToVDR, String vptslog) {
 				options = makevdr.writePVA(data2,options,demux,0);
 			else if (ToVDR==4) 
 				options = makevdr.writeTS(data2,options,demux,0);
+		***/
 
 			showOutSize();
-			if (ToVDR>0)  //DM06022004 081.6 int15 fix
+
+			if (ToVDR > 0)  //DM06022004 081.6 int15 fix
 				options[20] = count;
 
 			/****** split size reached *****/
@@ -13104,6 +13131,7 @@ public void processSubpicture(String[] args)
 						{
 							String[] SONhead = Teletext.getSONHead(new File(subfile).getParent(), (long)videoframerate);
 
+
 							for (int a=0; a < SONhead.length; a++) 
 								print_out.println(SONhead[a]);
 						}
@@ -15948,7 +15976,8 @@ class PIDdemux {
 /**********************
  * create VDR from TS *
  **********************/
-class makeVDR {
+class makeVDR
+{
 
 	IDDBufferedOutputStream out; //DM18022004 081.6 int17 changed
 	String name="";
@@ -16018,6 +16047,31 @@ class makeVDR {
 		catch (IOException e) { 
 			Msg(Resource.getString("makeVDR.error.io") + "1 " + e); 
 		}
+	}
+
+	// entry point and pre functions
+	public long[] write(int format, byte[] data, long[] options, PIDdemux demux, int overhead, long cutposition)
+	{
+		//cut-off determination
+		if (comBox[17].getSelectedIndex() == 0 && !qinfo && !makecut(cutposition + 5) )
+			return options;
+
+		switch(format)
+		{
+		case 1:
+			return writeVDR(data, options, demux, overhead);
+
+		case 2:
+			return writeMPG(data, options, demux, overhead);
+
+		case 3:
+			return writePVA(data, options, demux, overhead);
+
+		case 4:
+			return writeTS(data, options, demux, overhead);
+		}
+
+		return options;
 	}
 
 	/******* write MPG ******/
