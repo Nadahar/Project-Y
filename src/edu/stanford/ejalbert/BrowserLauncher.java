@@ -477,7 +477,7 @@ public class BrowserLauncher {
 		if (browser == null) {
 			throw new IOException("Unable to locate browser: " + errorMessage);
 		}
-		
+
 		switch (jvm) {
 			case MRJ_2_0:
 				Object aeDesc = null;
@@ -530,13 +530,29 @@ public class BrowserLauncher {
 				}
 				break;
 		    case WINDOWS_NT:
-		    case WINDOWS_9x:
 		    	// Add quotes around the URL to allow ampersands and other special
 		    	// characters to work.
 				Process process = Runtime.getRuntime().exec(new String[] { (String) browser,
 																FIRST_WINDOWS_PARAMETER,
 																SECOND_WINDOWS_PARAMETER,
 																THIRD_WINDOWS_PARAMETER,
+																'"' + url + '"' });
+				// This avoids a memory leak on some versions of Java on Windows.
+				// That's hinted at in <http://developer.java.sun.com/developer/qow/archive/68/>.
+				try {
+					process.waitFor();
+					process.exitValue();
+				} catch (InterruptedException ie) {
+					throw new IOException("InterruptedException while launching browser: " + ie.getMessage());
+				}
+				break;
+		    case WINDOWS_9x:
+			// 2004-10-23 dvb.matt mod, Win98SE 'start' command seems not work with a 'title' string in the commandline chain
+		    	// Add quotes around the URL to allow ampersands and other special
+		    	// characters to work.
+				process = Runtime.getRuntime().exec(new String[] { (String) browser,
+																FIRST_WINDOWS_PARAMETER,
+																SECOND_WINDOWS_PARAMETER,
 																'"' + url + '"' });
 				// This avoids a memory leak on some versions of Java on Windows.
 				// That's hinted at in <http://developer.java.sun.com/developer/qow/archive/68/>.

@@ -6888,9 +6888,11 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 	//** pid inclusion 
 	ArrayList abc = (ArrayList)speciallist.get(currentcoll);
 	int[] include = new int[abc.size()];
+
 	for (int a=0; a<abc.size(); a++) 
-		include[a] = 0xFF&Integer.parseInt(abc.get(a).toString().substring(2),16);
-	if (include.length>0)
+		include[a] = 0xFF & Integer.parseInt(abc.get(a).toString().substring(2), 16);
+
+	if (include.length > 0)
 		Msg(Resource.getString("vdrparse.special.pes"));
 
 	//*** split skipping first
@@ -7252,7 +7254,7 @@ public String vdrparse(String file, int ismpg, int ToVDR)
 
 			/** pid inclusion **/
 			includeloop:
-			while (include.length>0)
+			while (include.length > 0)
 			{
 				for (int v=0; v < include.length; v++) 
 					if (pesID == include[v] || subID == include[v]) 
