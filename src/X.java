@@ -4775,7 +4775,7 @@ class GoListener implements ActionListener
 		}
 		else if (actName.equals("cancel"))
 		{ 
-			Msg(Resource.getString("golistener.msg.cacelled")); 
+			Msg(Resource.getString("golistener.msg.cancelled")); 
 			TextArea.setBackground(new Color(230, 230, 255)); //DM14052004 081.7 int02 add
 			qpause=false; 
 			qbreak=true; 
@@ -5323,7 +5323,7 @@ public static boolean makecut(String cuts_filename, long startPTS, long compareP
 					{ 
 						bool=true; 
 						CP=abc;
-						Msg("-> cut-in @ GOP#"+(clv[6]-1)+" / new vframe "+lastframes+" / new Timecode "+base_time.format(new java.util.Date((long)(lastframes*(double)(options[14]/90.0f)) )));
+						Msg(Resource.getString("msg.cuts.cutin", "" + (clv[6] - 1), "" + lastframes, "" + base_time.format(new java.util.Date((long)(lastframes * (double)(options[14] / 90.0f)) ))));
 						saveCuts(comparePoint,startPTS,lastframes,cuts_filename); //DM18022004 081.6 int17 new
 
 						if (lastframes>0) 
@@ -5334,7 +5334,7 @@ public static boolean makecut(String cuts_filename, long startPTS, long compareP
 				}
 				if (!bool)
 				{
-					Msg("-> cut-out @ GOP#"+(clv[6]-1));
+					Msg(Resource.getString("msg.cuts.cutout", "" + (clv[6] - 1)));
 					saveCuts(comparePoint,startPTS,lastframes,cuts_filename); //DM18022004 081.6 int17 new
 				}
 
@@ -5346,11 +5346,11 @@ public static boolean makecut(String cuts_filename, long startPTS, long compareP
 				bool=true;
 				cutcount++;
 
-				Msg("-> cut-in @ GOP#"+(clv[6]-1)+" / new vframe "+lastframes+" / new Timecode "+base_time.format(new java.util.Date((long)(lastframes*(double)(options[14]/90.0f)) )));
+				Msg(Resource.getString("msg.cuts.cutin", "" + (clv[6] - 1), "" + lastframes, "" + base_time.format(new java.util.Date((long)(lastframes * (double)(options[14] / 90.0f)) ))));
 				saveCuts(comparePoint,startPTS,lastframes,cuts_filename); //DM18022004 081.6 int17 new
 
 				if (lastframes>0) 
-					cell.add(""+lastframes); // celltimes for cutin
+					cell.add("" + lastframes); // celltimes for cutin
 
 				if (cutcount >= ctemp.size()) 
 					return bool;
@@ -5476,7 +5476,7 @@ public void run() {
 			workinglist.clear();
 			workinglist = (ArrayList)collfiles[a].clone();
 			comBox[0].setSelectedIndex(a);
-			Msg("\r\n" + Resource.getString("run.working.coll") + a);
+			Msg("\r\n" + Resource.getString("run.working.coll") + " " + a);
 			currentcoll = a;
 
 			if (workinglist.size() > 0) { 
@@ -5495,12 +5495,12 @@ public void run() {
 				//DM15072004 081.7 int06 moved and add++
 				if (options[18]>0)
 				{
-					Msg(Resource.getString("run.split.output") + (options[18]/1048576) + " MB");
+					Msg(Resource.getString("run.split.output") + " " + (options[18]/1048576) + " MB");
 				}
 
 				if (cBox[8].isSelected())
 				{
-					Msg(Resource.getString("run.add.time.offset", ""+(options[28] / 90)));
+					Msg(Resource.getString("run.add.time.offset", "" + (options[28] / 90)));
 				}
 
 				for (int i = 55; i < 61; i++)
@@ -5544,7 +5544,7 @@ public void run() {
 				Msg("\t"+workouts);
 
 				if (ctemp.size()>0)
-					Msg("-> "+ctemp.size()+Resource.getString("run.cutpoints.defined") + " ("+comBox[17].getSelectedItem()+")");
+					Msg("-> " + ctemp.size() + " " + Resource.getString("run.cutpoints.defined") + " ( "+comBox[17].getSelectedItem()+" )");
 
 				String fchilds = (new File(firstfile).getName()).toString();
 				if ( fchilds.lastIndexOf(".") != -1 ) 
