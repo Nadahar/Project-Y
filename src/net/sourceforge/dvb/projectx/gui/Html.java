@@ -1,5 +1,5 @@
 /*
- * @(#)X_Help.java - provides an external HTML pane for additional infos
+ * @(#)Html.java - provides an external HTML pane for additional infos
  *
  * Copyright (c) 2004 by dvb.matt, All Rights Reserved.
  * 
@@ -32,18 +32,29 @@ import java.awt.event.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.*;
+
 import javax.swing.text.*;
 import javax.swing.event.*;
+
+import edu.stanford.ejalbert.BrowserLauncher;
 
 import net.sourceforge.dvb.projectx.common.Resource;
 import net.sourceforge.dvb.projectx.common.X;
 
-//DM20032004 081.6 int18 introduced
+
+/**
+ * Html.java - provides an external HTML pane for additional infos.
+ * 
+ * @since DM20032004 081.6 int18
+ */
 public class Html extends JFrame
 {
+	/**
+	 * Constructor of Html.
+	 */
 	public Html()
 	{
-		setBounds( 200, 25, 600, 400);
+		setBounds( 200, 25, 600, 600);
 		HtmlPane html = new HtmlPane();
 		setContentPane(html);
 		setTitle(Resource.getString("html.title"));		
@@ -59,16 +70,26 @@ public class Html extends JFrame
 		UIManager.addPropertyChangeListener(new UISwitchListener((JComponent)getRootPane()));
 	}
 
+	/**
+	 * Quit disposes this window.
+	 */
 	public void quit()
 	{
 		dispose();
 	}
 }
 
+/**
+ * HtmlPane.
+ */
 class HtmlPane extends JScrollPane implements HyperlinkListener
 {
-	JEditorPane html;
+	/** the JEditorPane */
+	private JEditorPane html;
 
+	/**
+	 * Constructor of HtmlPane.
+	 */
 	public HtmlPane()
 	{
 		try
@@ -90,7 +111,11 @@ class HtmlPane extends JScrollPane implements HyperlinkListener
 		}	
 	}
 
-	// Notification of a change relative to a hyperlink.
+	/**
+	 * Notification of a change relative to a hyperlink.
+	 * 
+	 * @see javax.swing.event.HyperlinkListener#hyperlinkUpdate(javax.swing.event.HyperlinkEvent)
+	 */
 	public void hyperlinkUpdate(HyperlinkEvent e)
 	{
 		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
@@ -99,22 +124,59 @@ class HtmlPane extends JScrollPane implements HyperlinkListener
 		}
 	}
 
+	/**
+	 * Called if someone has activated a hyperlink.
+	 * 
+	 * @param u URL of the link
+	 */
 	protected void linkActivated(URL u)
 	{
-		Cursor c = html.getCursor();
-		Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-		html.setCursor(waitCursor);
-		SwingUtilities.invokeLater(new PageLoader(u, c));
+		// external links are loaded by the BrowserLauncher
+		if (u.getProtocol().equals("http")
+			|| u.getProtocol().equals("https"))
+		{
+			try 
+			{
+				BrowserLauncher.openURL(u.toString());
+			} 
+			catch (IOException e) 
+			{
+				X.Msg(Resource.getString("msg.browser.launcher.error") + " " + e);
+			}
+		}
+		else
+		{
+			// all local links are loaded into the JEditorPane
+			Cursor c = html.getCursor();
+			Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+			html.setCursor(waitCursor);
+			SwingUtilities.invokeLater(new PageLoader(u, c));
+		}
 	}
 
-	class PageLoader implements Runnable
+	/**
+	 * PageLoader provides a thread for loading a page.
+	 */
+	private class PageLoader implements Runnable
 	{
+		private URL url;
+		private Cursor cursor;
+
+		/**
+		 * Constructor of PageLoader.
+		 * 
+		 * @param u URL to load
+		 * @param c Cursor to display
+		 */
 		PageLoader(URL u, Cursor c)
 		{
 			url = u;
 			cursor = c;
 		}
 
+		/* (non-Javadoc)
+		 * @see java.lang.Runnable#run()
+		 */
 		public void run()
 		{
 			if (url == null)
@@ -146,8 +208,5 @@ class HtmlPane extends JScrollPane implements HyperlinkListener
 				}
 			}
 		}
-
-		URL url;
-		Cursor cursor;
 	}
 }

@@ -158,7 +158,6 @@ import net.sourceforge.dvb.projectx.video.MPVD;
 import net.sourceforge.dvb.projectx.video.PatchPanel;
 import net.sourceforge.dvb.projectx.video.Preview;
 import net.sourceforge.dvb.projectx.video.PreviewObject;
-import edu.stanford.ejalbert.BrowserLauncher;
 
 
 public class X extends JPanel
@@ -607,31 +606,12 @@ protected JMenu buildHelpMenu()
 	Resource.localize(openHtml, "help.help");
 	openHtml.setActionCommand("helphtml");
 
-	JMenuItem lucikeInfo = new JMenuItem();
-	Resource.localize(lucikeInfo, "help.lucike.info");
-	lucikeInfo.setActionCommand("helplucikeinfo");
-
-	JMenuItem lucikeForum = new JMenuItem();
-	Resource.localize(lucikeForum, "help.lucike.forum");
-	lucikeForum.setActionCommand("helplucikeforum");
-
-	JMenuItem sourceforge = new JMenuItem();
-	Resource.localize(sourceforge, "help.sourceforge.net");
-	sourceforge.setActionCommand("sourceforge");
-
 	help.add(about);
 	help.addSeparator();
 	help.add(openHtml);
-	help.addSeparator();
-	help.add(lucikeInfo);
-	help.add(lucikeForum);
-	help.add(sourceforge);
 
 	about.addActionListener(menulistener);
 	openHtml.addActionListener(menulistener);
-	lucikeInfo.addActionListener(menulistener);
-	lucikeForum.addActionListener(menulistener);
-	sourceforge.addActionListener(menulistener);
 
 	return help;
 }
@@ -2643,30 +2623,6 @@ class MenuListener implements ActionListener
 
 		else if (actName.equals("helphtml"))
 			new Html().show();
-		else if (actName.equals("helplucikeinfo"))
-		{
-			try {
-				BrowserLauncher.openURL("http://www.lucike.info");
-			} catch (IOException e1) {
-				Msg(Resource.getString("msg.browser.launcher.error") + " " + e1);
-			}
-		}
-		else if (actName.equals("helplucikeforum"))
-		{
-			try {
-				BrowserLauncher.openURL("http://forum.lucike.info");
-			} catch (IOException e1) {
-				Msg(Resource.getString("msg.browser.launcher.error") + " " + e1);
-			}
-		}
-		else if (actName.equals("sourceforge"))
-		{
-			try {
-				BrowserLauncher.openURL("http://sourceforge.net/projects/project-x");
-			} catch (IOException e1) {
-				Msg(Resource.getString("msg.browser.launcher.error") + " " + e1);
-			}
-		}
 		
 		else if (actName.equals("about"))
 			showAboutBox();

@@ -100,7 +100,8 @@ public class Resource {
 			File file = new File(workdir + filesep + resourceName);
 			if (file.exists() && file.canRead())
 			{
-					return new PropertyResourceBundle(new FileInputStream(file));
+				newBundle = new PropertyResourceBundle(new FileInputStream(file));
+				return newBundle;
 			}
 		} 
 		catch (Exception e) 
@@ -162,16 +163,13 @@ public class Resource {
 					if (line.startsWith("lang="))
 					{
 						String lang = line.substring(5);
-						System.out.println("lang="+lang);
 						locale=new Locale(lang, "");
-						System.out.println("locale="+locale);
 						try {
 							resource = loadResourceBundle(locale);
 						} catch (MissingResourceException e) {
 							// our fallback is english
 							resource = defaultResource;
 						}
-						System.out.println("resource="+resource.getLocale());
 						
 						// we have found what we need, stop reading this file
 						break;
@@ -578,15 +576,22 @@ public class Resource {
 	 */
 	public static URL getLocalizedResourceURL(String path, String resourceName)
 	{
-		if (resource.getLocale() != null)
+		Locale usedLocale = null;
+		if (locale != null)
 		{
-			String localizedResource = path + filesep + resource.getLocale() + filesep + resourceName;
-			
-			URL url = getResourceURL(localizedResource);
-			if (url != null)
-			{
-				return url;
-			}
+			usedLocale = locale;
+		}
+		else
+		{
+			usedLocale = Locale.getDefault();
+		}
+
+		String localizedResource = path + filesep + usedLocale.getLanguage() + filesep + resourceName;
+		
+		URL url = getResourceURL(localizedResource);
+		if (url != null)
+		{
+			return url;
 		}
 
 		// there is no localized version of this file, try the default version
