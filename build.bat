@@ -22,7 +22,7 @@ javac.exe -O -classpath src -d build @sources.lst
 
 pause
 
-copy src\resources\*.* build
+copy resources\*.* build
 
 jar.exe cfvm ProjectX.jar MANIFEST.MF -C build .
 
