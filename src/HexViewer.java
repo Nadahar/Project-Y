@@ -35,7 +35,7 @@ import java.io.*;
 public class HexViewer extends JFrame
 {
 	private String file = "";
-	private JTextArea HexArea;
+	private LogArea HexArea;
 	private JTextField Field, Field1, from, fsize;
 	private JScrollPane scroll;
 	private JViewport viewport;

@@ -25,19 +25,46 @@
  */
 
 
-import javax.swing.*;
+import java.awt.Color;
+
+import javax.swing.JTextPane;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 
 /**************
  * log window *
  **************/
-public class LogArea extends JTextArea {
+public class LogArea extends JTextPane {
+	private StyledDocument doc = null;
 
 public LogArea() {
-	super(null, 0, 0);
+	super();
 	setEditable(true);
-	setRows(4);
 	setText("");
+	doc = getStyledDocument();
+}
+
+public void append(String text)
+{
+	append(text, null);
+}
+
+public void append(String text, Color col)
+{
+	try {
+        SimpleAttributeSet attrs = null;
+		if (col != null)
+		{
+	        attrs = new SimpleAttributeSet();
+	        StyleConstants.setForeground(attrs, col);
+		}
+		
+		doc.insertString(doc.getLength(), text, attrs);
+	} catch (Exception e) {
+		System.out.println("LogArea.append(" + text + ", " + col + "): " + e.toString());
+	}
 }
 
 public float getAlignmentX () { 

@@ -121,6 +121,7 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -233,7 +234,8 @@ static AudioFrameConstants afc = new AudioFrameConstants();
 
 static DropTarget dropTarget_1, dropTarget_2, dropTarget_3, dropTarget_4; //DM26032004 081.6 int18 changed
 
-static JTextArea TextArea, FileInfoTextArea;  //DM26032004 081.6 int18 add
+static LogArea TextArea, FileInfoTextArea;
+//static JTextArea TextArea, FileInfoTextArea;  //DM26032004 081.6 int18 add
 static JViewport viewport, viewport_2; //DM26032004 081.6 int18 add
 static JTabbedPane logtab; //DM26032004 081.6 int18 add
 static JButton add_files;  //DM26032004 081.6 int18 add
@@ -4857,26 +4859,27 @@ class GoListener implements ActionListener
  ****************/
 public void javaEV()
 {
-	TextArea.setText(java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(new Date()));
-	TextArea.append("  " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.FULL).format(new Date()));
-	TextArea.append("\n" + Resource.getString("javaev.java.version") + "\t" + System.getProperty("java.version"));
-	TextArea.append("\n" + Resource.getString("javaev.java.vendor") + "\t" + System.getProperty("java.vendor"));
-	TextArea.append("\n" + Resource.getString("javaev.java.home") + "\t" + System.getProperty("java.home"));
-	TextArea.append("\n" + Resource.getString("javaev.java.vm.version") + "\t" + System.getProperty("java.vm.version"));
-	TextArea.append("\n" + Resource.getString("javaev.java.vm.vendor") + "\t" + System.getProperty("java.vm.vendor"));
-	TextArea.append("\n" + Resource.getString("javaev.java.vm.name") + "\t" + System.getProperty("java.vm.name"));
-	TextArea.append("\n" + Resource.getString("javaev.java.class.vers") + "\t" + System.getProperty("java.class.version"));
-	TextArea.append("\n" + Resource.getString("javaev.java.class.path") + "\t" + System.getProperty("java.class.path"));
-	TextArea.append("\n" + Resource.getString("javaev.java.os.name") + "\t" + System.getProperty("os.name"));
-	TextArea.append("\n" + Resource.getString("javaev.java.os.arch") + "\t" + System.getProperty("os.arch"));
-	TextArea.append("\n" + Resource.getString("javaev.java.os.version") + "\t" + System.getProperty("os.version"));
-	TextArea.append("\n" + Resource.getString("javaev.java.user.name") + "\t" + System.getProperty("user.name"));
-	TextArea.append("\n" + Resource.getString("javaev.java.user.home") + "\t" + System.getProperty("user.home"));
-	TextArea.append("\n" + Resource.getString("javaev.java.user.lang") + "\t" + System.getProperty("user.language"));
-	TextArea.append("\n" + Resource.getString("javaev.java.ini.file") + "\t" + inifile);
+	TextArea.setText("");
+	TextArea.append(java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(new Date()), Color.BLUE);
+	TextArea.append("  " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.FULL).format(new Date()), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.version") + "\t" + System.getProperty("java.version"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.vendor") + "\t" + System.getProperty("java.vendor"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.home") + "\t" + System.getProperty("java.home"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.vm.version") + "\t" + System.getProperty("java.vm.version"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.vm.vendor") + "\t" + System.getProperty("java.vm.vendor"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.vm.name") + "\t" + System.getProperty("java.vm.name"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.class.vers") + "\t" + System.getProperty("java.class.version"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.class.path") + "\t" + System.getProperty("java.class.path"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.os.name") + "\t" + System.getProperty("os.name"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.os.arch") + "\t" + System.getProperty("os.arch"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.os.version") + "\t" + System.getProperty("os.version"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.user.name") + "\t" + System.getProperty("user.name"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.user.home") + "\t" + System.getProperty("user.home"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.user.lang") + "\t" + System.getProperty("user.language"), Color.BLUE);
+	TextArea.append("\n" + Resource.getString("javaev.java.ini.file") + "\t" + inifile, Color.BLUE);
 
 	//DM18062004 081.7 int05 add
-	TextArea.append("\n" + Resource.getString("javaev.java.disk.access") + "\t" + raw_interface.GetLoadStatus());
+	TextArea.append("\n" + Resource.getString("javaev.java.disk.access") + "\t" + raw_interface.GetLoadStatus(), Color.BLUE);
 }
 
 
@@ -5254,6 +5257,14 @@ public static String[] getVersion()
  ************/
 public static void Msg(String msg)
 {
+	Msg(msg, null);
+}
+
+/************
+ * messages *
+ ************/
+public static void Msg(String msg, Color col)
+{
 	//DM25072004 081.7 int07 add
 	if (msg == null) 
 		return;
@@ -5266,13 +5277,12 @@ public static void Msg(String msg)
 
 	else
 	{
-		TextArea.append("\r\n"+msg);
-		viewport.setViewPosition(new Point(0,TextArea.getHeight()));
+		TextArea.append("\r\n"+msg, col);
+		//viewport.setViewPosition(new Point(0,TextArea.getHeight()));
 		//viewport.repaint();
 	}
 	messagelog += "\r\n"+msg;
 }
-
 
 /**********************
  * show output MB *
