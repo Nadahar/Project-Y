@@ -32,6 +32,8 @@ public final class WSS
 	private static int a;
 	private static String str;
 
+	private static String start = X.RESOURCE.getString("wss.start");
+
 	public WSS()
 	{
 		init(new int[0], 0);
@@ -75,21 +77,21 @@ public final class WSS
 
 		if (getRunIn())
 		{
-			str += "Run-In-Code found @ " + a + "<p>";
+			str += X.RESOURCE.getString("wss.run_in") + " @ " + a + "<p>";
 			a += 29;
 
 			if (getStartCode())
 			{
-				str += "Start-Code found @ " + a + "<p>";
+				str += X.RESOURCE.getString("wss.startcode") + " @ " + a + "<p>";
 
 				a += 24;
 
-				str += "Group 1 (Picture Format) start @ " + a + " :" + "<p>";
+				str += X.RESOURCE.getString("wss.group_1") + " " + start + " @ " + a + " :" + "<p>";
 				str += " * " + getGroup1() + "<p>";
 
 				a += 24;
 
-				str += "Group 2 (Picture Enhancements) start @ " + a + " :" + "<p>";
+				str += X.RESOURCE.getString("wss.group_2") + " " + start + " @ " + a + " :" + "<p>";
 
 				String[] group = getGroup2();
 
@@ -98,7 +100,7 @@ public final class WSS
 
 				a += 24;
 
-				str += "Group 3 (Subtitles) start @ " + a + " :" + "<p>";
+				str += X.RESOURCE.getString("wss.group_3") + " " + start + " @ " + a + " :" + "<p>";
 
 				group = getGroup3();
 
@@ -107,7 +109,7 @@ public final class WSS
 
 				a += 18;
 
-				str += "Group 4 (others) start @ " + a + " :" + "<p>";
+				str += X.RESOURCE.getString("wss.group_4") + " " + start + " @ " + a + " :" + "<p>";
 
 				group = getGroup4();
 
@@ -116,11 +118,11 @@ public final class WSS
 
 			}
 			else
-				str += "no Start-Code found";
+				str += X.RESOURCE.getString("wss.no_startcode");
 		}
 		else
 		{
-			str += "no Run-In-Code found";
+			str += X.RESOURCE.getString("wss.no_run_in");
 			str = null;
 		}
 
@@ -168,28 +170,28 @@ public final class WSS
 		switch (b1)
 		{
 		case 0x56: // 0001  Biphase 01010110
-			return "  4:3 full format, 576 lines, full screen"; 
+			return ("  " + X.RESOURCE.getString("wss.group_1.0001"));
 
 		case 0x95: // 1000  Biphase 10010101
-			return "  14:9 letterbox, 504 lines, center"; 
+			return ("  " + X.RESOURCE.getString("wss.group_1.1000"));
 
 		case 0x65: // 0100  Biphase 01100101
-			return "  14:9 letterbox, 504 lines, top"; 
+			return ("  " + X.RESOURCE.getString("wss.group_1.0100"));
 
 		case 0xA6: // 1101  Biphase 10100110
-			return "  16:9 letterbox, 432 lines, center"; 
+			return ("  " + X.RESOURCE.getString("wss.group_1.1101"));
 
 		case 0x59: // 0010  Biphase 01011001
-			return "  16:9 letterbox, 432 lines, top"; 
+			return ("  " + X.RESOURCE.getString("wss.group_1.0010"));
 
 		case 0x6A: // 0111  Biphase 01101010
-			return "  14:9 full format, 576 lines, center, full screen"; 
+			return ("  " + X.RESOURCE.getString("wss.group_1.0111"));
 
 		case 0xA9: // 1110  Biphase 10101001
-			return "  16:9 full format, 576 lines, full screen"; 
+			return ("  " + X.RESOURCE.getString("wss.group_1.1110"));
 
 		default:  
-			return "  error parsing group 1 (bits0..3)";
+			return ("  " + X.RESOURCE.getString("wss.group_1.error"));
 		}
 	}
 
@@ -205,57 +207,57 @@ public final class WSS
 		switch (b1>>>6)
 		{
 		case 1: // 0  Biphase 01
-			group2[0]= "  camera mode";
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_2.0.01");
 			break; 
 
 		case 2: // 1  Biphase 10
-			group2[0]= "  film mode"; 
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_2.0.10"); 
 			break;
 
 		default:  
-			group2[0]= "  error parsing bit4";
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_2.0.00");
 		}       
 
 		switch (0x3 & (b1>>>4))
 		{
 		case 1: // 0  Biphase 01
-			group2[1]= "  standard PAL"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_2.1.01"); 
 			break;
 
 		case 2: // 1  Biphase 10
-			group2[1]= "  MACP (motion adaptive color plus)"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_2.1.10"); 
 			break;
 
 		default:  
-			group2[1]= "  error parsing bit5"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_2.1.00"); 
 		}       
 
 		switch (0x3 & (b1>>>2))
 		{
 		case 1:  // 0  Biphase 01
-			group2[2]= "  no helper"; 
+			group2[2]= "  " + X.RESOURCE.getString("wss.group_2.2.01"); 
 			break;
 
 		case 2:  // 1  Biphase 10
-			group2[2]= "  helper modulation (PALplus)"; 
+			group2[2]= "  " + X.RESOURCE.getString("wss.group_2.2.10"); 
 			break;
 
 		default:  
-			group2[2]= "  error parsing bit6";
+			group2[2]= "  " + X.RESOURCE.getString("wss.group_2.2.00");
 		}       
 
 		switch (0x3 & b1)
 		{
 		case 1: // 0  Biphase 01
-			group2[3]= "  reserved (0)"; 
+			group2[3]= "  " + X.RESOURCE.getString("wss.group_2.3.01"); 
 			break;
 
 		case 2:  // 1  Biphase 10
-			group2[3]= "  reserved (1)"; 
+			group2[3]= "  " + X.RESOURCE.getString("wss.group_2.3.10"); 
 			break;
 
 		default:  
-			group2[3]= "  error parsing bit7";
+			group2[3]= "  " + X.RESOURCE.getString("wss.group_2.3.00");
 		}       
 
 		return group2;
@@ -273,37 +275,37 @@ public final class WSS
 		switch (0x3 & (b1>>>4))
 		{
 		case 1: // 0  Biphase 01
-			group2[0]= "  no subtitles in teletext"; 
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_3.0.01"); 
 			break;
 
 		case 2: // 1  Biphase 10
-			group2[0]= "  subtitles in teletext"; 
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_3.0.10"); 
 			break;
 
 		default:
-			group2[0]= "  error parsing bit8";
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_3.0.00");
 		}       
 
 		switch (0xF & b1)
 		{
 		case 5:  // 00  Biphase 0101
-			group2[1]= "  no 'open subtitles'"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.00"); 
 			break;
 
 		case 6:  // 01  Biphase 0110
-			group2[1]= "  'open subtitles' inside active picture"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.01"); 
 			break;
 
 		case 9:  // 10  Biphase 1001
-			group2[1]= "  'open subtitles' outside active picture"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.10"); 
 			break; 
 
 		case 0xA:  // 11  Biphase 1010
-			group2[1]= "  reserved (11)"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.11"); 
 			break;
 
 		default: 
-			group2[1]= "  error parsing bit9..10";
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_3.1.err");
 		}       
 
 		return group2;
@@ -321,37 +323,37 @@ public final class WSS
 		switch (0x3 & (b1>>>4))
 		{
 		case 1:  // 0  Biphase 01
-			group2[0]= "  no surround sound";
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_4.0.01");
 			break;
 
 		case 2:  // 1  Biphase 10
-			group2[0]= "  surround sound";
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_4.0.10");
 			break;
 
 		default:
-			group2[0]= "  error parsing bit11";
+			group2[0]= "  " + X.RESOURCE.getString("wss.group_4.0.00");
 		}       
 
 		switch (0xF & b1)
 		{
 		case 5: // 00  Biphase 0101
-			group2[1]= "  reserved (00)";
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.00");
 			break;
 
 		case 6: // 01  Biphase 0110
-			group2[1]= "  reserved (01)"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.01"); 
 			break; 
 
 		case 9:  // 10  Biphase 1001
-			group2[1]= "  reserved (10)"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.10"); 
 			break;
 
 		case 0xA:  // 11  Biphase 1010
-			group2[1]= "  reserved (11)"; 
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.11"); 
 			break;
 
 		default:
-			group2[1]= "  error parsing bit12..13";
+			group2[1]= "  " + X.RESOURCE.getString("wss.group_4.1.err");
 		}       
 
 		return group2;

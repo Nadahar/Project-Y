@@ -1042,6 +1042,7 @@ protected JPanel buildMainPanel()
 	main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
 	doitButton = new JButton();
+	doitButton.setActionCommand("go");
 	localize(doitButton, "button.go");
 	doitButton.addActionListener(my2Listener);
 
@@ -1058,6 +1059,7 @@ protected JPanel buildMainPanel()
 	control05.add(outSize);
 
 	scanButton = new JButton();
+	scanButton.setActionCommand("infoscan");
 	localize(scanButton, "button.i");
 	scanButton.setMaximumSize(new Dimension(45,22));
 	scanButton.setPreferredSize(new Dimension(45,22));
@@ -1066,6 +1068,7 @@ protected JPanel buildMainPanel()
 	scanButton.addActionListener(my2Listener);
 
 	breakButton = new JButton();
+	breakButton.setActionCommand("cancel");
 	localize(breakButton, "button.c");
 	breakButton.setMaximumSize(new Dimension(45,22));
 	breakButton.setPreferredSize(new Dimension(45,22));
@@ -1074,6 +1077,7 @@ protected JPanel buildMainPanel()
 	breakButton.addActionListener(my2Listener);
 
 	pauseButton = new JButton();
+	pauseButton.setActionCommand("pause");
 	localize(pauseButton, "button.p");
 	pauseButton.setMaximumSize(new Dimension(45,22));
 	pauseButton.setPreferredSize(new Dimension(45,22));
@@ -1087,6 +1091,7 @@ protected JPanel buildMainPanel()
 	comBox[9].setMaximumRowCount(5);
 
 	extract = new JButton();
+	extract.setActionCommand("extract");
 	localize(extract, "button.e");
 	extract.setMaximumSize(new Dimension(45,22));
 	extract.setPreferredSize(new Dimension(45,22));
@@ -4834,13 +4839,13 @@ class GoListener implements ActionListener
 		logtab.setSelectedIndex(0); //DM26032004 081.6 int18 add
 		TextArea.setBackground(Color.white); //DM26032004 081.6 int18 add
 
-		if (actName.equals("Go!") && comBox[0].getItemCount()>0)
+		if (actName.equals("go") && comBox[0].getItemCount()>0)
 		{
 			comBox[9].removeAllItems();
 			options[33]=-1;
 			new WORK().start();
 		}
-		else if (actName.equals("i") && comBox[0].getItemCount()>0)
+		else if (actName.equals("infoscan") && comBox[0].getItemCount()>0)
 		{
 			comBox[9].removeAllItems();
 			options[33]=-1;
@@ -4848,7 +4853,7 @@ class GoListener implements ActionListener
 			options[56]= (0x100000L * Integer.parseInt(comBox[21].getSelectedItem().toString())); 
 			new WORK().start();
 		}
-		else if (actName.equals("C"))
+		else if (actName.equals("cancel"))
 		{ 
 			Msg("--- process cancelled ----"); 
 			TextArea.setBackground(new Color(230, 230, 255)); //DM14052004 081.7 int02 add
@@ -4856,7 +4861,7 @@ class GoListener implements ActionListener
 			qbreak=true; 
 			options[18]=0; 
 		}
-		else if (actName.equals("P"))
+		else if (actName.equals("pause"))
 		{
 			if (!qpause)
 			{ 
@@ -4871,7 +4876,7 @@ class GoListener implements ActionListener
 				qpause=false; 
 			}
 		}
-		else if (actName.equals("e") && comBox[9].getItemCount()>0)
+		else if (actName.equals("extract") && comBox[9].getItemCount()>0)
 		{
 			options[31]=1; 
 			options[30]=0;

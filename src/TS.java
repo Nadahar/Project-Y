@@ -171,7 +171,7 @@ public class TS
 
 		if (Pids.length == 0)
 		{
-			X.Msg("!> no IDs found! ..use fixed PMT");
+			X.Msg(X.RESOURCE.getString("ts.msg1"));
 			autopmt = pmt;
 
 			return;

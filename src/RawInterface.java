@@ -57,7 +57,7 @@ class RawInterface
 			return Rawread.GetLoadStatus();
 
 		else
-			return "disabled or library not found";
+			return X.RESOURCE.getString("rawread.msg1");
 	}
 
 	public boolean isAccessibleDisk(String sourcefile)

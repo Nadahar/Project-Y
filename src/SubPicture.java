@@ -46,7 +46,7 @@ public class SubPicture extends JFrame
 
 public Picture picture;
 
-String title = "Subtitle PreViewer";
+String title = X.RESOURCE.getString("subpicture.title");
 
 public SubPicture()
 {
@@ -278,7 +278,7 @@ public class Picture extends JPanel implements Runnable
 		tmp[34+tp] = (byte)(0xFF & difference>>>8);
 		tmp[35+tp] = (byte)(0xFF & difference);
 
-		newTitle(" / in: " + sms.format(new java.util.Date(in_time / 90)) + " duration: " + sms.format(new java.util.Date((out_time - in_time) / 90)) );
+		newTitle(" / " + X.RESOURCE.getString("subpicture.in_time") + ": " + sms.format(new java.util.Date(in_time / 90)) + " " + X.RESOURCE.getString("subpicture.duration") + ": " + sms.format(new java.util.Date((out_time - in_time) / 90)) );
 
 		return tmp;
 	}
@@ -502,7 +502,7 @@ public class Picture extends JPanel implements Runnable
 		} 
 		catch (IOException e)
 		{ 
-			X.Msg("-> subpic write error"); 
+			X.Msg(X.RESOURCE.getString("subpicture.msg1")); 
 		}
 
 		read_from_Image = false;
@@ -871,7 +871,7 @@ public class Picture extends JPanel implements Runnable
 		{
 			playtime_pos = packetlength;
 			simple_picture = true;
-			X.Msg("!> simple picture packet");
+			X.Msg(X.RESOURCE.getString("subpicture.msg2"));
 		}
 		else
 			start_pos[2] += off+2;
@@ -912,7 +912,7 @@ public class Picture extends JPanel implements Runnable
 					start_pos[b] = Get_Bits(data, BPos, 16);
 				break;
 			default:
-				X.Msg("!> suppic unknown cmd: " + cmd_switch);
+				X.Msg(X.RESOURCE.getString("subpicture.msg3") + ": " + cmd_switch);
 			}
 		}
 

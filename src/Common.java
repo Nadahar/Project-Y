@@ -49,7 +49,7 @@ public final class Common
 			if ( oldfile.renameTo(newfile) )
 				return;
 
-		X.Msg("!> cannot rename " + oldfile.toString() + " to " + newfile.toString());
+		X.Msg(X.RESOURCE.getString("common.rename_error1") + " " + oldfile.toString() + " " + X.RESOURCE.getString("common.rename_error2") + " " + newfile.toString());
 		X.TextArea.setBackground(new Color(255,225,225));
 	}
 
