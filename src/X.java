@@ -2583,7 +2583,7 @@ class MenuListener implements ActionListener
 			try {
 				BrowserLauncher.openURL("http://www.lucike.info");
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				Msg(Resource.getString("msg.browser.launcher.error") + " " + e1);
 			}
 		}
 		else if (actName.equals("helplucikeforum"))
@@ -2591,7 +2591,7 @@ class MenuListener implements ActionListener
 			try {
 				BrowserLauncher.openURL("http://forum.lucike.info");
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				Msg(Resource.getString("msg.browser.launcher.error") + " " + e1);
 			}
 		}
 		
