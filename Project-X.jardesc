@@ -2,7 +2,7 @@
 <jardesc>
     <jar path="Z:/Projekte/Project-X/Project-X.jar"/>
     <options overwrite="true" compress="true" exportErrors="false" exportWarnings="true" saveDescription="true" descriptionLocation="/Project-X/Project-X.jardesc" useSourceFolders="false" buildIfNeeded="true"/>
-    <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="false" saveManifest="false" generateManifest="true" manifestLocation="/Project-X/MANIFEST.MF" mainClassHandleIdentifier="=Project-X/src&lt;{X.java[X">
+    <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="false" saveManifest="false" generateManifest="false" manifestLocation="/Project-X/MANIFEST.MF" mainClassHandleIdentifier="=Project-X/src&lt;{X.java[X">
         <sealing sealJar="false">
             <packagesToSeal/>
             <packagesToUnSeal/>
