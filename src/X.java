@@ -168,7 +168,7 @@ static java.text.DateFormat base_time = new java.text.SimpleDateFormat("HH:mm:ss
 PrintStream logging;
 static String loggin="", workouts ="", loggin2="";
 static boolean comchange=false, outchange=false, singleraw=false, newvideo=true, running=false, qinfo=false, qbreak=false, qpause=false;
-static String outalias = ">> output to same location as 1st file in collection";
+static String outalias = "output to same location as 1st file in collection";
 static String newOutName = "";
 
 static long[] options = new long[58];
@@ -1056,6 +1056,7 @@ protected JPanel buildMainPanel()
 
 	outSize = new JLabel(RESOURCE.getString("mainpanel.outsize"));
 	outSize.setToolTipText(RESOURCE.getString("mainpanel.outsize_tip"));
+
 	control05.add(outSize);
 
 	scanButton = new JButton();
@@ -3598,7 +3599,7 @@ class COLLECTION extends JFrame
 	{
  
 		addWindowListener (new WindowAdapter(){ public void windowClosing(WindowEvent e) { close(); } });
-		setTitle("collection specials");
+		setTitle(RESOURCE.getString("collection.title"));
 
 		JPanel container = new JPanel();
 		container.setLayout( new BorderLayout() );
@@ -3608,9 +3609,9 @@ class COLLECTION extends JFrame
 		grid.setLayout(new BorderLayout());
 
 		JPanel previewPanel = new JPanel();
-		previewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "videofile cuts (demux only!)")); //DM27042004 081.7 int02 changed
+		previewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), RESOURCE.getString("collection.cutpanel"))); //DM27042004 081.7 int02 changed
 		previewPanel.setLayout ( new BorderLayout() );
-		previewPanel.setToolTipText("use also the keyboard keys for navigation"); //DM18052004 081.7 int02 add
+		previewPanel.setToolTipText(RESOURCE.getString("collection.cutpanel_tip1")); //DM18052004 081.7 int02 add
 		previewPanel.add(MPVDecoder.picture);
 
 		search = new JSlider(0, (10240000/16), 0);
@@ -3640,8 +3641,8 @@ class COLLECTION extends JFrame
 		jump2Panel.add((firstfile = new JLabel(file)));
 		jump2Panel.add((scannedPID = new JLabel(" ")));
 
-		firstfile.setToolTipText("active segment/number of segments + filename of active segment");
-		scannedPID.setToolTipText("processed (P)ID to get the current picture");
+		firstfile.setToolTipText(RESOURCE.getString("collection.cutpanel_tip2"));
+		scannedPID.setToolTipText(RESOURCE.getString("collection.cutpanel_tip3"));
 
 		JPanel jump3Panel = new JPanel();
 		jump3Panel.setLayout(new ColumnLayout());
@@ -3652,11 +3653,11 @@ class COLLECTION extends JFrame
 		framecutfield = new JTextField("");
 		framecutfield.setPreferredSize(new Dimension(150,22));
 		framecutfield.setMaximumSize(new Dimension(150,22));
-		framecutfield.setToolTipText("key in a number, or drag&drop a cutpoint file over here"); //DM18022004 081.6 int17 changed
+		framecutfield.setToolTipText(RESOURCE.getString("collection.cutpanel_tip4")); //DM18022004 081.6 int17 changed
 		framecutfield.setActionCommand("cutnumber");
 		CL1.add(framecutfield);
 
-		cutadd = new JButton("add point");
+		cutadd = new JButton(RESOURCE.getString("collection.addpoint"));
 		cutadd.setActionCommand("addpoint");
 		cutadd.setPreferredSize(new Dimension(100,25));
 		cutadd.setMaximumSize(new Dimension(100,25));
@@ -3674,7 +3675,7 @@ class COLLECTION extends JFrame
 		comBox[14].setActionCommand("cutbox");
 		CL5.add(comBox[14]);
 
-		cutdel = new JButton("del point");
+		cutdel = new JButton(RESOURCE.getString("collection.delpoint"));
 		cutdel.setActionCommand("delpoint");
 		cutdel.setPreferredSize(new Dimension(100,22));
 		cutdel.setMaximumSize(new Dimension(100,22));
@@ -3685,8 +3686,8 @@ class COLLECTION extends JFrame
 
 		JPanel CL0 = new JPanel();
 		CL0.setLayout(new BoxLayout(CL0, BoxLayout.X_AXIS));
-		CL0.add(new JLabel("Number of Points: "));
-		CL0.setToolTipText("all numbers are automatically sorted");
+		CL0.add(new JLabel(RESOURCE.getString("collection.numberofpoints")));
+		CL0.setToolTipText(RESOURCE.getString("collection.numberofpoints_tip"));
 		CL0.add((pointscount = new JLabel("")));
 
 		jump3Panel.add(CL0);
@@ -3722,7 +3723,7 @@ class COLLECTION extends JFrame
 						preview(val);
 
 					else if (comBox[17].getSelectedIndex() > 0) //DM30032004 081.6 int18 add
-						scannedPID.setText("preview not available");
+						scannedPID.setText(RESOURCE.getString("collection.preview"));
 
 					getType();
 				}
@@ -3787,34 +3788,34 @@ class COLLECTION extends JFrame
 
 
 		JPanel cutPanel = new JPanel();
-		cutPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createRaisedBevelBorder(), "various")); //DM27042004 081.7 int02 changed
+		cutPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createRaisedBevelBorder(), RESOURCE.getString("collection.various"))); //DM27042004 081.7 int02 changed
 		cutPanel.setLayout ( new ColumnLayout() );
 
 		//DM08022004 081.6 int16 new
-		RButton[10] = new JRadioButton("faster/worse decoding of preview");
-		RButton[10].setToolTipText("reconstruct and interpolate only the upper/left pixel of each macroblock");
+		RButton[10] = new JRadioButton(RESOURCE.getString("collection.fastpreview"));
+		RButton[10].setToolTipText(RESOURCE.getString("collection.fastpreview_tip"));
 		RButton[10].setPreferredSize(new Dimension(230,20));
 		RButton[10].setMaximumSize(new Dimension(230,20));
 		cutPanel.add(RButton[10]);
 
-		RButton[6] = new JRadioButton("also preview GOPs w/o sequ.header");
-		RButton[6].setToolTipText("for DVB data it's not recommended, enable only for some streams with only one sequ.header!");
+		RButton[6] = new JRadioButton(RESOURCE.getString("collection.goppreview"));
+		RButton[6].setToolTipText(RESOURCE.getString("collection.goppreview_tip"));
 		RButton[6].setPreferredSize(new Dimension(230,20));
 		RButton[6].setMaximumSize(new Dimension(230,20));
 		cutPanel.add(RButton[6]);
 
 		cutPanel.add(new JLabel(" "));
 
-		cutPanel.add(new JLabel("PES(&Sub)-ID/PID list: "));
+		cutPanel.add(new JLabel(RESOURCE.getString("collection.pidlist")));
 
 		includeField = new JTextField("");
 		includeField.setPreferredSize(new Dimension(80,25));
 		includeField.setEditable(true);
 		includeField.setActionCommand("ID");
-		includeField.setToolTipText("enter PES-ID or sub-ID (MPG etc) or PID (PVA,TS); empty list == use all IDs");
+		includeField.setToolTipText(RESOURCE.getString("collection.pidlist_tip1"));
 
 		includeList = new JList();
-		includeList.setToolTipText("doubleclick to remove a selected entry");
+		includeList.setToolTipText(RESOURCE.getString("collection.pidlist_tip2"));
 		cutPanel.add(includeField);
 
 		includeField.addActionListener(cutAction);
@@ -3838,37 +3839,37 @@ class COLLECTION extends JFrame
 		});
 
 		//DM26112003 081.5++
-		JButton pids = new JButton("transfer selected (P)IDs to new coll#");
+		JButton pids = new JButton(RESOURCE.getString("collection.transferpids1"));
 		pids.setPreferredSize(new Dimension(250,20));
 		pids.setMaximumSize(new Dimension(250,20));
 		pids.setActionCommand("transferPIDs");
-		pids.setToolTipText("changes in the active coll# you must apply");
+		pids.setToolTipText(RESOURCE.getString("collection.transferpids1_tip"));
 		pids.addActionListener(cutAction);
 		cutPanel.add(pids);
 
 		//DM26112003 081.5++
-		JButton cpoints = new JButton("transfer cutpoint pairs to new coll#");
+		JButton cpoints = new JButton(RESOURCE.getString("collection.transferpids2"));
 		cpoints.setPreferredSize(new Dimension(250,20));
 		cpoints.setMaximumSize(new Dimension(250,20));
 		cpoints.setActionCommand("transferCuts");
-		cpoints.setToolTipText("changes in the active coll# you must apply");
+		cpoints.setToolTipText(RESOURCE.getString("collection.transferpids2_tip"));
 		cpoints.addActionListener(cutAction);
 		cutPanel.add(cpoints);
 
 		cutPanel.add(new JLabel(" ")); //DM27042004 081.7 int02 changed
 
-		cBox[2] = new JCheckBox("create coll# as subdirectory");
-		cBox[2].setToolTipText("global: create new subdirectory for each collection number (better for same files in diff. collections)");
+		cBox[2] = new JCheckBox(RESOURCE.getString("collection.ceatesubdir"));
+		cBox[2].setToolTipText(RESOURCE.getString("collection.createsubdir_tip"));
 		cBox[2].setPreferredSize(new Dimension(230,20));
 		cBox[2].setMaximumSize(new Dimension(230,20));
 		cutPanel.add(cBox[2]);
 
 		cutPanel.add(new JLabel(" ")); //DM27042004 081.7 int02 changed
 
-		cutPanel.add(new JLabel("additional export limits:"));
+		cutPanel.add(new JLabel(RESOURCE.getString("collection.exportlimits")));
 
-		cBox[52] = new JCheckBox("H-Resol.: ");
-		cBox[52].setToolTipText("global,..that will automatically ignore any other video sequences");
+		cBox[52] = new JCheckBox(RESOURCE.getString("collection.h_resolution"));
+		cBox[52].setToolTipText(RESOURCE.getString("collection.h_resolution_tip"));
 		cBox[52].setPreferredSize(new Dimension(110,20));
 		cBox[52].setMaximumSize(new Dimension(110,20));
 
@@ -3885,8 +3886,8 @@ class COLLECTION extends JFrame
 		CL2.add(comBox[34]);  
 		cutPanel.add(CL2);
 
-		cBox[47] = new JCheckBox("DAR: ");
-		cBox[47].setToolTipText("global,..that will automatically ignore any other video sequences");
+		cBox[47] = new JCheckBox(RESOURCE.getString("collection.dar"));
+		cBox[47].setToolTipText(RESOURCE.getString("collection.dar_tip"));
 		cBox[47].setPreferredSize(new Dimension(80,20));
 		cBox[47].setMaximumSize(new Dimension(80,20));
 
@@ -3907,25 +3908,26 @@ class COLLECTION extends JFrame
 		//DM17012004 081.6 int11 changed, DM18022004 081.6 int17 changed
 		Object[] cut_types = 
 		{ 
-			">> " + "use BytePos. for cuts", 
-			">> " + "use GOP number for cuts",
-			">> " + "use Frame number for cuts",
-			">> " + "use PTS for cuts",
-			">> " + "use Timecode for cuts"
+			">> " + RESOURCE.getString("collection.cutmode_bytepos"), 
+			">> " + RESOURCE.getString("collection.cutmode_gop"),
+			">> " + RESOURCE.getString("collection.cutmode_frame"),
+			">> " + RESOURCE.getString("collection.cutmode_pts"),
+			">> " + RESOURCE.getString("collection.cutmode_timecode")
 		}; 
 		comBox[17] = new JComboBox(cut_types);
-		comBox[17].setPreferredSize(new Dimension(200,22));
-		comBox[17].setMaximumSize(new Dimension(200,22));
+		comBox[17].setPreferredSize(new Dimension(230,22));
+		comBox[17].setMaximumSize(new Dimension(230,22));
 		comBox[17].setSelectedIndex(0);
 		cutPanel.add(comBox[17]);
 
-		loadlist = new JButton("load Cutpoints from file");
-		loadlist.setPreferredSize(new Dimension(200,22));
-		loadlist.setMaximumSize(new Dimension(200,22));
-		loadlist.setToolTipText("open a cutpoint file or drag&drop it over here"); //DM18022004 081.6 int17 new
-		savelist = new JButton("save Cutpoints to file");
-		savelist.setPreferredSize(new Dimension(200,22));
-		savelist.setMaximumSize(new Dimension(200,22));
+		loadlist = new JButton(RESOURCE.getString("collection.loadcutlist"));
+		loadlist.setPreferredSize(new Dimension(230,22));
+		loadlist.setMaximumSize(new Dimension(230,22));
+		loadlist.setToolTipText(RESOURCE.getString("collection.loadcutlist_tip")); //DM18022004 081.6 int17 new
+
+		savelist = new JButton(RESOURCE.getString("collection.savecutlist"));
+		savelist.setPreferredSize(new Dimension(230,22));
+		savelist.setMaximumSize(new Dimension(230,22));
 		loadlist.setActionCommand("loadlist");
 		savelist.setActionCommand("savelist");
 		loadlist.addActionListener(jumpAction);
@@ -3942,11 +3944,12 @@ class COLLECTION extends JFrame
 
 		container.add(grid);
 
-		close = new JButton("apply & close");
+		close = new JButton(RESOURCE.getString("collection.apply_close"));
 		close.setActionCommand("apply_close");
-		apply = new JButton("apply");
-		apply.setActionCommand("apply");
 		close.addActionListener(cutAction);
+
+		apply = new JButton(RESOURCE.getString("collection.apply"));
+		apply.setActionCommand("apply");
 		apply.addActionListener(cutAction);
 
 		JPanel CL4 = new JPanel();
@@ -3983,7 +3986,7 @@ class COLLECTION extends JFrame
 		//DM09032004 081.6 int18 changed
 		if (comBox[17].getSelectedIndex()!=0 || previewList.size()==0)
 		{
-			scannedPID.setText("preview not available");
+			scannedPID.setText(RESOURCE.getString("collection.preview"));
 			return;
 		}
 
@@ -4084,9 +4087,9 @@ class COLLECTION extends JFrame
 		if (comBox[17].getSelectedIndex()==0 && previewList.size()>0)
 			preview(0);
 		else
-			scannedPID.setText("preview not available");
+			scannedPID.setText(RESOURCE.getString("collection.preview"));
 
-		title = "collection specials for coll.# "+activecoll+"  ";
+		title = RESOURCE.getString("collection.title2") + " " + activecoll + "  ";
 		setTitle(title);
 
 		//DM17012004 081.6 int11 changed
