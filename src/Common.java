@@ -27,13 +27,12 @@
 //package X
 
 import java.awt.Color;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -41,6 +40,9 @@ import java.util.Hashtable;
 //DM13042004 081.7 int01 introduced
 public final class Common
 {
+	/** name of the colours table file */
+	private static final String COLOUR_TABLES_FILENAME = "colours.tbl";
+	
 	/** name of the ac3 file */
 	private static final String AC3_FILENAME = "ac3.bin";
 	
@@ -51,8 +53,6 @@ public final class Common
 	private static java.text.DateFormat time_format_1 = new java.text.SimpleDateFormat("HH:mm:ss.SSS");
 	private static java.text.DateFormat time_format_2 = new java.text.SimpleDateFormat("HH:mm:ss:SSS");
 
-	private static final String COLOUR_TABLES_FILENAME = "colours.tbl";
-	
 	private Common()
 	{}
 
@@ -121,7 +121,7 @@ public final class Common
 
 
 	//DM13062004 081.7 int04 add
-	public static Object[] checkUserColourTable(String file) throws IOException
+	public static Object[] checkUserColourTable() throws IOException
 	{
 		URL url = Resource.getResourceURL(COLOUR_TABLES_FILENAME);
 

@@ -152,7 +152,6 @@ static D2V d2v = new D2V();
 static TS tf = new TS();
 
 static String inifile = "";
-static String ColourTablesFile = "";
 static String inidir = System.getProperty("user.dir");
 static String filesep = System.getProperty("file.separator");
 static String frametitle = "";
@@ -261,7 +260,6 @@ public X()	//DM20032004 081.6 int18 changed
 		inidir += filesep;
 
 	inifile = inidir + "X.ini";
-	ColourTablesFile = inidir + "colours.tbl";
 }
 
 void buildGUI()
@@ -4680,7 +4678,7 @@ public void iniload()
 	{
 
 	//DM13062004 081.7 int04 add
-	Object table_indices[] = Common.checkUserColourTable(ColourTablesFile);
+	Object table_indices[] = Common.checkUserColourTable();
 	if (table_indices != null)
 	{
 		for (int i = 0; i < table_indices.length; i++)
