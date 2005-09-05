@@ -1,7 +1,7 @@
 /==============================================================================/
 
  X - a free Java based demux utility
- Copyright (C) 2001-2004 dvb.matt, All Rights Reserved
+ Copyright (C) 2001-2005 dvb.matt, All Rights Reserved
 
  It is intended for educational purposes only, as a non-commercial test project.
  It may not be used otherwise. Most parts are only experimental.
@@ -25,11 +25,11 @@
 /==============================================================================/
 
  This program is completely designed as a test, therefore it mostly
- implement its own code instead of a derivation of an ISO reference
+ implements its own code instead of a derivation of an ISO reference
  source or any other code. Considerable effort has been expended to
  ensure an useful implementation, even in cases where the standards
  are ambiguous or misleading.
- Do not expect any useful output from it, even if that may possible.
+ Do not expect any useful output, even if that may be possible.
 
  For a program compliant to the international standards ISO 11172
  and ISO 13818 it is inevitable to use methods covered by patents
@@ -39,12 +39,21 @@
 
 /==============================================================================/
 
+ This program includes software developed by the
+ Apache Software Foundation (http://www.apache.org/).
+
+ This software contains fast high-quality IDCT decoder by Miha Peternel.
+
+/==============================================================================/
+
  This program is provided in sourcecode form only,
  because it is meant for educational purposes.
- Binaries of this project itself will not be included.
+ Binaries of this project itself will not be included (may not apply to external libraries)
 
  If you need an executable, you have to compile the package by yourself,
  or you ask someone to do so for you.
+
+/==============================================================================/
 
  For a compilation, you need a Java SDK, which is available for various platforms.
 
@@ -53,11 +62,14 @@
        big troubles with some versions of JRE's on different OS's.
 
 
-   Extract all files from the received archive to a separate directory.
+ Extract all files from the received archive to a separate directory.
+ Note:  dependent on the used JDK/JRE, ensure that the directory does not start with a '!'-sign or similars,
+        otherwise you'll get an error like 'main class not found'
 
-   sample of a compilation (may differ on your system) :
-
-   (A) open "build.bat" with an editor an check/correct the entry/path of JAVA_HOME 
+   /**
+    * sample of a compilation (may differ on your system) :
+    */
+   (A) open "build.bat" with an editor and check/correct the entry/path of JAVA_HOME 
        of your installed JDK 
 
    (B) execute the "build.bat" on its place.
@@ -65,16 +77,35 @@
        build the .jar file and
        copies the resource files from the resource folder into the new .jar,
 
-       Note: now, we made a package for the sources
-             the file source.lst points to all required sourcefiles and its location
+       Notes:
+       [i]   now, we made a package for the sources,
+             the file sources.lst points to every required sourcefile and its location
+       [ii]  the following libraries are required on this place from the V 0.82.0,
+             related to the executed .jar:
+             - lib/commons-net-1.3.0.jar  (compiled with JDK 1.2.2) *)
+             - lib/jakarta-oro-2.0.8.jar  (compiled with JDK 1.2.2) *)
+       [iii] the following libraries are optional from the V 0.82.0 :
+             - lib/idct*.dll  (win32 optimized lib's for a faster preview)
+             copy one of them to the systems folder or where the compiled .jar is located
+       [iv]  dependent on the used JDK, you'll encounter some 'warnings' about 'using a deprecated API'
+             that's not critical, as long as an actual JDK still supports these methods
+
+       *)
+       further informations and newer versions (mostly compiled with JDK 1.4.2) you'll find at:
+       'jakarta.apache.org/site/binindex.cgi', look for 'Commons Net' and  'ORO'
+       - using newer lib's possibly requires an update of the 'build.bat' and 'MANIFEST.MF' !
+
 
    (C) additional received resource files (e.g. other language files) can be added 
        to the .jar file, later, 
        or you put them into the same folder where the compiled .jar is executed.
 
+       
 
    the compiling process doesn't take more than about 30 seconds.
 
+
+/==============================================================================/
 
  ProjectX - CVS at sourceforge.net/projects/project-x/
 
@@ -94,7 +125,10 @@
 	pstorch - i18n support
 	chrisg - Topfield disk access (AddOn)
 	jazzydane - danish translation
+	Kano / RoEn - Unix buils script
 	Eric Albert - BrowserLauncher
+	catapult,Bonni - Topfield 5x00 export
+	MartinR - Gui-BaseOutputFileName
 	...and all other supporters...
 
 /===============================================================================/

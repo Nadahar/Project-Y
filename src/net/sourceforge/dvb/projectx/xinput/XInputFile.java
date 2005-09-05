@@ -1,3 +1,29 @@
+/*
+ * @(#)XInputFile.java
+ *
+ * Copyright (c) 2004-2005 by roehrist, All Rights Reserved. 
+ * 
+ * This file is part of X, a free Java based demux utility.
+ * X is intended for educational purposes only, as a non-commercial test project.
+ * It may not be used otherwise. Most parts are only experimental.
+ * 
+ *
+ * This program is free software; you can redistribute it free of charge
+ * and/or modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 package net.sourceforge.dvb.projectx.xinput;
 
 import java.io.FileNotFoundException;
@@ -6,12 +32,16 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 
+import net.sourceforge.dvb.projectx.xinput.StreamInfo;
+import net.sourceforge.dvb.projectx.common.Common;
+
+
 public class XInputFile implements XInputFileIF {
 
 	// Implementation class
 	private XInputFileIF impl = null;
 
-	private boolean debug = true;
+	private boolean debug = false;
 
 	private Object constructorParameter = null;
 
@@ -32,12 +62,26 @@ public class XInputFile implements XInputFileIF {
 		retrieveImplementation(parameterTypes, parameterValues);
 		constructorParameter = aVO;
 
+		if (impl != null)
+			impl.setConstructorParameter(aVO);
+
 		if (debug) System.out.println("Leave XInputFile(Object '" + aVO + "')");
 	}
 
 	public XInputFile getNewInstance() {
 		if (debug) System.out.println("Enter XInputFile.getNewInstance()");
+
+		if (impl != null)
+			constructorParameter = impl.getConstructorParameter();
+
 		XInputFile xif = new XInputFile(constructorParameter);
+//
+		/**
+		 * copy already parsed streaminfo
+		 */
+		if (impl.getStreamInfo() != null)
+			xif.setStreamInfo(impl.getStreamInfo().getNewInstance());
+
 		if (debug) System.out.println("Leave XInputFile.getNewInstance() returning " + xif);
 		return xif;
 	}
@@ -50,26 +94,39 @@ public class XInputFile implements XInputFileIF {
 
 		FileType fileType = null;
 
-		for (Iterator fileTypes = FileType.getFileTypes().iterator(); fileTypes.hasNext();) {
+		for (Iterator fileTypes = FileType.getFileTypes().iterator(); fileTypes.hasNext(); )
+		{
 			fileType = (FileType) fileTypes.next();
 
-			if (fileType.equals(FileType.DEFAULT)) {
+			if (fileType.equals(FileType.DEFAULT))
 				continue;
-			}
 
 			try {
-				if (debug) System.out.println("Try FileType '" + fileType.getName() + "'");
-				impl = (XInputFileIF) fileType.getImplementation().getConstructor(parameterTypes).newInstance(parameterValues);
-				if (debug) System.out.println("Use FileType '" + fileType.getName() + "' for file '" + impl.toString() + "'");
 				if (debug)
-						System.out
-								.println("Leave XInputFile.retrieveImplementation(Class[] parameterTypes, Object[] parameterValues)");
+					System.out.println("Try FileType '" + fileType.getName() + "'");
+
+				impl = (XInputFileIF) fileType.getImplementation().getConstructor(parameterTypes).newInstance(parameterValues);
+
+				/**
+				 * simply disable access, if commons-net is missing
+				 */
+/**				if (fileType.getName().equals("FTP") && !Common.canAccessFtp())
+					impl = null;
+**/
+				if (debug)
+					System.out.println("Use FileType '" + fileType.getName() + "' for file '" + impl.toString() + "'");
+
+				if (debug)
+					System.out.println("Leave XInputFile.retrieveImplementation(Class[] parameterTypes, Object[] parameterValues");
+
 				return;
+
 			} catch (Exception e) {
 				// Failed, try next type
 				impl = null;
 			}
 		}
+
 		try {
 			fileType = FileType.DEFAULT;
 			if (debug) System.out.println("Try default FileType '" + fileType.getName() + "'");
@@ -77,18 +134,29 @@ public class XInputFile implements XInputFileIF {
 			if (debug)
 					System.out.println("Use default FileType '" + fileType.getName() + "' for file '" + impl.toString() + "'");
 			if (debug)
-					System.out
-							.println("Leave XInputFile.retrieveImplementation(Class[] parameterTypes, Object[] parameterValues)");
+					System.out.println("Leave XInputFile.retrieveImplementation(Class[] parameterTypes, Object[] parameterValues)");
 			return;
 		} catch (Exception e) {
 			// Failed, no type left, so this is final failure
 			impl = null;
 			if (debug) System.out.println("No matching FileType found or file doesn't exist");
 			if (debug)
-					System.out
-							.println("Leave XInputFile.retrieveImplementation(Class[] parameterTypes, Object[] parameterValues)");
+					System.out.println("Leave XInputFile.retrieveImplementation(Class[] parameterTypes, Object[] parameterValues)");
 			throw new IllegalArgumentException("No matching FileType found or file doesn't exist");
 		}
+	}
+
+	public void setConstructorParameter(Object obj) {
+		if (debug) System.out.println("Enter XInputFile.setConstructorParameter(Object obj)" + "'" + obj + "'");
+		impl.setConstructorParameter(obj);
+		if (debug) System.out.println("Leave XInputFile.setConstructorParameter(Object obj)");
+	}
+			
+	public Object getConstructorParameter() {
+		if (debug) System.out.println("Enter XInputFile.getConstructorParameter()");
+		Object obj = impl.getConstructorParameter();
+		if (debug) System.out.println("Leave XInputFile.getConstructorParameter()" + "'" + obj + "'");
+		return obj;
 	}
 
 	/**
@@ -118,6 +186,30 @@ public class XInputFile implements XInputFileIF {
 			throw e;
 		}
 		if (debug) System.out.println("Leave XInputFile.getInputStream() returning " + is);
+		return is;
+	}
+
+	/**
+	 * @return @throws
+	 *         FileNotFoundException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	public InputStream getInputStream(long start_position) throws FileNotFoundException, MalformedURLException, IOException {
+		if (debug) System.out.println("Enter XInputFile.getInputStream(long start_position)");
+
+		InputStream is = null;
+
+		try {
+			is = impl.getInputStream(start_position);
+		} catch (IOException e) {
+			if (debug) System.out.println(e.getLocalizedMessage());
+			if (debug) e.printStackTrace();
+			throw e;
+		}
+
+		if (debug) System.out.println("Leave XInputFile.getInputStream(long start_position) returning " + is);
+
 		return is;
 	}
 
@@ -176,11 +268,33 @@ public class XInputFile implements XInputFileIF {
 	/**
 	 * @return
 	 */
+	public boolean setLastModified() {
+		if (debug) System.out.println("Enter XInputFile.setLastModified()");
+		boolean b = impl.setLastModified();
+		if (debug) System.out.println("Leave XInputFile.setLastModified() returning " + b);
+		return b;
+	}
+
+	/**
+	 * @return
+	 */
 	public long length() {
 		if (debug) System.out.println("Enter XInputFile.length()");
 		long l = impl.length();
 		if (debug) System.out.println("Leave XInputFile.length() returning " + l);
 		return l;
+	}
+
+	/**
+	 * rename
+	 * 
+	 * @return 
+	 */
+	public boolean rename() throws IOException {
+		if (debug) System.out.println("Enter XInputFile.rename()");
+		boolean b = impl.rename();
+		if (debug) System.out.println("Leave XInputFile.rename() returning " + b);
+		return b;
 	}
 
 	/**
@@ -422,4 +536,21 @@ public class XInputFile implements XInputFileIF {
 		if (debug) System.out.println("Leave XInputFile.toString() returning " + s);
 		return s;
 	}
+
+	/**
+	 *
+	 */
+	public void setStreamInfo(StreamInfo _streamInfo)
+	{
+		impl.setStreamInfo(_streamInfo);
+	}
+
+	/**
+	 *
+	 */
+	public StreamInfo getStreamInfo()
+	{
+		return impl.getStreamInfo();
+	}
+
 }

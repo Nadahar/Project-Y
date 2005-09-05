@@ -1,7 +1,7 @@
 /*
- * @(#)VIDEO.java - some video constants
+ * @(#)Video.java - some video constants
  *
- * Copyright (c) 2003,2004 by dvb.matt, All Rights Reserved. 
+ * Copyright (c) 2003-2005 by dvb.matt, All Rights Reserved. 
  * 
  * This file is part of X, a free Java based demux utility.
  * X is intended for educational purposes only, as a non-commercial test project.
@@ -26,17 +26,41 @@
 
 package net.sourceforge.dvb.projectx.video;
 
-public class Video {
+import java.util.StringTokenizer;
 
-	final static String[] aspratio = { 
+public class Video extends Object {
+
+	private final static String[] aspectratio_table_strings = { 
 		"res." , "1:1" , "4:3" , "16:9" , "2.21:1" , "0.8055" , "0.8437" , "0.9375" , 
 		"0.9815" , "1.0255" , "1.0695" , "1.1250" , "1.1575" , "1.2015" , "res." , "res." 
 	};
-	final static String[] fps_tabl1 = { 
+
+	private final static String[] framerate_table_strings = { 
 		"forbidden fps" , "23.976fps" , "24fps" , "25fps" , "29.97fps" , "30fps" , "50fps" , 
-		"59.94fps" , "60fps" , "n.def." , "n.def." ,	"n.def." , "n.def." , "n.def." , "n.def." , "n.def."
+		"59.94fps" , "60fps" , "n.def." , "n.def." , "n.def." , "n.def." , "n.def." , "n.def." , "n.def."
 	};
-	// int[] fps_tabl2 = {0,3753,3750,3600,3003,3000,1800,1501,1500,0,0,0,0,0,0,0};
+
+	private final static int[] framerate_table = { -1, 23976, 24000, 25000, 29970, 30000, 50000, 59940, 60000, -1, -1, -1, -1, -1, -1, -1 };
+
+	/**
+	 * returns aspectratio as string
+	 *
+	 * @return
+	 */
+	public static String getAspectRatio(int index)
+	{
+		return aspectratio_table_strings[index];
+	}
+
+	/**
+	 * returns framerate as string
+	 *
+	 * @return
+	 */
+	public static int getFrameRate(int index)
+	{
+		return framerate_table[index];
+	}
 
 	/**
 	 * returns formatted display from sequence header
@@ -44,39 +68,97 @@ public class Video {
 	 * @param1 - source array
 	 * @return - string
 	 */
-	public static String videoformatByte(byte[] gop)
+	public static String getVideoformatfromBytes(byte[] gop)
 	{
-		return "" + ((0xFF & gop[4])<<4 | (240 & gop[5])>>>4) + "*" + ((15 & gop[5])<<8 | (0xFF & gop[6])) + ", " + fps_tabl1[15 & gop[7]] + ", " + aspratio[(0xFF & gop[7])>>>4] + ", " + ( ((0xFF & gop[8])<<10 | (0xFF & gop[9])<<2 | (192 & gop[10])>>>6) * 400  ) + "bps, vbv " + ( (31 & gop[10])<<5 | (248 & gop[11])>>>3 );
+		return "" + ((0xFF & gop[4])<<4 | (0xF0 & gop[5])>>>4) + 
+			"*" + ((0xF & gop[5])<<8 | (0xFF & gop[6])) + 
+			", " + framerate_table_strings[0xF & gop[7]] + 
+			", " + aspectratio_table_strings[(0xFF & gop[7])>>>4] + 
+			", " + ( ((0xFF & gop[8])<<10 | (0xFF & gop[9])<<2 | (0xC0 & gop[10])>>>6) * 400  ) + 
+			"bps, vbv " + ( (0x1F & gop[10])<<5 | (0xF8 & gop[11])>>>3 );
+	}
+
+
+	/**
+	 * returns Sequence End Code as array
+	 *
+	 * @return
+	 */
+	public static byte[] getSequenceEndCode()
+	{
+		byte[] b = { 0, 0, 1, (byte)0xB7 };
+
+		return b;
 	}
 
 	/**
-	 * returns pts value from pes_extension
+	 * returns Sequence End Code as array
 	 *
-	 * @param1 - source array
-	 * @param2 - array offset
-	 * @return - pts
+	 * @return
 	 */
-	public static long getPTSfromBytes(byte[] array, int offset)
+	public static byte[] getSequenceStartCode()
 	{
-		return getPTSfromBytes(array, offset, true);
+		byte[] b = { 0, 0, 1, (byte)0xB3 };
+
+		return b;
 	}
 
 	/**
-	 * returns pts value from pes_extension
+	 * returns std Sequence Display Ext as array
 	 *
-	 * @param1 - source array
-	 * @param2 - array offset
-	 * @param3 - trim to positive 32bit value
-	 * @return - pts
+	 * @return
 	 */
-	public static long getPTSfromBytes(byte[] array, int offset, boolean trim)
+	public static byte[] setSequenceDisplayExtension( String str, String[] videobasics)
 	{
-		long pts = (6 & array[offset])<<29 | (0xFF & array[offset + 1])<<22 | (0xFE & array[offset + 2])<<14 |
-				(0xFF & array[offset + 3])<<7 | (0xFE & array[offset + 4])>>>1;
+		byte[] b = { 0, 0, 1, (byte)0xB5, 0x2B, 2, 2, 2, 0, 0, 0, 0 };
 
-		if (trim)
-			pts &= 0xFFFFFFFFL;
+		setSequenceDisplayExtension( b, 0, str, videobasics);
 
-		return pts;
+		return b;
+	}
+
+	/**
+	 * returns std Sequence Display Ext as array
+	 *
+	 * @return
+	 */
+	public static void setSequenceDisplayExtension( byte[] b, int offs, String str, String[] videobasics) throws ArrayIndexOutOfBoundsException
+	{
+		int[] size = getHVSize( str, videobasics);
+
+		offs += (1 & b[offs + 4]) != 0 ? 8 : 5;
+
+		b[offs] = (byte) (0xFF & size[0]>>>6);
+		b[offs + 1] = (byte) (0xFC & size[0]<<2);
+		b[offs + 1] |= 2;
+		b[offs + 1] |= (byte) (1 & size[0]>>>13);
+		b[offs + 2] = (byte) (0xFF & size[1]>>>5);
+		b[offs + 3] = (byte) (0xF8 & size[1]<<3);
+	}
+
+	private static int[] getHVSize(String str, String[] videobasics)
+	{
+		StringTokenizer st = new StringTokenizer(str, "*");
+		int[] tokens = { 720, 576 };
+
+		for (int i = 0, val; i < 2; i++)
+		{
+			try {
+				val = Integer.parseInt(videobasics[i].trim());
+				tokens[i] = val;
+			} catch (Exception e) {
+			}
+		}
+
+		for (int i = 0, val; st.hasMoreTokens() && i < 2; i++)
+		{
+			try {
+				val = Integer.parseInt(st.nextElement().toString().trim());
+				tokens[i] = val;
+			} catch (Exception e) {
+			}
+		}
+
+		return tokens;
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * @(#)Ifo.java - carries various stuff 
  *
- * Copyright (c) 2004 by dvb.matt,, All Rights Reserved. 
+ * Copyright (c) 2004-2005 by dvb.matt,, All Rights Reserved. 
  * 
  * This file is part of X, a free Java based demux utility.
  * X is intended for educational purposes only, as a non-commercial test project.
@@ -27,12 +27,17 @@
 package net.sourceforge.dvb.projectx.thirdparty;
 
 
-import java.io.*;
-import java.util.zip.*;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.File;
+
+import java.util.zip.InflaterInputStream;
 
 //DM10052004 081.7 int02 introduced
-public final class Ifo
-{
+public final class Ifo extends Object {
+
 	private Ifo()
 	{}
 

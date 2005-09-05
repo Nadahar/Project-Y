@@ -1,3 +1,34 @@
+/*
+ * @(#)XInputFileImpl.java - implementation for ftp access
+ *
+ * Copyright (c) 2004-2005 by roehrist, All Rights Reserved. 
+ * 
+ * This file is part of X, a free Java based demux utility.
+ * X is intended for educational purposes only, as a non-commercial test project.
+ * It may not be used otherwise. Most parts are only experimental.
+ * 
+ *
+ * This program is free software; you can redistribute it free of charge
+ * and/or modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*
+ * requires Jakarta Commons Net library, developed by the
+ * Apache Software Foundation (http://www.apache.org/).
+ */
+
 package net.sourceforge.dvb.projectx.xinput.ftp;
 
 import java.io.EOFException;
@@ -9,13 +40,23 @@ import java.io.PushbackInputStream;
 import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.StringTokenizer;
 
-import net.sourceforge.dvb.projectx.common.X;
+import net.sourceforge.dvb.projectx.common.Resource;
+import net.sourceforge.dvb.projectx.common.Common;
+import net.sourceforge.dvb.projectx.common.Keys;
+
 import net.sourceforge.dvb.projectx.xinput.FileType;
 import net.sourceforge.dvb.projectx.xinput.XInputFileIF;
 import net.sourceforge.dvb.projectx.xinput.XInputStream;
 
 import org.apache.commons.net.ftp.FTPFile;
+
+import java.io.DataInputStream;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTP;
+
+import net.sourceforge.dvb.projectx.xinput.StreamInfo;
 
 public class XInputFileImpl implements XInputFileIF {
 
@@ -35,6 +76,18 @@ public class XInputFileImpl implements XInputFileIF {
 	private FtpVO ftpVO = null;
 
 	private FTPFile ftpFile = null;
+
+	private FTPClient client = null;
+
+	private DataInputStream in = null;
+
+	public XInputStream xIs = null;
+
+	private Object constructorParameter = null;
+
+	private StreamInfo streamInfo = null;
+
+	private boolean supportsResume = true;
 
 	/**
 	 * Private Constructor, don't use!
@@ -93,7 +146,7 @@ public class XInputFileImpl implements XInputFileIF {
 		name = replaceStringByString(name, "Ãº", "ú");
 		name = replaceStringByString(name, "Ã¹", "ù");
 
-		s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@" + ftpVO.getServer() + ftpVO.getDirectory() + "/"
+		s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@" + ftpVO.getServer() + ftpVO.getPort(":") + ftpVO.getDirectory() + "/"
 				+ name;
 
 		return s;
@@ -115,6 +168,14 @@ public class XInputFileImpl implements XInputFileIF {
 		return sb.toString();
 	}
 
+	public void setConstructorParameter(Object obj) {
+		constructorParameter = obj;
+	}
+			
+	public Object getConstructorParameter() {
+		return constructorParameter;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -131,19 +192,8 @@ public class XInputFileImpl implements XInputFileIF {
 	 */
 	public String getUrl() {
 
-		String s;
-
-		/**
-		 * append the "type=b" string depending on the users wish, better for JRE 1.2.2 seems not parse it correctly
-		 * usually TYPE I is set as std, so we don't ever need this appending
-		 */
-		String b = X.cBox[74].isSelected() ? ";type=b" : "";
-
-	//	s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@" + ftpVO.getServer() + ftpVO.getDirectory() + "/"
-	//			+ ftpFile.getName() + ";type=b";
-
-		s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@" + ftpVO.getServer() + ftpVO.getDirectory() + "/"
-				+ ftpFile.getName() + b;
+		String s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@" + ftpVO.getServer() + ftpVO.getPort(":") + ftpVO.getDirectory() + "/"
+				+ ftpFile.getName();
 
 		return s;
 	}
@@ -171,6 +221,16 @@ public class XInputFileImpl implements XInputFileIF {
 
 		// JDK 1.4.2 return value long is not protected
 		//return ftpFile.getTimestamp().getTimeInMillis();
+	}
+
+	/**
+	 * sets Time in milliseconds from the epoch.
+	 * 
+	 * @return success
+	 */
+	public boolean setLastModified() {
+
+		return true; //later
 	}
 
 	/**
@@ -248,7 +308,74 @@ public class XInputFileImpl implements XInputFileIF {
 	 */
 	public InputStream getInputStream() throws FileNotFoundException, MalformedURLException, IOException {
 
-		return new XInputStream((new URL(getUrl())).openConnection().getInputStream());
+		return getInputStream(0L);
+	}
+
+	/**
+	 * Get input stream from the file. close() on stream closes XInputFile, too.
+	 * 
+	 * @return Input stream from the file
+	 */
+	public InputStream getInputStream(long start_position) throws FileNotFoundException, MalformedURLException, IOException {
+
+		supportsResume = Common.getSettings().getBooleanProperty(Keys.KEY_useFtpServerResume);
+
+		randomAccessOpen("r");
+
+		if (supportsResume)
+			client.setRestartOffset(start_position);  //void
+
+		if (debug) System.out.println("gIS name " + getName());
+
+		xIs = new XInputStream(client.retrieveFileStream(getName()));
+
+		if (debug) System.out.println("gIS retriveStream " + client.getReplyString());
+
+		if (!supportsResume)
+			xIs.skip(start_position);
+
+		xIs.setFtpFile(this);
+		return xIs;
+	}
+
+	/**
+	 * rename this file
+	 *
+	 * @return success
+	 */
+	public boolean rename() throws IOException {
+
+	//	if (isopen) { throw new IllegalStateException("XInputFile is open!"); }
+		if (isopen)
+			return false;
+
+		randomAccessOpen("r");
+
+		String name = getName();
+		String newName = null;
+		boolean ret = false;
+
+		newName = Common.getGuiInterface().getUserInputDialog(name, Resource.getString("autoload.dialog.rename") + " " + getUrl());
+
+		if (newName != null && !newName.equals(""))
+			ret = client.rename(name, newName);
+
+		if (ret)
+		{
+			FTPFile[] aFtpFiles = client.listFiles();
+
+			for (int i = 0; i < aFtpFiles.length; i++)
+				if (aFtpFiles[i].getName().equals(newName) && aFtpFiles[i].isFile())
+				{
+					ftpFile = aFtpFiles[i];
+					ftpVO.setFtpFile(ftpFile);
+					break;
+				}
+		}
+
+		randomAccessClose();
+
+		return ret;
 	}
 
 	/**
@@ -264,10 +391,74 @@ public class XInputFileImpl implements XInputFileIF {
 
 		if (mode.compareTo("r") != 0) { throw new IllegalStateException("Illegal access mode for FileType.FTP"); }
 
-		pbis = new PushbackInputStream(getInputStream());
-		rafFile = File.createTempFile("XInputFile", "");
-		raf = new RandomAccessFile(rafFile, "rw");
+		boolean ret = false;
+
+		client = new FTPClient();
+		client.connect(ftpVO.getServer(), ftpVO.getPortasInteger()); //void
+		if (debug) System.out.println("rAO connect " + client.getReplyString());
+
+		ret = client.login(ftpVO.getUser(), ftpVO.getPassword()); //bool
+		if (debug) System.out.println("rAO login " + ret + " / " + client.getReplyString());
+
+		ret = client.changeWorkingDirectory(ftpVO.getDirectory()); //bool
+		if (debug) System.out.println("rAO cwd " + ret + " / " + client.getReplyString());
+
+		ret = client.setFileType(FTP.BINARY_FILE_TYPE); //bool
+		if (debug) System.out.println("rAO binary " + ret + " / " + client.getReplyString());
+
+		client.enterLocalPassiveMode(); //void
+		if (debug) System.out.println("rAO PASV " + client.getReplyString());
+
+		String[] commands = getUserFTPCommand();
+
+		for (int i = 0; i < commands.length; i++)
+		{
+			if (commands[i] != null && commands[i].length() > 0)
+			{
+				client.sendCommand(commands[i]); //bool
+				if (debug) System.out.println("rAO cmd " + client.getReplyString());
+			}
+		}
+
 		isopen = true;
+	}
+
+	/**
+	 * @throws java.io.IOException
+	 */
+	public String[] getUserFTPCommand() {
+
+		StringTokenizer st = new StringTokenizer(Common.getSettings().getProperty(Keys.KEY_FtpServer_Commands), "|");
+		String[] tokens = new String[st.countTokens()];
+
+		for (int i = 0; st.hasMoreTokens(); i++)
+			tokens[i] = st.nextElement().toString().trim();
+
+		return tokens;
+	}
+
+
+	private boolean EOF() throws IOException {
+
+		int ret;
+
+		if (in != null)
+		{
+			ret = in.read();
+
+			if (ret < 0)
+				return true;
+		}
+
+		else if (xIs != null)
+		{
+			ret = xIs.read();
+
+			if (ret < 0)
+				return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -277,26 +468,61 @@ public class XInputFileImpl implements XInputFileIF {
 
 		if (!isopen) { throw new IllegalStateException("XInputFile is already closed!"); }
 
-		try {
+		//no need to abort a transfer explicitly, because we logout here
 
-		//	pbis.close();
-	// close does nothing in InputStream, so we set it to null
-	pbis = null;
-	// call the GC here, otherwise the last user connection stands until next GC and blocks
-	System.gc();
+		boolean ret = false;
+		if (debug) System.out.println("rAC last " + client.getReplyCode() + " / " + client.getReplyString());
 
-			raf.close();
-			rafFile.delete();
-		} catch (IOException e) {
-			if (debug) System.out.println(e.getLocalizedMessage());
-			if (debug) e.printStackTrace();
-		} finally {
-			pbis = null;
-			raf = null;
-			buffer = new byte[8];
-			isopen = false;
+		ret = client.isConnected();
+		if (debug) System.out.println("rAC isCon " + ret + " / " + client.getReplyCode() + " / " + client.getReplyString());
+
+		/**
+		 * alternative kills the client instance, some server won't abort an incomplete data transfer
+		 * (current box-idx 80)
+		 */
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_killFtpClient))
+		{
+			if (debug) System.out.println("rAC kill ");
 		}
 
+		/**
+		 * standard close of a client connection
+		 */
+		else
+		{
+			if ( !EOF() )
+			{
+				if (debug) System.out.println("rAC !eof ");
+
+				ret = client.abort();
+				if (debug) System.out.println("rAC abort " + ret + " / " + client.getReplyCode() + " / " + client.getReplyString());
+			}
+
+			ret = client.logout();
+			if (debug) System.out.println("rAC logout " + ret + " / " + client.getReplyCode() + " / " + client.getReplyString());
+
+			ret = client.isConnected();
+			if (debug) System.out.println("rAC isCon " + ret + " / " + client.getReplyCode() + " / " + client.getReplyString());
+
+			if (ret)
+			{
+				try {
+					client.disconnect();
+					if (debug) System.out.println("rAC disc " + client.getReplyCode() + " / " + client.getReplyString());
+				} catch (IOException e) {
+					if (debug) System.out.println("rAC disc-er " + e);
+				}
+			}
+		}
+
+		in = null;
+		xIs = null;
+		client = null;
+		isopen = false;
+
+		System.gc();
+
+		if (debug) System.out.println("rAC out ");
 	}
 
 	/**
@@ -307,10 +533,11 @@ public class XInputFileImpl implements XInputFileIF {
 	 */
 	public void randomAccessSeek(long aPosition) throws IOException {
 
-		if (aPosition > raf.length()) {
-			fillRandomAccessBuffer(aPosition - raf.length());
-		}
-		raf.seek(aPosition);
+		client.setRestartOffset(aPosition);  //void
+		if (debug) System.out.println("rAS REST " + client.getReplyString() + " /aP " + aPosition);
+
+		in = new DataInputStream(client.retrieveFileStream(getName()));
+		if (debug) System.out.println("rAS retriveStream " + client.getReplyString());
 	}
 
 	/**
@@ -318,6 +545,7 @@ public class XInputFileImpl implements XInputFileIF {
 	 *         IOException
 	 */
 	public long randomAccessGetFilePointer() throws IOException {
+
 		return raf.getFilePointer();
 	}
 
@@ -326,6 +554,7 @@ public class XInputFileImpl implements XInputFileIF {
 	 *         IOException
 	 */
 	public int randomAccessRead() throws IOException {
+
 		buffer[0] = -1;
 		randomAccessRead(buffer, 0, 1);
 		return (int) buffer[0];
@@ -352,48 +581,22 @@ public class XInputFileImpl implements XInputFileIF {
 	 *         IOException
 	 */
 	public int randomAccessRead(byte[] aBuffer, int aOffset, int aLength) throws IOException {
-		int result = 0;
 
-		if ((raf.getFilePointer() + aLength) > raf.length()) {
-			fillRandomAccessBuffer(raf.getFilePointer() + aLength - raf.length());
-		}
-		return raf.read(aBuffer, aOffset, aLength);
+		int bytesRead, totalBytes = aOffset;
+
+		while( (bytesRead = in.read(aBuffer, totalBytes, aLength - totalBytes)) > 0)
+			totalBytes += bytesRead;
+
+		return bytesRead;
 	}
 
-	private void fillRandomAccessBuffer(long aAmount) throws IOException {
-		int read = 0;
-		long position = raf.getFilePointer();
-		int requiredBufferSize = 65000;
-		if (requiredBufferSize > buffer.length) {
-			buffer = new byte[requiredBufferSize];
-			if (debug) System.out.println("Buffer enhanced to " + requiredBufferSize + " bytes");
-		}
-		
-		for (long l = 0; l < aAmount; ) {
-			read = pbis.read(buffer, 0, requiredBufferSize);
-			if (read == -1) {
-				break;
-			}
-			raf.write(buffer, 0, read);
-			l += read;
-			if (read < requiredBufferSize) {
-				break;
-			}
-		}
-		raf.seek(position);
-		if (debug) System.out.println("RandomAccessFile enhanced to " + raf.length() + " bytes");
-	}
-	
 	/**
 	 * @return Read line
 	 * @throws IOException
 	 */
 	public String randomAccessReadLine() throws IOException {
 		
-		if ((raf.length() - raf.getFilePointer()) < 65000) {
-			fillRandomAccessBuffer(65000);
-		}
-		return raf.readLine();
+		return in.readLine();
 	}
 
 	/**
@@ -430,15 +633,23 @@ public class XInputFileImpl implements XInputFileIF {
 	 */
 	public long randomAccessReadLong() throws IOException {
 
-		long l = 0;
+		return in.readLong();
+	}
 
-		int bytesRead = 0;
+//
+	/**
+	 *
+	 */
+	public void setStreamInfo(StreamInfo _streamInfo)
+	{
+		streamInfo = _streamInfo;
+	}
 
-		bytesRead = randomAccessRead(buffer, 0, 8);
-		if (bytesRead < 8) { throw new EOFException("Less than 8 bytes read"); }
-		l = ((long) buffer[1] << 56) + ((long) buffer[2] << 48) + ((long) buffer[3] << 40) + ((long) buffer[4] << 32)
-				+ ((long) buffer[5] << 24) + ((long) buffer[6] << 16) + ((long) buffer[7] << 8) + buffer[8];
-
-		return l;
+	/**
+	 *
+	 */
+	public StreamInfo getStreamInfo()
+	{
+		return streamInfo;
 	}
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)RIFFHEADER.java - create a RIFF Header for nonPCM data
+ * @(#)RIFFHeader.java - create a RIFF Header for nonPCM data
  *
- * Copyright (c) 2002-2004 by dvb.matt, All Rights Reserved. 
+ * Copyright (c) 2002-2005 by dvb.matt, All Rights Reserved. 
  * 
  * This file is part of X, a free Java based demux utility.
  * X is intended for educational purposes only, as a non-commercial test project.
@@ -26,8 +26,7 @@
 
 package net.sourceforge.dvb.projectx.audio;
 
-public class RIFFHeader
-{
+public class RIFFHeader extends Object {
 
 	byte[] riffacm = { 82, 73, 70, 70,  0,  0,  0,  0, 87, 65, 86, 69,102,109,116, 32,
 		30,  0,  0,  0, 85,  0,  1,  0,  1,  0,  0,  0,  0,  0,  0,  0,

@@ -1,7 +1,7 @@
 /*
  * @(#)RawInterface.java - provides a little interface
  * 
- * Copyright (c) 2004 by dvb.matt, All Rights Reserved.
+ * Copyright (c) 2004-2005 by dvb.matt, All Rights Reserved.
  * 
  * This file is part of X, a free Java based demux utility. X is intended for
  * educational purposes only, as a non-commercial test project. It may not be
@@ -59,7 +59,7 @@ public class RawInterface {
 		if (rawRead.AccessEnabled())
 			return rawRead.GetLoadStatus();
 		else
-			return Resource.getString("rawread.msg1");
+			return null;
 	}
 
 	/*

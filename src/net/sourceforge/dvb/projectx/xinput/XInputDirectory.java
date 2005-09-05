@@ -1,13 +1,41 @@
+/*
+ * @(#)XInputDirectory
+ *
+ * Copyright (c) 2004-2005 by roehrist, All Rights Reserved. 
+ * 
+ * This file is part of X, a free Java based demux utility.
+ * X is intended for educational purposes only, as a non-commercial test project.
+ * It may not be used otherwise. Most parts are only experimental.
+ * 
+ *
+ * This program is free software; you can redistribute it free of charge
+ * and/or modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 package net.sourceforge.dvb.projectx.xinput;
 
 import java.util.Iterator;
+
+import net.sourceforge.dvb.projectx.common.Common;
 
 public class XInputDirectory implements XInputDirectoryIF {
 
 	// Implementation class
 	private XInputDirectoryIF impl = null;
 
-	private boolean debug = true;
+	private boolean debug = false;
 	
 	private Object constructorParameter = null;
 
@@ -47,21 +75,32 @@ public class XInputDirectory implements XInputDirectoryIF {
 
 		DirType dirType = null;
 
-		for (Iterator dirTypes = DirType.getDirTypes().iterator(); dirTypes.hasNext();) {
+		for (Iterator dirTypes = DirType.getDirTypes().iterator(); dirTypes.hasNext();)
+		{
 			dirType = (DirType) dirTypes.next();
 
-			if (dirType.equals(DirType.DEFAULT)) {
+			if (dirType.equals(DirType.DEFAULT))
 				continue;
-			}
 
 			try {
-				if (debug) System.out.println("Try DirType '" + dirType.getName() + "'");
+				if (debug) 
+					System.out.println("Try DirType '" + dirType.getName() + "'");
+
 				impl = (XInputDirectoryIF) dirType.getImplementation().getConstructor(parameterTypes).newInstance(
 						parameterValues);
-				if (debug) System.out.println("Use DirType '" + dirType.getName() + "' for file '" + impl.toString() + "'");
+
+				/**
+				 * simply disable access, if commons-net is missing
+				 */
+/**				if (dirType.getName().equals("FTP_DIR") && !Common.canAccessFtp())
+					impl = null;
+**/
+				if (debug) 
+					System.out.println("Use DirType '" + dirType.getName() + "' for file '" + impl.toString() + "'");
+
 				if (debug)
-						System.out
-								.println("Leave XInputDirectory.retrieveImplementation(Class[] parameterTypes, Object[] parameterValues)");
+						System.out.println("Leave XInputDirectory.retrieveImplementation(Class[] parameterTypes, Object[] parameterValues)");
+
 				return;
 			} catch (Exception e) {
 				// Failed, try next type
@@ -169,6 +208,16 @@ public class XInputDirectory implements XInputDirectoryIF {
 		if (debug) System.out.println("Enter XInputDirectory.getServer()");
 		String s = impl.getServer();
 		if (debug) System.out.println("Leave XInputDirectory.getServer() returning " + s);
+		return s;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getPort() {
+		if (debug) System.out.println("Enter XInputDirectory.getPort()");
+		String s = impl.getPort();
+		if (debug) System.out.println("Leave XInputDirectory.getPort() returning " + s);
 		return s;
 	}
 

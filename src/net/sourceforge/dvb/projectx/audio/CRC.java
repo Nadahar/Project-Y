@@ -1,7 +1,7 @@
 /*
  * @(#)CRC.java - carries basic CRC funtions 
  *
- * Copyright (c) 2004 by dvb.matt, All Rights Reserved.
+ * Copyright (c) 2004-2005 by dvb.matt, All Rights Reserved.
  * 
  * This file is part of X, a free Java based demux utility.
  * X is intended for educational purposes only, as a non-commercial test project.
@@ -34,9 +34,11 @@
 
 package net.sourceforge.dvb.projectx.audio;
 
+import net.sourceforge.dvb.projectx.audio.MpaDecoder;
+
 //DM10042004 081.7 int01 introduced
-public final class CRC
-{
+public final class CRC extends Object {
+
 	private CRC()
 	{}
 
@@ -124,13 +126,16 @@ public final class CRC
 			return 0;
 	}
 
-	public static int checkCRC16ofMPA(Audio Audio, byte[] data)
+	public static int checkCRC16ofMPA(Audio Audio, byte[] _data)
 	{
 		if (Audio.Layer < 2 || Audio.Protection_bit==0)
 			return 0;
 
-		int crc_val = (0xFF & data[4])<<8 | (0xFF & data[5]);
-		data = Audio.MPA_deleteCRC(data);
+		int crc_val = (0xFF & _data[4])<<8 | (0xFF & _data[5]);
+
+		byte[] data = new byte[_data.length];
+		System.arraycopy(_data, 0, data, 0, 4);
+		System.arraycopy(_data, 6, data, 4, _data.length - 6);
 
 		int ch, sb, offset = 2, nr_bits = 16, BitPos[] = { 32 };
 
@@ -153,19 +158,19 @@ public final class CRC
 			{
 				if (Audio.Sblimit > 20)
 				{
-					table_nbal = MPAD.table_b2ab_nbal;
-					table_alloc = MPAD.table_b2ab;
+					table_nbal = MpaDecoder.table_b2ab_nbal;
+					table_alloc = MpaDecoder.table_b2ab;
 				}
 				else
 				{
-					table_nbal = MPAD.table_b2cd_nbal;
-					table_alloc = MPAD.table_b2cd;
+					table_nbal = MpaDecoder.table_b2cd_nbal;
+					table_alloc = MpaDecoder.table_b2cd;
 				}
 			}
 			else
 			{
-				table_nbal = MPAD.table_MPG2_nbal;
-				table_alloc = MPAD.table_MPG2;
+				table_nbal = MpaDecoder.table_MPG2_nbal;
+				table_alloc = MpaDecoder.table_MPG2;
 			}
 
 			for( sb=0; sb<Audio.Bound; sb++)

@@ -1,12 +1,36 @@
+/*
+ * @(#)XInputDirectoryImpl.java - implementation for ftp access
+ *
+ * Copyright (c) 2004-2005 by roehrist, All Rights Reserved. 
+ * 
+ * This file is part of X, a free Java based demux utility.
+ * X is intended for educational purposes only, as a non-commercial test project.
+ * It may not be used otherwise. Most parts are only experimental.
+ * 
+ *
+ * This program is free software; you can redistribute it free of charge
+ * and/or modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 package net.sourceforge.dvb.projectx.xinput.ftp;
 
 import net.sourceforge.dvb.projectx.xinput.DirType;
 import net.sourceforge.dvb.projectx.xinput.XInputDirectoryIF;
 import net.sourceforge.dvb.projectx.xinput.XInputFile;
 
-//+
 import java.net.URL;
-//-
 
 public class XInputDirectoryImpl implements XInputDirectoryIF {
 
@@ -60,8 +84,16 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 			String password = aFileIdentifier.substring(posColon + 1, posAt);
 			String server = aFileIdentifier.substring(posAt + 1, posSlash);
 			String directory = aFileIdentifier.substring(posSlash);
+			String port = null;
 
-			ftpVO = new FtpVO(server, user, password, directory, null);
+			int posColon2 = server.indexOf(':');
+			if (posColon2 != -1)
+			{
+				server = server.substring(0, posColon2);
+				port = server.substring(posColon2 + 1);
+			}
+
+			ftpVO = new FtpVO(server, user, password, directory, port, null);
 			ftpServer = new FtpServer(ftpVO);
 			dirType = DirType.FTP_DIR;
 
@@ -76,7 +108,6 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 		}
 	}
 
-//+
 	/**
 	 * Create a XInputDirectory of type DirType.FILE_DIR.
 	 * 
@@ -89,7 +120,16 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 		if (url.getProtocol().compareTo("ftp") != -1) {
 
+			/**
+			 * JDK122 cannot parse user + pw, but returns it in getHost()
+			 */
+			String _link = url.toString();
 			String _host = url.getHost();
+
+			int j = _link.indexOf(_host);
+
+			if (j > 6)
+				_host = _link.substring(6, j) + _host;
 
 			String server = _host;
 			String user = null;
@@ -109,6 +149,12 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 					password = user.substring(i + 1);
 					user = user.substring(0, i);
 				}
+			}
+
+			if (user == null && password == null)
+			{
+				user = "anonymous";
+				password = "";
 			}
 
 			int _port = url.getPort();
@@ -133,7 +179,6 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 			throw new IllegalArgumentException(url + " is not a correct ftp URL!");
 		}
 	}
-//-
 
 	/**
 	 * Get String representation of the object.
@@ -144,7 +189,7 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 
 		String s = null;
 
-		s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@" + ftpVO.getServer() + ftpVO.getDirectory();
+		s = "ftp://" + ftpVO.getUser() + ":" + ftpVO.getPassword() + "@" + ftpVO.getServer() + ftpVO.getPort(":") + ftpVO.getDirectory();
 
 		return s;
 	}
@@ -181,6 +226,18 @@ public class XInputDirectoryImpl implements XInputDirectoryIF {
 	public String getServer() {
 
 		return ftpVO.getServer();
+	}
+
+	/**
+	 * Get name or ip address of the ftp server
+	 * 
+	 * @return port of the ftp server
+	 * @throws IllegalStateException
+	 *           If file type of object is not DirType.FTP_DIR
+	 */
+	public String getPort() {
+
+		return ftpVO.getPort();
 	}
 
 	/**

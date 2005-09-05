@@ -1,7 +1,7 @@
 /*
  * @(#)StandardBuffer.java - temporary buffer of any data
  *
- * Copyright (c) 2004 by dvb.matt, All Rights Reserved. 
+ * Copyright (c) 2004-2005 by dvb.matt, All Rights Reserved. 
  * 
  * This file is part of X, a free Java based demux utility.
  * X is intended for educational purposes only, as a non-commercial test project.
@@ -28,8 +28,8 @@ package net.sourceforge.dvb.projectx.io;
 
 import java.io.*;
 
-public class StandardBuffer
-{
+public class StandardBuffer extends Object {
+
 	private ByteArrayOutputStream buf = null;
 	private int id;
 	private int type;

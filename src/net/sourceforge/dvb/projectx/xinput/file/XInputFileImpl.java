@@ -1,3 +1,29 @@
+/*
+ * @(#)XInputFileImpl.java - implementation for files
+ *
+ * Copyright (c) 2004-2005 by roehrist, All Rights Reserved. 
+ * 
+ * This file is part of X, a free Java based demux utility.
+ * X is intended for educational purposes only, as a non-commercial test project.
+ * It may not be used otherwise. Most parts are only experimental.
+ * 
+ *
+ * This program is free software; you can redistribute it free of charge
+ * and/or modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 package net.sourceforge.dvb.projectx.xinput.file;
 
 import java.io.File;
@@ -10,6 +36,13 @@ import java.net.MalformedURLException;
 
 import net.sourceforge.dvb.projectx.xinput.FileType;
 import net.sourceforge.dvb.projectx.xinput.XInputFileIF;
+import net.sourceforge.dvb.projectx.xinput.XInputStream;
+
+import net.sourceforge.dvb.projectx.common.Common;
+import net.sourceforge.dvb.projectx.common.Resource;
+
+import net.sourceforge.dvb.projectx.xinput.StreamInfo;
+
 
 public class XInputFileImpl implements XInputFileIF {
 
@@ -25,7 +58,13 @@ public class XInputFileImpl implements XInputFileIF {
 	// Members used for type FileType.FILE
 	private File file = null;
 
+	private String file_separator = System.getProperty("file.separator");
+
 	private RandomAccessFile randomAccessFile = null;
+
+	private Object constructorParameter = null;
+
+	private StreamInfo streamInfo = null;
 
 	/**
 	 * Private Constructor, don't use!
@@ -66,6 +105,15 @@ public class XInputFileImpl implements XInputFileIF {
 		return file.getAbsolutePath();
 	}
 
+
+	public void setConstructorParameter(Object obj) {
+		constructorParameter = obj;
+	}
+			
+	public Object getConstructorParameter() {
+		return constructorParameter;
+	}
+
 	/**
 	 * Get url representation of the object.
 	 * 
@@ -94,6 +142,16 @@ public class XInputFileImpl implements XInputFileIF {
 	public long lastModified() {
 
 		return file.lastModified();
+	}
+
+	/**
+	 * sets Time in milliseconds from the epoch.
+	 * 
+	 * @return Time in milliseconds from the epoch
+	 */
+	public boolean setLastModified() {
+
+		return file.setLastModified(System.currentTimeMillis());
 	}
 
 	/**
@@ -133,7 +191,65 @@ public class XInputFileImpl implements XInputFileIF {
 	 */
 	public InputStream getInputStream() throws FileNotFoundException, MalformedURLException, IOException {
 
-		return new FileInputStream(file);
+		return getInputStream(0L);
+	}
+
+	/**
+	 * Get input stream from the file. close() on stream closes XInputFile, too.
+	 * 
+	 * @return Input stream from the file
+	 */
+	public InputStream getInputStream(long start_position) throws FileNotFoundException, MalformedURLException, IOException {
+
+		XInputStream xIs = new XInputStream(new FileInputStream(file));
+		xIs.skip(start_position);
+
+		return xIs;
+	}
+
+	/**
+	 * rename this file
+	 * @return 
+	 */
+	public boolean rename() throws IOException {
+
+	//	if (isopen) { throw new IllegalStateException("XInputFile is open!"); }
+		if (isopen)
+			return false;
+
+		String parent = getParent();
+		String name = getName();
+		String newName = null;
+		boolean ret = false;
+
+		if ( !parent.endsWith(file_separator) )
+			parent += file_separator;
+
+		newName = Common.getGuiInterface().getUserInputDialog(name, Resource.getString("autoload.dialog.rename") + " " + parent + name);
+
+		if (newName != null && !newName.equals(""))
+		{
+			if (new File(parent + newName).exists())
+			{
+				ret = Common.getGuiInterface().getUserConfirmationDialog(Resource.getString("autoload.dialog.fileexists"));
+
+				if (ret)
+				{
+					new File(parent + newName).delete();
+					ret = Common.renameTo(parent + name, parent + newName);
+				}
+			}
+			else
+				ret = Common.renameTo(parent + name, parent + newName);
+		}
+
+		if (ret)
+		{
+			file = new File(parent + newName);
+			constructorParameter = file;
+		}
+
+		return ret;
 	}
 
 	/**
@@ -266,5 +382,21 @@ public class XInputFileImpl implements XInputFileIF {
 	 */
 	public FileType getFileType() {
 		return fileType;
+	}
+//
+	/**
+	 *
+	 */
+	public void setStreamInfo(StreamInfo _streamInfo)
+	{
+		streamInfo = _streamInfo;
+	}
+
+	/**
+	 *
+	 */
+	public StreamInfo getStreamInfo()
+	{
+		return streamInfo;
 	}
 }

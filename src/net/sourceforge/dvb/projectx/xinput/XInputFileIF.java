@@ -1,4 +1,30 @@
 /*
+ * @(#)XInputFileIF.java
+ *
+ * Copyright (c) 2004-2005 by roehrist, All Rights Reserved. 
+ * 
+ * This file is part of X, a free Java based demux utility.
+ * X is intended for educational purposes only, as a non-commercial test project.
+ * It may not be used otherwise. Most parts are only experimental.
+ * 
+ *
+ * This program is free software; you can redistribute it free of charge
+ * and/or modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*
  * Created on 24.08.2004
  *
  */
@@ -8,6 +34,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+
+import net.sourceforge.dvb.projectx.xinput.StreamInfo;
 
 /**
  * @author Stefan
@@ -21,6 +49,10 @@ public interface XInputFileIF {
 	 * @return String representation of the object
 	 */
 	public String toString();
+
+	public void setConstructorParameter(Object obj);
+			
+	public Object getConstructorParameter();
 
 	/**
 	 * Gets the type of this XInputFile implementation.
@@ -51,6 +83,13 @@ public interface XInputFileIF {
 	public long lastModified();
 
 	/**
+	 * set Time in milliseconds from the epoch.
+	 * 
+	 * @return success
+	 */
+	public boolean setLastModified();
+
+	/**
 	 * Checks if file exists
 	 * 
 	 * @return Result of check
@@ -77,6 +116,20 @@ public interface XInputFileIF {
 	 * @return Input stream from the file
 	 */
 	public InputStream getInputStream() throws FileNotFoundException, MalformedURLException, IOException;
+
+	/**
+	 * Get input stream from the file. close() on stream closes XInputFile, too.
+	 * 
+	 * @return Input stream from the file
+	 */
+	public InputStream getInputStream(long start_position) throws FileNotFoundException, MalformedURLException, IOException;
+
+	/**
+	 * rename file
+	 * 
+	 * @return success
+	 */
+	public boolean rename() throws IOException;
 
 	/**
 	 * Opens XInputFile for random access
@@ -162,4 +215,15 @@ public interface XInputFileIF {
 	 * @throws java.io.IOException
 	 */
 	public long randomAccessReadLong() throws IOException;
+
+	/**
+	 *
+	 */
+	public void setStreamInfo(StreamInfo _streamInfo);
+
+	/**
+	 *
+	 */
+	public StreamInfo getStreamInfo();
+
 }

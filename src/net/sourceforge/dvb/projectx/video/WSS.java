@@ -1,7 +1,7 @@
 /*
  * @(#)WSS.java - mini info about WSS
  *
- * Copyright (c) 2004 by dvb.matt, All Rights Reserved. 
+ * Copyright (c) 2004-2005 by dvb.matt, All Rights Reserved. 
  * 
  * This file is part of X, a free Java based demux utility.
  * X is intended for educational purposes only, as a non-commercial test project.
@@ -28,13 +28,18 @@ package net.sourceforge.dvb.projectx.video;
 
 import net.sourceforge.dvb.projectx.common.Resource;
 
+import java.util.Arrays;
 
 //DM30072004 introduced with 081.7 int07
-public final class WSS
-{
+public final class WSS extends Object {
+
+	private static boolean isPalplus = false;
+
 	private static int pixels[] = new int[267];
 	private static int a;
 	private static String str;
+
+	private static String format;
 
 	private static String start = Resource.getString("wss.start");
 
@@ -46,6 +51,7 @@ public final class WSS
 	public static void init(int source_pixels[], int width)
 	{
 		str = null;
+		format = "";
 
 		if (source_pixels.length < 200)
 			return;
@@ -58,26 +64,54 @@ public final class WSS
 		return str;
 	}
 
+	public static boolean isPalPlus()
+	{
+		return isPalplus;
+	}
+
+	public static String getFormatInfo()
+	{
+		return format;
+	}
+
 	private static void scale(int source_pixels[], int width)
 	{
-		java.util.Arrays.fill(pixels, 0);
+		Arrays.fill(pixels, 0);
 
 		int nx = 267;
 		float fx = 0;
 		float Xdecimate = width / (float)(nx);
 
-		//DM28082004 081.7 int10 changed
 		for (int x = 0; fx < width && x < nx; fx += Xdecimate, x++)
 			pixels[x] = 0xFF & source_pixels[(int)fx]>>>16;
 
 		a = 0;
 
-		handlepixels();  // read out
+		/**
+		 * WSS of PAL 625-lines
+		 */
+		handlepixels("line 0 (23)");  // read out
+
+		if (str == null)
+		{
+			fx = 0;
+
+			for (int x = 0; fx < width && x < nx; fx += Xdecimate, x++)
+				pixels[x] = 0xFF & source_pixels[width + (int)fx]>>>16;
+
+			a = 0;
+
+			handlepixels("line 1 (24)");  // read out
+		}
 	}
 
-	private static void handlepixels()
+	private static void handlepixels(String _str)
 	{
-		str = "WSS status:<p>";
+		isPalplus = false;
+		format = "";
+
+		str = "WSS status @ " + _str;
+		str += ":<p>";
 
 		if (getRunIn())
 		{
@@ -99,7 +133,7 @@ public final class WSS
 
 				String[] group = getGroup2();
 
-				for (int d=0; d < 4; d++) 
+				for (int d = 0; d < group.length; d++) 
 					str += " * " + group[d] + "<p>";
 
 				a += 24;
@@ -108,7 +142,7 @@ public final class WSS
 
 				group = getGroup3();
 
-				for (int d=0; d < 2; d++) 
+				for (int d = 0; d < group.length; d++) 
 					str += " * " + group[d] + "<p>";
 
 				a += 18;
@@ -117,7 +151,7 @@ public final class WSS
 
 				group = getGroup4();
 
-				for (int d=0; d < 2; d++) 
+				for (int d = 0; d < group.length; d++) 
 					str += " * " + group[d] + "<p>";
 
 			}
@@ -174,24 +208,31 @@ public final class WSS
 		switch (b1)
 		{
 		case 0x56: // 0001  Biphase 01010110
+			format = "[4:3 full]";
 			return ("  " + Resource.getString("wss.group_1.0001"));
 
 		case 0x95: // 1000  Biphase 10010101
+			format = "[14:9 LB center]";
 			return ("  " + Resource.getString("wss.group_1.1000"));
 
 		case 0x65: // 0100  Biphase 01100101
+			format = "[14:9 LB top]";
 			return ("  " + Resource.getString("wss.group_1.0100"));
 
 		case 0xA6: // 1101  Biphase 10100110
+			format = "[16:9 LB center]";
 			return ("  " + Resource.getString("wss.group_1.1101"));
 
 		case 0x59: // 0010  Biphase 01011001
+			format = "[16:9 LB top]";
 			return ("  " + Resource.getString("wss.group_1.0010"));
 
 		case 0x6A: // 0111  Biphase 01101010
+			format = "[14:9 full]";
 			return ("  " + Resource.getString("wss.group_1.0111"));
 
 		case 0xA9: // 1110  Biphase 10101001
+			format = "[16:9 full]";
 			return ("  " + Resource.getString("wss.group_1.1110"));
 
 		default:  
@@ -244,6 +285,7 @@ public final class WSS
 
 		case 2:  // 1  Biphase 10
 			group2[2]= "  " + Resource.getString("wss.group_2.2.10"); 
+			isPalplus = true;
 			break;
 
 		default:  
@@ -319,12 +361,12 @@ public final class WSS
 	{
 		int b1 = 0;
 
-		for (int c=0; c < 6; c++)
+		for (int c = 0; c < 6; c++)
 			b1 |= pixels[a + (3 * c)] < 120 ? 0 : (1<<(5 - c));
 
-		String[] group2 = new String[2];
+		String[] group2 = new String[3];
 
-		switch (0x3 & (b1>>>4))
+		switch (3 & (b1>>>4))
 		{
 		case 1:  // 0  Biphase 01
 			group2[0]= "  " + Resource.getString("wss.group_4.0.01");
@@ -338,26 +380,32 @@ public final class WSS
 			group2[0]= "  " + Resource.getString("wss.group_4.0.00");
 		}       
 
-		switch (0xF & b1)
+		switch (3 & (b1>>>2))
 		{
-		case 5: // 00  Biphase 0101
-			group2[1]= "  " + Resource.getString("wss.group_4.1.00");
+		case 1:  // 0  Biphase 01
+			group2[1]= "  " + Resource.getString("wss.group_4.1.01");
 			break;
 
-		case 6: // 01  Biphase 0110
-			group2[1]= "  " + Resource.getString("wss.group_4.1.01"); 
-			break; 
-
-		case 9:  // 10  Biphase 1001
-			group2[1]= "  " + Resource.getString("wss.group_4.1.10"); 
-			break;
-
-		case 0xA:  // 11  Biphase 1010
-			group2[1]= "  " + Resource.getString("wss.group_4.1.11"); 
+		case 2:  // 1  Biphase 10
+			group2[1]= "  " + Resource.getString("wss.group_4.1.10");
 			break;
 
 		default:
-			group2[1]= "  " + Resource.getString("wss.group_4.1.err");
+			group2[1]= "  " + Resource.getString("wss.group_4.1.00");
+		}       
+
+		switch (3 & b1)
+		{
+		case 1:  // 0  Biphase 01
+			group2[2]= "  " + Resource.getString("wss.group_4.2.01");
+			break;
+
+		case 2:  // 1  Biphase 10
+			group2[2]= "  " + Resource.getString("wss.group_4.2.10");
+			break;
+
+		default:
+			group2[2]= "  " + Resource.getString("wss.group_4.2.00");
 		}       
 
 		return group2;

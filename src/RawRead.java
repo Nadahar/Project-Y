@@ -33,7 +33,8 @@
 
 import java.util.ArrayList;
 
-import net.sourceforge.dvb.projectx.xinput.topfield_raw.*;;
+//import net.sourceforge.dvb.projectx.xinput.topfield_raw.*;;
+import net.sourceforge.dvb.projectx.xinput.topfield_raw.RawReadIF;
 
 public class RawRead implements RawReadIF 
 {
@@ -73,8 +74,8 @@ public class RawRead implements RawReadIF
 
 				i++;
 
-				if (i>100)
-					break;
+				//if (i>100)
+				//	break;
 			}
 			while (s.length()!=0);
 

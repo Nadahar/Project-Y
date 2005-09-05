@@ -1,7 +1,7 @@
 /*
  * @(#)CharSet.java - constants of teletext System B
  *
- * Copyright (c) 2004 by dvb.matt, All Rights Reserved. 
+ * Copyright (c) 2004-2005 by dvb.matt, All Rights Reserved. 
  * 
  * This file is part of X, a free Java based demux utility.
  * X is intended for educational purposes only, as a non-commercial test project.
@@ -27,8 +27,8 @@
 package net.sourceforge.dvb.projectx.subtitle;
 
 //DM06082004 081.7 int07 introduced
-public final class CharSet
-{
+public final class CharSet extends Object {
+
 	private CharSet()
 	{}
 
