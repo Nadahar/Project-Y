@@ -86,7 +86,8 @@ public class Keys extends Object {
 	public final static String[] KEY_minimizeMainFrame = { "MessagePanel.minimizeMainFrame", "0" }; 
 	public final static String[] KEY_hideProcessWindow = { "MessagePanel.hideProcessWindow", "0" }; 
 	public final static String[] KEY_showSubpictureWindow = { "MessagePanel.showSubpictureWindow", "0" }; 
-	public final static String[] KEY_simplePES = { "MainPanel.simplePES", "0" }; //cbox[14]
+	public final static String[] KEY_simpleMPG = { "MainPanel.simpleMPG", "0" }; //cbox[14]
+	public final static String[] KEY_enhancedPES = { "MainPanel.enhancedPES", "0" }; //cbox[14]
 	public final static String[] KEY_useAutoPidFilter = { "MainPanel.useAutoPidFilter", "0" };
 
 	/**

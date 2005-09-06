@@ -475,13 +475,17 @@ public class MainProcess extends Thread {
 		if (Common.getSettings().getBooleanProperty(Keys.KEY_DebugLog))
 			Common.setMessage("-> " + Resource.getString(Keys.KEY_DebugLog[0]));
 
-		//normlalog
+		//normallog
 		if (Common.getSettings().getBooleanProperty(Keys.KEY_NormalLog))
 			Common.setMessage("-> " + Resource.getString(Keys.KEY_NormalLog[0]));
 
-		//sPES
-		if (Common.getSettings().getBooleanProperty(Keys.KEY_simplePES))
-			Common.setMessage("-> " + Resource.getString(Keys.KEY_simplePES[0]));
+		//MPG->sPES
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_simpleMPG))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_simpleMPG[0]));
+
+		//sPES->MPG
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_enhancedPES))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_enhancedPES[0]));
 
 		//split
 		if (Common.getSettings().getBooleanProperty(Keys.KEY_SplitSize))
@@ -815,7 +819,8 @@ public class MainProcess extends Thread {
 						if (!CommonParsing.getPvaPidExtraction()) 
 							Common.setMessage(convertType[action]);
 
-						vptslog = parsePrimaryPES(collection, xInputFile, filetype, action);
+					//	vptslog = parsePrimaryPES(collection, xInputFile, filetype, action);
+						vptslog = Common.getSettings().getBooleanProperty(Keys.KEY_enhancedPES) ? parsePrimaryPES(collection, xInputFile, CommonParsing.MPEG2PS_TYPE, action) : parsePrimaryPES(collection, xInputFile, filetype, action);
 
 						if (action == CommonParsing.ACTION_DEMUX) 
 							resetSplitMode(job_processing, vptslog);
@@ -849,7 +854,7 @@ public class MainProcess extends Thread {
 						if (!CommonParsing.getPvaPidExtraction()) 
 							Common.setMessage(convertType[action]);
 
-						vptslog = Common.getSettings().getBooleanProperty(Keys.KEY_simplePES) ? parsePrimaryPES(collection, xInputFile, CommonParsing.PES_AV_TYPE, action) : parsePrimaryPES(collection, xInputFile, filetype, action);
+						vptslog = Common.getSettings().getBooleanProperty(Keys.KEY_simpleMPG) ? parsePrimaryPES(collection, xInputFile, CommonParsing.PES_AV_TYPE, action) : parsePrimaryPES(collection, xInputFile, filetype, action);
 	
 						if (action == CommonParsing.ACTION_DEMUX) 
 							resetSplitMode(job_processing, vptslog);
@@ -892,7 +897,8 @@ public class MainProcess extends Thread {
 						if (!CommonParsing.getPvaPidExtraction()) 
 							Common.setMessage(convertType[action]);
 
-						vptslog = parsePrimaryPES(collection, xInputFile, CommonParsing.PES_AV_TYPE, action);
+					//	vptslog = parsePrimaryPES(collection, xInputFile, CommonParsing.PES_AV_TYPE, action);
+						vptslog = Common.getSettings().getBooleanProperty(Keys.KEY_enhancedPES) ? parsePrimaryPES(collection, xInputFile, CommonParsing.MPEG2PS_TYPE, action) : parsePrimaryPES(collection, xInputFile, CommonParsing.PES_AV_TYPE, action);
 
 						if (action == CommonParsing.ACTION_DEMUX) 
 							resetSplitMode(job_processing, vptslog);
@@ -1342,7 +1348,7 @@ public class MainProcess extends Thread {
 
 		boolean Message_2 = Common.getSettings().getBooleanProperty(Keys.KEY_MessagePanel_Msg2);
 		boolean Debug = collection.DebugMode();
-		boolean SimplePES = Common.getSettings().getBooleanProperty(Keys.KEY_simplePES);
+		boolean SimpleMPG = Common.getSettings().getBooleanProperty(Keys.KEY_simpleMPG);
 		boolean GetEnclosedPackets = Common.getSettings().getBooleanProperty(Keys.KEY_Input_getEnclosedPackets);
 		boolean IgnoreScrambledPackets = Common.getSettings().getBooleanProperty(Keys.KEY_TS_ignoreScrambled);
 
@@ -1437,7 +1443,7 @@ public class MainProcess extends Thread {
 					{
 						if (Message_2 && !missing_startcode)
 							Common.setMessage(Resource.getString("parseSecondaryPES.missing.startcode") + " " + count);
-//>neu
+
 						in.read(pes_packet, pes_packetoffset, pes_packet.length - pes_packetoffset);
 
 						int i = returncode;
@@ -1469,17 +1475,6 @@ public class MainProcess extends Thread {
 						missing_startcode = true;
 
 						continue loop;
-//<neu
-/**
-						returncode = returncode < 0 ? -returncode : 4;
-
-						in.unread(pes_packet, returncode, pes_packetoffset - returncode);
-
-						missing_startcode = true;
-						count += returncode;
-
-						continue loop;
-**/
 					}
 
 					if (Message_2 && missing_startcode)
@@ -1487,7 +1482,7 @@ public class MainProcess extends Thread {
 
 					missing_startcode = false;
 
-					if (pes_streamtype == CommonParsing.MPEG1PS_TYPE || pes_streamtype == CommonParsing.MPEG2PS_TYPE || SimplePES)
+					if (pes_streamtype == CommonParsing.MPEG1PS_TYPE || pes_streamtype == CommonParsing.MPEG2PS_TYPE || SimpleMPG)
 					{
 						switch (pesID)
 						{
@@ -1935,7 +1930,7 @@ public class MainProcess extends Thread {
 
 		boolean Message_2 = Common.getSettings().getBooleanProperty(Keys.KEY_MessagePanel_Msg2);
 		boolean Debug = collection.DebugMode();
-		boolean SimplePES = Common.getSettings().getBooleanProperty(Keys.KEY_simplePES);
+		boolean SimpleMPG = Common.getSettings().getBooleanProperty(Keys.KEY_simpleMPG);
 		boolean GetEnclosedPackets = Common.getSettings().getBooleanProperty(Keys.KEY_Input_getEnclosedPackets);
 		boolean IgnoreScrambledPackets = Common.getSettings().getBooleanProperty(Keys.KEY_TS_ignoreScrambled);
 		boolean PreviewAllGops = Common.getSettings().getBooleanProperty(Keys.KEY_Preview_AllGops);
@@ -2160,15 +2155,10 @@ public class MainProcess extends Thread {
 
 			base = count;
 			size = count + aXInputFile.length();
-//
+
 			PushbackInputStream in = new PushbackInputStream(aXInputFile.getInputStream(startPoint), pes_packet.length);
 
 			count += startPoint;
-//
-		//	PushbackInputStream in = new PushbackInputStream(aXInputFile.getInputStream(), pes_packet.length);
-
-		//	while (count < startPoint)
-		//		count += in.skip(startPoint - count);
 
 			Common.updateProgressBar((action == CommonParsing.ACTION_DEMUX ? Resource.getString("parsePrimaryPES.demuxing") : Resource.getString("parsePrimaryPES.converting")) + " " + Resource.getString("parsePrimaryPES.avpes.file") + " " + aXInputFile.getName(), (count - base), (size - base));
 
@@ -2234,7 +2224,7 @@ public class MainProcess extends Thread {
 
 						if (Message_2 && !missing_startcode)
 							Common.setMessage(Resource.getString("parsePrimaryPES.missing.startcode") + " " + count);
-//>neu
+
 						in.read(pes_packet, pes_packetoffset, pes_packet.length - pes_packetoffset);
 
 						int i = returncode;
@@ -2266,15 +2256,6 @@ public class MainProcess extends Thread {
 						missing_startcode = true;
 
 						continue loop;
-//<neu
-/**
-						in.unread(pes_packet, returncode, pes_packetoffset - returncode);
-
-						count += returncode;
-						missing_startcode = true;
-
-						continue loop;
-**/
 					}
 
 					if (Message_2 && missing_startcode)
@@ -2282,7 +2263,7 @@ public class MainProcess extends Thread {
 
 					missing_startcode = false;
 	
-					if (pes_streamtype == CommonParsing.MPEG1PS_TYPE || pes_streamtype == CommonParsing.MPEG2PS_TYPE || SimplePES)
+					if (pes_streamtype == CommonParsing.MPEG1PS_TYPE || pes_streamtype == CommonParsing.MPEG2PS_TYPE || SimpleMPG)
 					{
 						switch (pesID)
 						{

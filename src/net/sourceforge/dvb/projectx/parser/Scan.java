@@ -1184,7 +1184,7 @@ public class Scan extends Object {
 						continue mpgcheck;
 
 					if (more) 
-						loadMPG2(check, i, Common.getSettings().getBooleanProperty(Keys.KEY_simplePES), false, nullpacket, bs1); 
+						loadMPG2(check, i, Common.getSettings().getBooleanProperty(Keys.KEY_simpleMPG), false, nullpacket, bs1); 
 
 					return CommonParsing.MPEG2PS_TYPE;
 				}
@@ -1203,7 +1203,7 @@ public class Scan extends Object {
 
 				if ( (next == i + 6) && (0xC0 & check[i + 6]) == 0x80 && (0xC0 & check[i + 8]) == 0)
 				{ 
-					addInfo += " !!(VPacketLengthField is 0)"; 
+					addInfo = " !!(VPacketLengthField is 0)"; 
 					next = i; 
 					nullpacket = true; 
 				}
@@ -1214,7 +1214,7 @@ public class Scan extends Object {
 				else
 				{
 					if (more) 
-						loadMPG2(check, i, true, false, nullpacket, bs3); 
+						loadMPG2(check, i, !Common.getSettings().getBooleanProperty(Keys.KEY_enhancedPES), false, nullpacket, bs3); 
 
 					return CommonParsing.PES_AV_TYPE;
 				}

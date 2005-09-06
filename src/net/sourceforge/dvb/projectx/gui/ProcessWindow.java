@@ -288,7 +288,8 @@ public class ProcessWindow extends JFrame {
 			Keys.KEY_ExportPanel_createSubDirNumber,
 			Keys.KEY_ExportPanel_createSubDirName,
 			Keys.KEY_enablePostProcessing,
-			Keys.KEY_simplePES,
+			Keys.KEY_simpleMPG,
+			Keys.KEY_enhancedPES,
 			Keys.KEY_useAutoPidFilter
 		};
 
