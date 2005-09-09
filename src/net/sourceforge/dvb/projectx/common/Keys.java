@@ -260,7 +260,7 @@ public class Keys extends Object {
 	public static Object[] ITEMS_SubtitleExportFormat = null;
 
 	public final static String[] KEY_AudioPanel_decodeMpgAudio = { "AudioPanel.decodeMpgAudio", "0" }; //cbox[50] 
-	public final static String[] KEY_AudioPanel_verifyCRC = { "AudioPanel.verifyCRC", "0" }; //cbox[68] 
+	public final static String[] KEY_AudioPanel_validateCRC = { "AudioPanel.validateCRC", "0" }; //cbox[68] 
 	public final static String[] KEY_AudioPanel_clearCRC = { "AudioPanel.clearCRC", "0" }; //cbox[1] 
 	public final static String[] KEY_AudioPanel_fillGapsWithLastFrame = { "AudioPanel.fillGapsWithLastFrame", "0" }; //cbox[0] 
 	public final static String[] KEY_AudioPanel_addFrames = { "AudioPanel.addFrames", "1" }; //cbox[20] 

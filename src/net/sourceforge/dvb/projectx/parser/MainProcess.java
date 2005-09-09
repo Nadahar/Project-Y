@@ -1717,7 +1717,7 @@ public class MainProcess extends Thread {
 
 						foundObject = pesID == streamdemultiplexer.getID() && subID == streamdemultiplexer.subID() && isTeletext == streamdemultiplexer.isTTX();
 
-						if (foundObject);
+						if (foundObject)
 							break; 
 					}
 
@@ -1815,7 +1815,7 @@ public class MainProcess extends Thread {
 				break bigloop;
 			}
 
-			Common.setMessage(Resource.getString("parseSecondaryPES.packs", "" + clv[5], "" + (count * 100 / size), "" + count));
+			Common.setMessage(Resource.getString("parseSecondaryPES.packs", String.valueOf(clv[5]), String.valueOf(count * 100 / size), String.valueOf(count)));
 
 
 			in.close(); 
@@ -5691,7 +5691,7 @@ public class MainProcess extends Thread {
 		boolean Message_2 = Common.getSettings().getBooleanProperty(Keys.KEY_MessagePanel_Msg2);
 		boolean PitchAudio = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_pitchAudio);
 		boolean AllowSpaces = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_allowSpaces);
-		boolean ValidateCRC = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_verifyCRC);
+		boolean ValidateCRC = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_validateCRC);
 		boolean ReplaceAc3withSilence = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_replaceAc3withSilence);
 		boolean Patch1stAc3Header = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_patch1stAc3Header);
 		boolean FillGapsWithLastFrame = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_fillGapsWithLastFrame);

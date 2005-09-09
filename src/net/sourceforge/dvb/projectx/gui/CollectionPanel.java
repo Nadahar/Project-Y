@@ -495,6 +495,12 @@ public class CollectionPanel extends JPanel {
 			box[i].addActionListener(_CheckBoxListener);
 		}
 
+		for (int i = 0; i < 3; i++)
+			panel.add(box[i]);
+
+		panel.add(Box.createRigidArea(new Dimension(1, 72)));
+
+
 		panel.add(new JLabel(Resource.getString("CollectionPanel.PidList")));
 
 		includeField = new JTextField("");
@@ -542,12 +548,6 @@ public class CollectionPanel extends JPanel {
 		cpoints.setToolTipText(Resource.getString("CollectionPanel.transferPids2.Tip"));
 		cpoints.addActionListener(cutAction);
 		panel.add(cpoints);
-
-
-		panel.add(Box.createRigidArea(new Dimension(1, 72)));
-
-		for (int i = 0; i < 3; i++)
-			panel.add(box[i]);
 
 		//panel.add(Box.createRigidArea(new Dimension(1, 20)));
 

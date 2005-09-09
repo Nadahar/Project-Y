@@ -894,7 +894,7 @@ public class PreSettings extends JFrame {
 			Keys.KEY_AudioPanel_changeByteorder,
 			Keys.KEY_AudioPanel_addRiffHeader,
 			Keys.KEY_AudioPanel_addAiffHeader,
-			Keys.KEY_AudioPanel_verifyCRC,
+			Keys.KEY_AudioPanel_validateCRC,
 			Keys.KEY_AudioPanel_clearCRC,
 			Keys.KEY_AudioPanel_fillGapsWithLastFrame,
 			Keys.KEY_AudioPanel_addFrames,

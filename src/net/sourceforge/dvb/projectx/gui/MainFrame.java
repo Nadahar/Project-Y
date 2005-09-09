@@ -177,8 +177,6 @@ public class MainFrame extends JPanel {
 
 	// global boxes
 	private static JComboBox comboBox_0;
-	private JComboBox comboBox_13;
-	private JComboBox comboBox_12;
 
 	/**
 	 * radio buttons for look and feels in general menu
@@ -1620,8 +1618,8 @@ public class MainFrame extends JPanel {
 
 		outfield = new JTextField();
 		outfield.setBackground(new Color(225, 255, 225));
-		outfield.setMaximumSize(new Dimension(300, 20));
-		outfield.setMinimumSize(new Dimension(300, 20));
+		outfield.setMaximumSize(new Dimension(280, 20));
+		outfield.setMinimumSize(new Dimension(280, 20));
 		outfield.setEditable(false);
 		outfield.setToolTipText(Resource.getString("FilePanel.OutputDirectory.Tip"));
 
@@ -1632,6 +1630,62 @@ public class MainFrame extends JPanel {
 		panel_2.add(new JLabel(Resource.getString("FilePanel.recentOutputDirectories")));
 
 		panel_2.add(Box.createRigidArea(new Dimension(6, 1)));
+
+
+		/**
+		 * 
+		 */
+		// recent output
+		final JComboBox comboBox_13 = new JComboBox(Common.getSettings().getOutputDirectories().toArray());
+		comboBox_13.setMinimumSize(new Dimension(280, 20));
+		comboBox_13.setMaximumSize(new Dimension(280, 20));
+		comboBox_13.setMaximumRowCount(8);
+		comboBox_13.insertItemAt(Resource.getString("working.output.std"), 0);
+		comboBox_13.setSelectedItem(Common.getSettings().getProperty(Keys.KEY_OutputDirectory));
+		comboBox_13.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				if (comboBox_13.getItemCount() > 1)
+				{
+					if (comboBox_13.getSelectedIndex() == 0)
+						Common.getSettings().remove(Keys.KEY_OutputDirectory[0]);
+
+					else
+						Common.getSettings().setProperty(Keys.KEY_OutputDirectory[0], comboBox_13.getSelectedItem());
+
+					if (comboBox_0.getItemCount() > 0)
+					{
+						Common.setActiveCollection(comboBox_0.getSelectedIndex());
+
+						JobCollection collection = Common.getCollection(Common.getActiveCollection());
+
+						collection.setOutputDirectory(Common.getSettings().getProperty(Keys.KEY_OutputDirectory));
+
+						updateOutputField(collection);
+
+						updateCollectionTable(collection.getCollectionAsTable());
+					}
+				}
+
+				else
+				{
+					Common.getSettings().remove(Keys.KEY_OutputDirectory[0]);
+
+					if (comboBox_0.getItemCount() > 0)
+					{
+						Common.setActiveCollection(comboBox_0.getSelectedIndex());
+
+						JobCollection collection = Common.getCollection(Common.getActiveCollection());
+
+						collection.setOutputDirectory(Common.getSettings().getProperty(Keys.KEY_OutputDirectory));
+
+						updateOutputField(collection);
+
+						updateCollectionTable(collection.getCollectionAsTable());
+					}
+				}
+			}
+		});
 
 		/**
 		 * 
@@ -1662,8 +1716,9 @@ public class MainFrame extends JPanel {
 						else if (theFile.isDirectory()) 
 							file = theFile.getAbsolutePath(); 
 
+						// do not list duplicates
 						for (int i = 0; i < comboBox_13.getItemCount(); i++)
-							if (file.equalsIgnoreCase( comboBox_13.getItemAt(i).toString())) 
+							if (file.equalsIgnoreCase(comboBox_13.getItemAt(i).toString())) 
 								return;
 
 						Common.getSettings().addOutputDirectory(file);
@@ -1675,7 +1730,6 @@ public class MainFrame extends JPanel {
 			}
 		});
 
-		panel_2.add(add_output);
 
 		/**
 		 * 
@@ -1687,55 +1741,29 @@ public class MainFrame extends JPanel {
 		remove_output.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
-				if (comboBox_13.getItemCount() > 0)
+				if (comboBox_13.getItemCount() > 1)
 				{
 					int index = comboBox_13.getSelectedIndex();
 
-					Common.getSettings().removeOutputDirectory(index);
+					if (index > 0)
+					{
+						Common.getSettings().removeOutputDirectory(index - 1);
 
-					comboBox_13.removeItemAt(index);
+						comboBox_13.removeItemAt(index);
+					}
+
+					else
+						Common.setOSDErrorMessage("Eintrag kann nicht entfernt werden..");
 				}
 
-				if (comboBox_13.getItemCount() == 0)
+				if (comboBox_13.getItemCount() <= 1)
 					Common.getSettings().remove(Keys.KEY_OutputDirectory[0]);
 			}
 		});
 
+
+		panel_2.add(add_output);
 		panel_2.add(remove_output);
-
-		/**
-		 * 
-		 */
-		// recent output
-		comboBox_13 = new JComboBox(Common.getSettings().getOutputDirectories().toArray());
-		comboBox_13.setMinimumSize(new Dimension(300, 20));
-		comboBox_13.setMaximumSize(new Dimension(300, 20));
-		comboBox_13.setMaximumRowCount(8);
-		comboBox_13.setSelectedItem(Common.getSettings().getProperty(Keys.KEY_OutputDirectory));
-		comboBox_13.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
-			{
-				if (comboBox_13.getItemCount() > 0 && comboBox_0.getItemCount() > 0)
-				{
-					Common.setActiveCollection(comboBox_0.getSelectedIndex());
-
-					JobCollection collection = Common.getCollection(Common.getActiveCollection());
-
-					collection.setOutputDirectory(comboBox_13.getSelectedItem().toString());
-
-					updateOutputField(collection);
-
-					updateCollectionTable(collection.getCollectionAsTable());
-				}
-
-				if (comboBox_13.getItemCount() > 0)
-					Common.getSettings().setProperty(Keys.KEY_OutputDirectory[0], comboBox_13.getSelectedItem());
-
-				else
-					Common.getSettings().remove(Keys.KEY_OutputDirectory[0]);
-			}
-		});
-
 		panel_2.add(comboBox_13);
 
 
@@ -1798,6 +1826,16 @@ public class MainFrame extends JPanel {
 		JPanel bb = new JPanel();
 		bb.setLayout( new ColumnLayout() );
 
+		/**
+		 * 
+		 */
+		final JComboBox comboBox_12 = new JComboBox(Common.getSettings().getListProperty(Keys.KEY_InputDirectories).toArray());  // recent input
+		comboBox_12.setMaximumRowCount(8);
+		comboBox_12.setPreferredSize(new Dimension(400, 24));
+
+		/**
+		 * 
+		 */
 		JButton remove_input = new JButton(CommonGui.loadIcon("rem.gif"));
 		remove_input.setPreferredSize(new Dimension(50,28));
 		remove_input.setMaximumSize(new Dimension(50,28));
@@ -1820,7 +1858,9 @@ public class MainFrame extends JPanel {
 		});
 		bb.add(remove_input);
 
-
+		/**
+		 * 
+		 */
 		JButton add_input = new JButton(CommonGui.loadIcon("add.gif"));
 		add_input.setPreferredSize(new Dimension(50,28));
 		add_input.setMaximumSize(new Dimension(50,24));
@@ -1912,7 +1952,9 @@ public class MainFrame extends JPanel {
 		});
 		bb.add(add_inputftp);
 
-
+		/**
+		 * 
+		 */
 		JButton refresh_list = new JButton(CommonGui.loadIcon("rf.gif"));
 		refresh_list.setPreferredSize(new Dimension(50,28));
 		refresh_list.setMaximumSize(new Dimension(50,28));
@@ -1928,6 +1970,9 @@ public class MainFrame extends JPanel {
 
 		bb.add(new JLabel(" "));
 
+		/**
+		 * 
+		 */
 		JButton add_coll_and_files = new JButton(CommonGui.loadIcon("addleft.gif"));
 		add_coll_and_files.setPreferredSize(new Dimension(50,28));
 		add_coll_and_files.setMaximumSize(new Dimension(50,28));
@@ -1956,6 +2001,9 @@ public class MainFrame extends JPanel {
 		bb.add(add_coll_and_files);
 
 
+		/**
+		 * 
+		 */
 		JButton add_files = new JButton(CommonGui.loadIcon("left.gif"));
 		add_files.setPreferredSize(new Dimension(50, 28));
 		add_files.setMaximumSize(new Dimension(50, 28));
@@ -1982,6 +2030,9 @@ public class MainFrame extends JPanel {
 
 		bb.add(new JLabel(" "));
 
+		/**
+		 * 
+		 */
 		JButton close = new JButton(CommonGui.loadIcon("x.gif"));
 		close.setPreferredSize(new Dimension(50,28));
 		close.setMaximumSize(new Dimension(50,28));
@@ -2068,10 +2119,9 @@ public class MainFrame extends JPanel {
 		JScrollPane scrolltext = new JScrollPane();
 		scrolltext.setViewportView(list1);
 
-		comboBox_12 = new JComboBox(Common.getSettings().getListProperty(Keys.KEY_InputDirectories).toArray());  // recent input
-		comboBox_12.setMaximumRowCount(8);
-		comboBox_12.setPreferredSize(new Dimension(400, 24));
-
+		/**
+		 * 
+		 */
 		JPanel control_1 = new JPanel(new BorderLayout());
 		control_1.setAlignmentX(CENTER_ALIGNMENT);
 		control_1.add(scrolltext, BorderLayout.CENTER);
