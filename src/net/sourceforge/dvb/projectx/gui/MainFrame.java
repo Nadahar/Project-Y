@@ -1214,8 +1214,8 @@ public class MainFrame extends JPanel {
         final String[] names = {
 			"#", 
 			Resource.getString("CollectionTable.Source"), 
-			Resource.getString("CollectionTable.FileLocation"), 
 			Resource.getString("CollectionTable.FileName"), 
+			Resource.getString("CollectionTable.FileLocation"), 
 			Resource.getString("CollectionTable.Size"), 
 			Resource.getString("CollectionTable.lastModified"), 
 			Resource.getString("ScanInfo.Video").substring(0, 1), 

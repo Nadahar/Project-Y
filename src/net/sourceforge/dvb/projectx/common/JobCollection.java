@@ -811,8 +811,8 @@ public class JobCollection extends Object {
 
 			table[i][0] = new Integer(i);
 			table[i][1] = xInputFile.getStreamInfo().getFileSourceBase();
-			table[i][2] = (xInputFile.getParent().length() > 0 ? xInputFile.getParent() : xInputFile.toString().substring(0, xInputFile.toString().indexOf(xInputFile.getName())));
-			table[i][3] = xInputFile.getName();
+			table[i][2] = xInputFile.getName();
+			table[i][3] = (xInputFile.getParent().length() > 0 ? xInputFile.getParent() : xInputFile.toString().substring(0, xInputFile.toString().indexOf(xInputFile.getName())));
 			table[i][4] = String.valueOf(xInputFile.length() / 1048576L) + " MB";
 			table[i][5] = Common.formatTime_3(xInputFile.lastModified());
 			table[i][6] = new Integer(xInputFile.getStreamInfo().getVideoStreams().length);
