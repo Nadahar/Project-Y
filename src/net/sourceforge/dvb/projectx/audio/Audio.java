@@ -30,6 +30,7 @@
 package net.sourceforge.dvb.projectx.audio;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -970,7 +971,7 @@ public class Audio extends Object {
 	 * PI-Code is missing, WDR2 shall have Dx92
 	 *
 	 */
-	java.util.ArrayList _list = new java.util.ArrayList();
+	ArrayList _list = new ArrayList();
 	ByteArrayOutputStream bo = new ByteArrayOutputStream();
 	private boolean DecodeRDS = false;
 	private boolean Debug = false;

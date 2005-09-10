@@ -375,10 +375,10 @@ public class Gop extends Object {
 				System.arraycopy(headerrescue, 0, newgop, 0, headerrescue.length);
 				System.arraycopy(gop, 0, newgop, headerrescue.length, gop.length);
 
-				gop = new byte[newgop.length];
+			//	gop = new byte[newgop.length];
 				gop = newgop; 
 
-				newgop = null;
+			//	newgop = null;
 				job_processing.setSequenceHeader(true);
 
 				for (int a = 0; a < vpts[1].length; a++) 
@@ -392,10 +392,10 @@ public class Gop extends Object {
 				System.arraycopy(headerrescue, 0, newgop, 0, headerrescue.length);
 				System.arraycopy(gop, 0, newgop, headerrescue.length, gop.length);
 
-				gop = new byte[newgop.length];
+			//	gop = new byte[newgop.length];
 				gop = newgop; 
 
-				newgop = null;
+			//	newgop = null;
 				job_processing.setSequenceHeader(true);
 
 				for (int a = 0; a < vpts[1].length; a++) 
@@ -409,10 +409,10 @@ public class Gop extends Object {
 				System.arraycopy(headerrescue, 0, newgop, 0, headerrescue.length);
 				System.arraycopy(gop, 0, newgop, headerrescue.length, gop.length);
 
-				gop = new byte[newgop.length];
+			//	gop = new byte[newgop.length];
 				gop = newgop; 
 
-				newgop = null;
+			//	newgop = null;
 				job_processing.setSequenceHeader(true);
 
 				for (int a = 0; a < vpts[1].length; a++) 

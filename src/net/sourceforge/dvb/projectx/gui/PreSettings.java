@@ -34,6 +34,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.KeyEvent;
+import java.awt.Color;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -71,6 +72,8 @@ import net.sourceforge.dvb.projectx.common.Resource;
 public class PreSettings extends JFrame {
 
 	private String title = Resource.getString("PreferencesPanel.Title");
+
+	private final Color head_color = new Color(224, 224, 224);
 
 	private ComboBoxIndexListener _ComboBoxIndexListener = new ComboBoxIndexListener();
 	private ComboBoxItemListener _ComboBoxItemListener = new ComboBoxItemListener();
@@ -200,6 +203,23 @@ public class PreSettings extends JFrame {
 		panel.add(logtab, BorderLayout.CENTER);
 
 		return panel;
+	}
+
+	/**
+	 *
+	 */
+	protected JPanel buildHeadPanel(JPanel panel, String str)
+	{
+		JPanel panel_1 = new JPanel(new BorderLayout());
+		panel_1.setBackground(head_color);
+		panel_1.setBorder(BorderFactory.createTitledBorder(""));
+		panel_1.add(new JLabel(" " + str));
+
+		JPanel panel_2 = new JPanel(new BorderLayout());
+		panel_2.add(panel, BorderLayout.CENTER);
+		panel_2.add(panel_1, BorderLayout.NORTH);
+
+		return panel_2;
 	}
 
 	/**
@@ -371,7 +391,7 @@ public class PreSettings extends JFrame {
 
 		idbigPanel.add(idPanel2);
 
-		return idbigPanel;
+		return buildHeadPanel(idbigPanel, Resource.getString("TabPanel.SpecialPanel"));
 	}
 
 	/**
@@ -566,7 +586,7 @@ public class PreSettings extends JFrame {
 
 		exportPanel.add(op5);
 
-		return exportPanel;
+		return buildHeadPanel(exportPanel, Resource.getString("TabPanel.ExportPanel"));
 	}
 
 	/**
@@ -770,7 +790,7 @@ public class PreSettings extends JFrame {
 
 		video1.add(video3);
 
-		return video1;
+		return buildHeadPanel(video1, Resource.getString("TabPanel.VideoPanel"));
 	}
 
 	/**
@@ -858,7 +878,7 @@ public class PreSettings extends JFrame {
 
 		video2.add(video3Panel);
 
-		return video2;
+		return buildHeadPanel(video2, Resource.getString("TabPanel.ExternPanel"));
 	}
 
 	/**
@@ -1048,7 +1068,7 @@ public class PreSettings extends JFrame {
 		audio.add(audio0);
 		audio.add(audio1);
 
-		return audio;
+		return buildHeadPanel(audio, Resource.getString("TabPanel.AudioPanel"));
 	}
 
 	/**
@@ -1267,7 +1287,7 @@ public class PreSettings extends JFrame {
 
 		teletext.add(panel_1);
 
-		return teletext;
+		return buildHeadPanel(teletext, Resource.getString("TabPanel.SubtitlePanel"));
 	}
 
 	/**
@@ -1351,7 +1371,7 @@ public class PreSettings extends JFrame {
 
 		option.add(op2);
 
-		return option;
+		return buildHeadPanel(option, Resource.getString("TabPanel.OptionPanel"));
 	}
 
 	/**
@@ -1416,7 +1436,7 @@ public class PreSettings extends JFrame {
 
 		panel.add(panel_1);
 
-		return panel;
+		return buildHeadPanel(panel, Resource.getString("TabPanel.FtpPanel"));
 	}
 
 	/**
@@ -1504,7 +1524,7 @@ public class PreSettings extends JFrame {
 			container.add(panel);
 		}
 
-		return container;
+		return buildHeadPanel(container, Resource.getString("TabPanel.PostCommandsPanel"));
 	}
 
 }

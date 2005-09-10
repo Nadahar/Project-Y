@@ -364,7 +364,7 @@ public class StreamInfo extends Object {
 	 */
 	public int[] getMediaPIDs()
 	{
-		int len = pids == null ? 0 : pids.length - 1;
+		int len = pids == null || pids.length == 0 ? 0 : pids.length - 1;
 
 		int[] array = new int[len];
 

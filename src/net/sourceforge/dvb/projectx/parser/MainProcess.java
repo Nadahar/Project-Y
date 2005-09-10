@@ -581,6 +581,58 @@ public class MainProcess extends Thread {
 		if (!Common.getSettings().getBooleanProperty(Keys.KEY_Streamtype_Vbi))
 			Common.setMessage(Resource.getString("run.stream.type.disabled") + " " + Resource.getString(Keys.KEY_Streamtype_Vbi[0]));
 
+
+		/**
+		 *
+		 */
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_PVA_FileOverlap))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_PVA_FileOverlap[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_PVA_Audio))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_PVA_Audio[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_VOB_resetPts))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_VOB_resetPts[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_TS_ignoreScrambled))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_TS_ignoreScrambled[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_TS_blindSearch))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_TS_blindSearch[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_TS_joinPackets))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_TS_joinPackets[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_TS_HumaxAdaption))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_TS_HumaxAdaption[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_TS_FinepassAdaption))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_TS_FinepassAdaption[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_TS_generatePmt))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_TS_generatePmt[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_TS_generateTtx))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_TS_generateTtx[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_Input_getEnclosedPackets))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_Input_getEnclosedPackets[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_Input_concatenateForeignRecords))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_Input_concatenateForeignRecords[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_Video_ignoreErrors))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_Video_ignoreErrors[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_Video_trimPts))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_Video_trimPts[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_Conversion_startWithVideo))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_Conversion_startWithVideo[0]));
+
+		if (Common.getSettings().getBooleanProperty(Keys.KEY_Conversion_addPcrToStream))
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_Conversion_addPcrToStream[0]));
+
 		Common.setMessage(" ");
 	}
 
@@ -1076,11 +1128,6 @@ public class MainProcess extends Thread {
 				vptsval[1][i + 1] = CommonParsing.getValue(data, pos, 8, !CommonParsing.BYTEREORDERING);
 				pos += 8;
 
-/**				vptsval[0][i] = pts_file.readLong(); 
-				vptsval[0][i + 1] = pts_file.readLong();
-				vptsval[1][i] = pts_file.readLong(); 
-				vptsval[1][i + 1] = pts_file.readLong();
-**/
 				if (debug) 
 					System.out.println("#s " + i + " _" + vptsval[0][i] + " #e " + (i + 1) + " _" + vptsval[0][i + 1] + " /#s " + i + " _" + vptsval[1][i] + " #e " + (i + 1) + " _" + vptsval[1][i + 1]);
 			}
@@ -1139,9 +1186,6 @@ public class MainProcess extends Thread {
 				ptsPos = CommonParsing.getValue(data, pos, 8, !CommonParsing.BYTEREORDERING);
 				pos += 8;
 
-/**				ptsVal = pts_file.readLong();
-				ptsPos = pts_file.readLong();
-**/
 				if (debug) 
 					System.out.println(" #" + aa + "/" + a + " _" + ptsVal + " / " + ptsPos);
 
@@ -3345,16 +3389,10 @@ public class MainProcess extends Thread {
 
 			base = count;
 			size = count + xInputFile.length();
-//
+
 			PushbackInputStream in = new PushbackInputStream(xInputFile.getInputStream(startPoint), 200);
 
 			count += startPoint;
-//
-
-		//	PushbackInputStream in = new PushbackInputStream(xInputFile.getInputStream(), 200);
-
-		//	while (count < startPoint)
-		//		count += in.skip(startPoint - count);
 
 			Common.updateProgressBar((action == CommonParsing.ACTION_DEMUX ? Resource.getString("parseTS.demuxing") : Resource.getString("parseTS.converting")) + " " + Resource.getString("parseTS.dvb.mpeg") + " " + xInputFile.getName(), (count - base), (size - base));
 
@@ -4809,16 +4847,10 @@ public class MainProcess extends Thread {
 
 			base = count;
 			size = count + aPvaXInputFile.length();
-//
+
 			PushbackInputStream in = new PushbackInputStream(aPvaXInputFile.getInputStream(startPoint), pva_buffersize);
 
 			count += startPoint;
-//
-
-		//	PushbackInputStream in = new PushbackInputStream(aPvaXInputFile.getInputStream(), pva_buffersize);
-
-		//	while (count < startPoint)
-		//		count += in.skip(startPoint - count);
 
 			overlapPVA(collection, overlapnext);
 
@@ -5605,6 +5637,7 @@ public class MainProcess extends Thread {
 		if (audio == null)
 			audio = new Audio();
 
+		// audio is global
 		audio.initRDSDecoding(Common.getSettings().getBooleanProperty(Keys.KEY_MessagePanel_Msg7), collection.DebugMode());
 
 		if (MPAConverter == null)
@@ -5625,6 +5658,9 @@ public class MainProcess extends Thread {
 			Common.setMessage(Resource.getString("audio.msg.normalize.fixed") + " 100%");
 		}
 
+		/**
+		 * messages
+		 */
 		int MpaConversionMode = Common.getSettings().getIntProperty(Keys.KEY_AudioPanel_loslessMpaConversionMode);
 
 		if (MpaConversionMode > 0)
@@ -5648,6 +5684,9 @@ public class MainProcess extends Thread {
 				Common.setMessage("\t" + Resource.getString(Keys.KEY_AudioPanel_addAiffHeader[0]));
 		}
 
+		/**
+		 * restart loop
+		 */
 		while (processAudio(collection, xInputFile, filename_pts, filename_type, videofile_pts, isElementaryStream, MpaConversionMode))
 		{
 			CommonParsing.setAudioProcessingFlags(CommonParsing.getAudioProcessingFlags() & ~0xCL);
@@ -5703,8 +5742,38 @@ public class MainProcess extends Thread {
 		boolean AddAiffHeader = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_addAiffHeader);
 		boolean DecodeMpgAudio = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_decodeMpgAudio);
 		boolean ClearCRC = Common.getSettings().getBooleanProperty(Keys.KEY_AudioPanel_clearCRC);
-		boolean Streamtype_VBI = Common.getSettings().getBooleanProperty(Keys.KEY_Streamtype_Vbi);
 		boolean IgnoreErrors = Common.getSettings().getBooleanProperty(Keys.KEY_Audio_ignoreErrors);
+
+		/**
+		 * messages
+		 */
+		if (IgnoreErrors)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_Audio_ignoreErrors[0]));
+
+		if (AllowSpaces)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_AudioPanel_allowSpaces[0]));
+
+		if (LimitPts)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_Audio_limitPts[0]));
+
+		if (ValidateCRC)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_AudioPanel_validateCRC[0]));
+
+		if (ClearCRC)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_AudioPanel_clearCRC[0]));
+
+		if (Patch1stAc3Header)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_AudioPanel_patch1stAc3Header[0]));
+
+		if (ReplaceAc3withSilence)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_AudioPanel_replaceAc3withSilence[0]));
+
+		if (FillGapsWithLastFrame)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_AudioPanel_fillGapsWithLastFrame[0]));
+
+		if (AddFrames)
+			Common.setMessage("-> " + Resource.getString(Keys.KEY_AudioPanel_addFrames[0]));
+
 
 		int ResampleAudioMode = Common.getSettings().getIntProperty(Keys.KEY_AudioPanel_resampleAudioMode);
 		int PitchValue = Integer.parseInt(Common.getSettings().getProperty(Keys.KEY_AudioPanel_PitchValue));
@@ -7189,9 +7258,9 @@ public class MainProcess extends Thread {
 						audio.MPA_deleteCRC(frame);
 
 					/**
-					 * RDS test, if vbi streamtype is enabled
+					 * RDS test
 					 */
-					if (audio.Layer == 2 && Streamtype_VBI) 
+					if (audio.Layer == 2) 
 						audio.testRDS(frame);
 
 					/**
@@ -8383,6 +8452,15 @@ public class MainProcess extends Thread {
 				}
 
 				Common.setMessage(Resource.getString("teletext.msg.output") + " " + ttxfile.substring(ttxfile.length() - 3));
+
+				if (ExportTextAsUnicode && subtitle_type != 6)
+					Common.setMessage("-> " + Resource.getString(Keys.KEY_SubtitlePanel_exportTextAsUnicode[0]));
+
+				if (DecodeHiddenRows)
+					Common.setMessage("-> " + Resource.getString(Keys.KEY_SubtitlePanel_decodeHiddenRows[0]));
+
+				if (KeepOriginalTimcode)
+					Common.setMessage("-> " + Resource.getString(Keys.KEY_SubtitlePanel_keepOriginalTimcode[0]));
 
 
 				DateFormat timeformat_1 = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -10334,7 +10412,7 @@ public class MainProcess extends Thread {
 
 					if ((returncode = CommonParsing.validateStartcode(vload, i)) < 0)
 					{
-						i += (-returncode) - 1;
+						i += (-returncode) - 1; //note i++
 						continue loop;
 					}
 
@@ -10342,6 +10420,11 @@ public class MainProcess extends Thread {
 
 					switch (pes_ID)
 					{
+					case CommonParsing.PICTURE_START_CODE:
+						lead_sequenceheader = false;
+						i += 3;
+						continue loop;
+
 					case CommonParsing.GROUP_START_CODE:
 
 						if (lead_sequenceheader)
@@ -10370,17 +10453,17 @@ public class MainProcess extends Thread {
 						{
 							es_packet = es_packetbuffer.toByteArray();
 							es_packetbuffer.reset();
-         
+
 							firstframeloop:
 							for (int j = 0, pes_ID_temp; j < 6000 && j < es_packet.length - 5; j++)
 							{
 								if ((returncode = CommonParsing.validateStartcode(es_packet, j)) < 0)
 								{
-									j += (-returncode) - 1;
+									j += (-returncode) - 1; //note j++
 									continue firstframeloop;
 								}
 
-								pes_ID_temp = CommonParsing.getPES_IdField(vload, j);
+								pes_ID_temp = CommonParsing.getPES_IdField(es_packet, j);
 
 								if (pes_ID_temp == CommonParsing.SEQUENCE_HEADER_CODE)
 									videotimecount = fps_tabl2[15 & es_packet[j + 7]];
@@ -10474,6 +10557,7 @@ public class MainProcess extends Thread {
 						break;
 
 					default:
+						i += 3;
 						// do nothing
 					}
 
@@ -10577,7 +10661,6 @@ public class MainProcess extends Thread {
 			Common.setExceptionMessage(e);
 		}
 
-		//VbvBuffer_Value = 0;
 		//System.gc();
 
 		return logfile;

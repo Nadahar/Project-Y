@@ -141,6 +141,8 @@
 --abfrage von fixen optionen/settings bei eintritt in methode
 --settings nur einmal auslesen, falls in routine mehrfach benötigt (loops)
 --sPES->MPG, Gegensatz zu MPG->sPES
+--Erweiterung anhängen bei sek. PES ging nicht mehr
+--fehlenden Sequenzheader ergänzen bei 'ES video' brachte fehler
 
 !-extra einstellungen für coll übernehmen, wird nur gelesen bei mainprocessing, vorbereitet
 !!-returncodes definieren ( System.exit(x) )

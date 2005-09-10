@@ -2233,12 +2233,15 @@ public class MainFrame extends JPanel {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), Resource.getString("MainPanel.Collection")));
 
+		final Color idle_color = new Color(230, 230, 230);
+		final Color running_color = new Color(245, 215, 215);
+
 		/**
 		 *  info field
 		 */
 		final JTextArea textarea = new JTextArea();
 		textarea.setToolTipText(Resource.getString("FilePanel.Textfield.Tip"));
-		textarea.setBackground(new Color(230, 230, 230));
+		textarea.setBackground(idle_color);
 		textarea.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		textarea.setEditable(false);
 
@@ -2402,6 +2405,7 @@ public class MainFrame extends JPanel {
 				text = str;
 
 				textarea.setText(text);
+				textarea.setBackground(collection != null && collection.isActive() ? running_color : idle_color);
 			}
 
 			public void stop()
