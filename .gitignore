@@ -1,7 +1,6 @@
-X.ini*
-test
+X.ini
 *.log
 *.jar
 tfdisk.img
 *.dll
-
+/bin/
